@@ -1,0 +1,11 @@
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\bin\Debug\net6.0\eCakeShop.Models.deps.json
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\bin\Debug\net6.0\eCakeShop.Models.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\bin\Debug\net6.0\eCakeShop.Models.pdb
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.AssemblyInfoInputs.cache
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.AssemblyInfo.cs
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.csproj.CoreCompileInputs.cache
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\refint\eCakeShop.Models.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.pdb
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\ref\eCakeShop.Models.dll

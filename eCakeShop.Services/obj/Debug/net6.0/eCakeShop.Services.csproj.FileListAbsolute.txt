@@ -1,0 +1,14 @@
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\bin\Debug\net6.0\eCakeShop.Services.deps.json
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\bin\Debug\net6.0\eCakeShop.Services.runtimeconfig.json
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\bin\Debug\net6.0\eCakeShop.Services.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\bin\Debug\net6.0\eCakeShop.Services.pdb
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.csproj.AssemblyReference.cache
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.AssemblyInfoInputs.cache
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.AssemblyInfo.cs
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.csproj.CoreCompileInputs.cache
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\refint\eCakeShop.Services.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.pdb
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.genruntimeconfig.cache
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\ref\eCakeShop.Services.dll

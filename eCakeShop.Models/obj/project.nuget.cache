@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "nfLVI/w0uTgcwTWpt9/O2Xb19ujaBZezObjjnnwbivsvMmRzTZVWBHt1ngxPRxK1fdww4VZnlRE+6G+zAbqYCQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Haris\\Desktop\\eCakeShop_RS2\\eCakeShop.Models\\eCakeShop.Models.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Haris\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
