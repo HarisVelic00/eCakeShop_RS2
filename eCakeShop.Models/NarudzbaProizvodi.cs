@@ -12,6 +12,7 @@ namespace eCakeShop.Models
         public int ProizvodID { get; set; }
         public int NarudzbaID { get; set; }
         public int Kolicina { get; set; }
-        public virtual Proizvod Proizvod { get; set; }
+
+        public virtual Proizvod Proizvod { get; set; } = null!;
     }
 }

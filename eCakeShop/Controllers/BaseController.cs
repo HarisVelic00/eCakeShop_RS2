@@ -7,7 +7,7 @@ namespace eCakeShop.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class BaseController<T, TSearch> : ControllerBase where T : class where TSearch : class
     {
         public IBaseService<T, TSearch> _service;

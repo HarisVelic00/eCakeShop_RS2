@@ -22,8 +22,11 @@ namespace eCakeShop.Services.Services
         public IEnumerable<T> GetAll(TSearch obj)
         {
             var entity = _db.Set<TDb>().AsQueryable();
+
             entity = AddInclude(entity, obj);
+
             entity = AddFilter(entity, obj);
+
             return _mapper.Map<IEnumerable<T>>(entity);
         }
 

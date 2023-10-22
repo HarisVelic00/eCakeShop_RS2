@@ -13,6 +13,7 @@ namespace eCakeShop.Services.Database
         {
             NarudzbaProizvodis = new HashSet<NarudzbaProizvodi>();
         }
+
         public int NarudzbaID { get; set; }
         public int UplataID { get; set; }
         public string? BrojNarudzbe { get; set; }

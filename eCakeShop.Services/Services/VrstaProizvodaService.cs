@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace eCakeShop.Services.Services
 {
-    public class VrstaProizvodaService : CRUDService<Models.VrstaProizvoda, VrstaProizvoda, object, VrstaProizvodaUpsertRequest, VrstaProizvodaUpsertRequest>, IVrstaProizvoda
+    public class VrstaProizvodaService : CRUDService<Models.VrstaProizvoda, VrstaProizvoda, object, VrstaProizvodaUpsertRequest, VrstaProizvodaUpsertRequest>, IVrstaProizvodaService
     {
         public VrstaProizvodaService(eCakeShopContext db, IMapper mapper) : base(db, mapper) { }
     }

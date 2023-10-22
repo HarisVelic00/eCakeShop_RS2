@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using eCakeShop.Services.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using eCakeShop.Models.Requests;
 using System.Runtime.CompilerServices;
+using eCakeShop.Models;
 
 namespace eCakeShop.Services.Mapper
 {
@@ -46,7 +46,6 @@ namespace eCakeShop.Services.Mapper
             CreateMap<NarudzbaInsertRequest, Database.Narudzba>();
             CreateMap<NarudzbaUpdateRequest, Database.Narudzba>();
             CreateMap<UplataUpsertRequest, Database.Uplata>();
-
         }
     }
 }

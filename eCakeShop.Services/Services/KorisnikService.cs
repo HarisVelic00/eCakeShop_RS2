@@ -99,12 +99,17 @@ namespace eCakeShop.Services.Services
             return _mapper.Map<Models.Korisnik>(user);
         }
 
+
         public Models.Korisnik Login(string username, string password)
         {
             var user = _db.Korisniks.Include("KorisnikUlogas.Uloga").FirstOrDefault(x => x.KorisnickoIme == username);
+
             if (user == null) { throw new Exception("No user found"); }
-            var hash = GenerateHash(user.LozinkaHash, password);
+
+            var hash = GenerateHash(user.LozinkaSalt, password);
+
             if (user.LozinkaHash != hash) { throw new Exception("Wrong password"); }
+
             return _mapper.Map<Models.Korisnik>(user);
         }
         public static string GenerateSalt()
