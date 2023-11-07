@@ -1,6 +1,10 @@
 import 'package:e_cakeshop/desktop/modals/add_order_modal.dart';
 import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
+import 'package:e_cakeshop/desktop/modals/edit_order_modal.dart';
+import 'package:e_cakeshop/models/narudzba.dart';
+import 'package:e_cakeshop/providers/narudzba_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OrdersScreen extends StatefulWidget {
   @override
@@ -10,16 +14,21 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen> {
   bool isDeleteModalOpen = false;
   bool isAddOrderModalOpen = false;
+  bool isEditOrderModalOpen = false;
+  late NarudzbaProvider narudzbaProvider;
+  Narudzba? narudzbaToDelete;
 
-  void openDeleteModal() {
+  void openDeleteModal(Narudzba narudzba) {
     setState(() {
       isDeleteModalOpen = true;
+      narudzbaToDelete = narudzba;
     });
   }
 
   void closeDeleteModal() {
     setState(() {
       isDeleteModalOpen = false;
+      narudzbaToDelete = null;
     });
   }
 
@@ -35,8 +44,40 @@ class _OrdersScreenState extends State<OrdersScreen> {
     });
   }
 
+  void openEditOrderModal() {
+    setState(() {
+      isEditOrderModalOpen = true;
+    });
+  }
+
+  void closeEditOrderModal() {
+    setState(() {
+      isEditOrderModalOpen = false;
+    });
+  }
+
+  void deleteNarudzba(Narudzba narudzba) async {
+    try {
+      await narudzbaProvider.delete(narudzba.narudzbaID!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Order deleted successfully'),
+        ),
+      );
+      closeDeleteModal();
+    } catch (e) {
+      print("Error deleting order: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete order'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    narudzbaProvider = Provider.of<NarudzbaProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order List', style: TextStyle(color: Colors.black)),
@@ -89,56 +130,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ],
                     ),
                   ),
-                  DataTable(
-                    columns: [
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Order Number')),
-                      DataColumn(label: Text('User')),
-                      DataColumn(label: Text('Date')),
-                      DataColumn(label: Text('Products')),
-                      DataColumn(label: Text('Is Shipped')),
-                      DataColumn(label: Text('Is Canceled')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows: [
-                      DataRow(
-                        cells: [
-                          DataCell(Text('ID')),
-                          DataCell(Text('Order Number')),
-                          DataCell(Text('User')),
-                          DataCell(Text('Date')),
-                          DataCell(Text('Products')),
-                          DataCell(Text('Is Shipped')),
-                          DataCell(Text('Is Canceled')),
-                          DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    // Implement edit functionality here
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: openDeleteModal,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Add more DataRow entries for additional orders
-                    ],
-                  ),
+                  OrdersTable(
+                    openEditUserModal: openEditOrderModal,
+                    openDeleteModal: openDeleteModal,
+                    narudzbaProvider: narudzbaProvider,
+                  )
                 ],
               ),
               if (isDeleteModalOpen)
                 Center(
                   child: DeleteModal(
                     onDeletePressed: () {
-                      // Handle delete action here
-                      // ...
+                      deleteNarudzba(narudzbaToDelete!);
                       closeDeleteModal();
                     },
                     onCancelPressed: () {
@@ -155,10 +158,85 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                   ),
                 ),
+              if (isEditOrderModalOpen)
+                Center(
+                  child: EditOrderModal(
+                    onCancelPressed: closeEditOrderModal,
+                  ),
+                ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class OrdersTable extends StatelessWidget {
+  final void Function() openEditUserModal;
+  final void Function(Narudzba) openDeleteModal;
+  final NarudzbaProvider narudzbaProvider;
+
+  OrdersTable({
+    required this.openEditUserModal,
+    required this.openDeleteModal,
+    required this.narudzbaProvider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Narudzba>>(
+      future: narudzbaProvider.Get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          return DataTable(
+            columns: const [
+              DataColumn(label: Text('Order Number')),
+              DataColumn(label: Text('User')),
+              DataColumn(label: Text('Date')),
+              DataColumn(label: Text('Products')),
+              DataColumn(label: Text('Is Shipped')),
+              DataColumn(label: Text('Is Canceled')),
+              DataColumn(label: Text('Actions')),
+            ],
+            rows: snapshot.data!.map((narudzba) {
+              return DataRow(
+                cells: [
+                  DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
+                  DataCell(Text(narudzba.korisnik.toString())),
+                  DataCell(Text(narudzba.datumNarudzbe.toString())),
+                  DataCell(Text(narudzba.narudzbaProizvodi ?? '')),
+                  DataCell(Text(narudzba.isShipped.toString())),
+                  DataCell(Text(narudzba.isCanceled.toString())),
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: openEditUserModal,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            openDeleteModal(
+                                narudzba); // Pass the narudzba object
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          );
+        } else {
+          return const Text('No data available');
+        }
+      },
     );
   }
 }

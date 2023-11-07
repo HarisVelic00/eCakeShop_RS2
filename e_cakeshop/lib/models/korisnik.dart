@@ -1,6 +1,9 @@
 import 'package:e_cakeshop/models/drzava.dart';
 import 'package:e_cakeshop/models/grad.dart';
+import 'package:json_annotation/json_annotation.dart';
+part 'korisnik.g.dart';
 
+@JsonSerializable()
 class Korisnik {
   int? korisnikID;
   String? ime;
@@ -15,5 +18,10 @@ class Korisnik {
   Grad? grad;
   Drzava? drzava;
 
-  Korisnik();
+  Korisnik() {}
+
+  factory Korisnik.fromJson(Map<String, dynamic> json) =>
+      _$KorisnikFromJson(json);
+
+  Map<String, dynamic> toJson() => _$KorisnikToJson(this);
 }

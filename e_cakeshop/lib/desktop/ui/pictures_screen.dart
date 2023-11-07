@@ -1,6 +1,10 @@
-import 'package:e_cakeshop/desktop/modals/add_image_modal.dart'; // Import the AddImageModal
+import 'package:e_cakeshop/desktop/modals/add_image_modal.dart';
 import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
+import 'package:e_cakeshop/desktop/modals/edit_image_modal.dart';
+import 'package:e_cakeshop/models/slika.dart';
+import 'package:e_cakeshop/providers/slika_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PicturesScreen extends StatefulWidget {
   @override
@@ -10,16 +14,21 @@ class PicturesScreen extends StatefulWidget {
 class _PicturesScreenState extends State<PicturesScreen> {
   bool isDeleteModalOpen = false;
   bool isAddPictureModalOpen = false;
+  bool isEditImageModalOpen = false;
+  late SlikaProvider slikaProvider;
+  Slika? slikaToDelete;
 
-  void openDeleteModal() {
+  void openDeleteModal(Slika slika) {
     setState(() {
       isDeleteModalOpen = true;
+      slikaToDelete = slika;
     });
   }
 
   void closeDeleteModal() {
     setState(() {
       isDeleteModalOpen = false;
+      slikaToDelete = null;
     });
   }
 
@@ -35,8 +44,40 @@ class _PicturesScreenState extends State<PicturesScreen> {
     });
   }
 
+  void openEditImageModal() {
+    setState(() {
+      isEditImageModalOpen = true;
+    });
+  }
+
+  void closeEditImageModal() {
+    setState(() {
+      isEditImageModalOpen = false;
+    });
+  }
+
+  void deleteSlika(Slika slika) async {
+    try {
+      await slikaProvider.delete(slika.slikaID!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Picture deleted successfully'),
+        ),
+      );
+      closeDeleteModal();
+    } catch (e) {
+      print("Error deleting picture: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete picture'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    slikaProvider = Provider.of<SlikaProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title:
@@ -90,54 +131,21 @@ class _PicturesScreenState extends State<PicturesScreen> {
                       ],
                     ),
                   ),
-                  // Your DataTable and data rows for pictures go here
-                  DataTable(
-                    columns: [
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Picture')),
-                      DataColumn(label: Text('Description')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows: [
-                      DataRow(
-                        cells: [
-                          DataCell(Text('ID')),
-                          DataCell(Text('Picture')),
-                          DataCell(Text('Description')),
-                          DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    // Implement edit functionality here
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: openDeleteModal,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Add more DataRow entries for additional pictures
-                    ],
-                  ),
+                  ImagesTable(
+                    openEditUserModal: openEditImageModal,
+                    openDeleteModal: openDeleteModal,
+                    slikaProvider: slikaProvider,
+                  )
                 ],
               ),
               if (isDeleteModalOpen)
                 Center(
                   child: DeleteModal(
                     onDeletePressed: () {
-                      // Handle delete action here
-                      // ...
+                      deleteSlika(slikaToDelete!);
                       closeDeleteModal();
                     },
-                    onCancelPressed: () {
-                      closeDeleteModal();
-                    },
+                    onCancelPressed: closeDeleteModal,
                   ),
                 ),
               if (isAddPictureModalOpen)
@@ -149,10 +157,79 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     ),
                   ),
                 ),
+              if (isEditImageModalOpen)
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: EditImageModal(
+                      onCancelPressed: closeEditImageModal,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class ImagesTable extends StatelessWidget {
+  final void Function() openEditUserModal;
+  final void Function(Slika) openDeleteModal;
+  final SlikaProvider slikaProvider;
+
+  ImagesTable({
+    required this.openEditUserModal,
+    required this.openDeleteModal,
+    required this.slikaProvider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Slika>>(
+      future: slikaProvider.Get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          return DataTable(
+            columns: const [
+              DataColumn(label: Text('ID')),
+              DataColumn(label: Text('Description')),
+              DataColumn(label: Text('Actions')),
+            ],
+            rows: snapshot.data!.map((slika) {
+              return DataRow(
+                cells: [
+                  DataCell(Text(slika.slikaID?.toString() ?? '')),
+                  DataCell(Text(slika.opis ?? '')),
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: openEditUserModal,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            openDeleteModal(slika);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          );
+        } else {
+          return const Text('No data available');
+        }
+      },
     );
   }
 }

@@ -1,6 +1,9 @@
 import 'package:e_cakeshop/models/korisnik.dart';
 import 'package:e_cakeshop/models/narudzbaproizvodi.dart';
+import 'package:json_annotation/json_annotation.dart';
+part 'narudzba.g.dart';
 
+@JsonSerializable()
 class Narudzba {
   int? narudzbaID;
   String? brojNarudzbe;
@@ -14,4 +17,9 @@ class Narudzba {
   List<NarudzbaProizvodi>? narudzbaProizvodis;
 
   Narudzba();
+
+  factory Narudzba.fromJson(Map<String, dynamic> json) =>
+      _$NarudzbaFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NarudzbaToJson(this);
 }

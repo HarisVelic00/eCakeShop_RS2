@@ -1,6 +1,9 @@
 import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
-import 'package:e_cakeshop/desktop/modals/report_modal.dart';
+import 'package:e_cakeshop/desktop/modals/edit_archive_modal.dart';
+import 'package:e_cakeshop/models/narudzba.dart';
+import 'package:e_cakeshop/providers/narudzba_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ArchiveScreen extends StatefulWidget {
   @override
@@ -9,21 +12,58 @@ class ArchiveScreen extends StatefulWidget {
 
 class _ArchiveScreenState extends State<ArchiveScreen> {
   bool isDeleteModalOpen = false;
+  bool isEditArchiveModalOpen = false;
+  late NarudzbaProvider arhivaProvider;
+  Narudzba? arhiviranaNarudzbaToDelete;
 
-  void openDeleteModal() {
+  void openDeleteModal(Narudzba arhiviranaNarudzba) {
     setState(() {
       isDeleteModalOpen = true;
+      arhiviranaNarudzbaToDelete = arhiviranaNarudzba;
     });
   }
 
   void closeDeleteModal() {
     setState(() {
       isDeleteModalOpen = false;
+      arhiviranaNarudzbaToDelete = null;
     });
+  }
+
+  void openEditArchiveModal() {
+    setState(() {
+      isEditArchiveModalOpen = true;
+    });
+  }
+
+  void closeEditArchiveModal() {
+    setState(() {
+      isEditArchiveModalOpen = false;
+    });
+  }
+
+  void deleteArhiviranaNarudzba(Narudzba arhiviranaNarudzba) async {
+    try {
+      await arhivaProvider.delete(arhiviranaNarudzba.narudzbaID!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Arhivirana narudzba deleted successfully'),
+        ),
+      );
+      closeDeleteModal();
+    } catch (e) {
+      print("Error deleting order: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete arhivirana narudzba'),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    arhivaProvider = Provider.of<NarudzbaProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title:
@@ -69,64 +109,36 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                                   const Color.fromRGBO(97, 142, 246, 1),
                             ),
                             onPressed: () {
-                              printReport();
+                              // Call any other function you want here
                             },
-                            child: const Text('Print Report'),
+                            child: const Text('Button Text'),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  DataTable(
-                    columns: [
-                      DataColumn(label: Text('Order Number')),
-                      DataColumn(label: Text('Date')),
-                      DataColumn(label: Text('User')),
-                      DataColumn(label: Text('Product')),
-                      DataColumn(label: Text('Price')),
-                      DataColumn(label: Text('IsCanceled')),
-                      DataColumn(label: Text('IsShipped')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows: [
-                      DataRow(
-                        cells: [
-                          DataCell(Text('Order Number')),
-                          DataCell(Text('User')),
-                          DataCell(Text('Date')),
-                          DataCell(Text('Product')),
-                          DataCell(Text('Price')),
-                          DataCell(Text('IsCanceled')),
-                          DataCell(Text('IsShipped')),
-                          DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {},
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: openDeleteModal,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  ArchiveTable(
+                      openEditUserModal: openEditArchiveModal,
+                      openDeleteModal: openDeleteModal,
+                      arhivaProvider: arhivaProvider)
                 ],
               ),
               if (isDeleteModalOpen)
                 Center(
                   child: DeleteModal(
                     onDeletePressed: () {
+                      deleteArhiviranaNarudzba(arhiviranaNarudzbaToDelete!);
                       closeDeleteModal();
                     },
                     onCancelPressed: () {
                       closeDeleteModal();
                     },
+                  ),
+                ),
+              if (isEditArchiveModalOpen)
+                Center(
+                  child: EditArchiveModal(
+                    onCancelPressed: closeEditArchiveModal,
                   ),
                 ),
             ],
@@ -135,24 +147,73 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
       ),
     );
   }
+}
 
-  void printReport() {
-    List<Map<String, String>> reportData = [
-      {
-        'Order Number': '123',
-        'Date': '2023-11-01',
-        'User': 'John Doe',
-        'Product': 'Product 1',
-        'Price': '\$100',
-        'IsCanceled': 'No',
-        'IsShipped': 'Yes',
-      },
-    ];
+class ArchiveTable extends StatelessWidget {
+  final void Function() openEditUserModal;
+  final void Function(Narudzba) openDeleteModal;
+  final NarudzbaProvider arhivaProvider;
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ReportModal(data: reportData);
+  ArchiveTable({
+    required this.openEditUserModal,
+    required this.openDeleteModal,
+    required this.arhivaProvider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Narudzba>>(
+      future: arhivaProvider.Get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          return DataTable(
+            columns: const [
+              DataColumn(label: Text('Order Number')),
+              DataColumn(label: Text('Date')),
+              DataColumn(label: Text('User')),
+              //DataColumn(label: Text('Products')),
+              DataColumn(label: Text('Price')),
+              DataColumn(label: Text('Is Shipped')),
+              DataColumn(label: Text('Is Canceled')),
+              DataColumn(label: Text('Actions')),
+            ],
+            rows: snapshot.data!.map((narudzba) {
+              return DataRow(
+                cells: [
+                  DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
+                  DataCell(Text(narudzba.datumNarudzbe.toString())),
+                  DataCell(Text(narudzba.korisnik.toString())),
+                  //DataCell(Text(narudzba.narudzbaProizvodi ?? '')),
+                  DataCell(Text(narudzba.ukupnaCijena.toString())),
+                  DataCell(Text(narudzba.isShipped.toString())),
+                  DataCell(Text(narudzba.isCanceled.toString())),
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: openEditUserModal,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            openDeleteModal(narudzba);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          );
+        } else {
+          return const Text('No data available');
+        }
       },
     );
   }

@@ -1,6 +1,10 @@
-import 'package:e_cakeshop/desktop/modals/add_news_modal.dart'; // Import the AddNewsModal
+import 'package:e_cakeshop/desktop/modals/add_news_modal.dart';
 import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
+import 'package:e_cakeshop/desktop/modals/edit_news_modal.dart';
+import 'package:e_cakeshop/models/novost.dart';
+import 'package:e_cakeshop/providers/novost_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NewsScreen extends StatefulWidget {
   @override
@@ -10,16 +14,21 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   bool isDeleteModalOpen = false;
   bool isAddNewsModalOpen = false;
+  bool isEditNewsModalOpen = false;
+  late NovostProvider novostProvider;
+  Novost? novostToDelete;
 
-  void openDeleteModal() {
+  void openDeleteModal(Novost novost) {
     setState(() {
       isDeleteModalOpen = true;
+      novostToDelete = novost;
     });
   }
 
   void closeDeleteModal() {
     setState(() {
       isDeleteModalOpen = false;
+      novostToDelete = null;
     });
   }
 
@@ -35,8 +44,40 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
+  void openEditNewsModal() {
+    setState(() {
+      isEditNewsModalOpen = true;
+    });
+  }
+
+  void closeEditNewsModal() {
+    setState(() {
+      isEditNewsModalOpen = false;
+    });
+  }
+
+  void deleteNovost(Novost novost) async {
+    try {
+      await novostProvider.delete(novost.novostID!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('News deleted successfully'),
+        ),
+      );
+      closeDeleteModal();
+    } catch (e) {
+      print("Error deleting news: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete news'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    novostProvider = Provider.of<NovostProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('News List', style: TextStyle(color: Colors.black)),
@@ -89,56 +130,20 @@ class _NewsScreenState extends State<NewsScreen> {
                       ],
                     ),
                   ),
-                  // Your DataTable and data rows for news go here
-                  DataTable(
-                    columns: [
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Title')),
-                      DataColumn(label: Text('Content')),
-                      DataColumn(label: Text('Thumbnail')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows: [
-                      DataRow(
-                        cells: [
-                          DataCell(Text('ID')),
-                          DataCell(Text('Title')),
-                          DataCell(Text('Content')),
-                          DataCell(Text('Thumbnail')),
-                          DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    // Implement edit functionality here
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: openDeleteModal,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Add more DataRow entries for additional news
-                    ],
-                  ),
+                  NewsTable(
+                    openEditUserModal: openEditNewsModal,
+                    openDeleteModal: openDeleteModal,
+                    novostProvider: novostProvider,
+                  )
                 ],
               ),
               if (isDeleteModalOpen)
                 Center(
                   child: DeleteModal(
                     onDeletePressed: () {
-                      // Handle delete action here
-                      // ...
-                      closeDeleteModal();
+                      deleteNovost(novostToDelete!);
                     },
-                    onCancelPressed: () {
-                      closeDeleteModal();
-                    },
+                    onCancelPressed: closeDeleteModal,
                   ),
                 ),
               if (isAddNewsModalOpen)
@@ -150,10 +155,78 @@ class _NewsScreenState extends State<NewsScreen> {
                     ),
                   ),
                 ),
+              if (isEditNewsModalOpen)
+                Center(
+                  child: EditNewsModal(
+                    onCancelPressed: closeEditNewsModal,
+                  ),
+                ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class NewsTable extends StatelessWidget {
+  final void Function() openEditUserModal;
+  final void Function(Novost) openDeleteModal;
+  final NovostProvider novostProvider;
+
+  NewsTable({
+    required this.openEditUserModal,
+    required this.openDeleteModal,
+    required this.novostProvider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Novost>>(
+      future: novostProvider.Get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          return DataTable(
+            columns: const [
+              DataColumn(label: Text('ID')),
+              DataColumn(label: Text('Title')),
+              DataColumn(label: Text('Content')),
+              DataColumn(label: Text('Actions')),
+            ],
+            rows: snapshot.data!.map((novost) {
+              return DataRow(
+                cells: [
+                  DataCell(Text(novost.novostID.toString())),
+                  DataCell(Text(novost.naslov ?? '')),
+                  DataCell(Text(novost.sadrzaj ?? '')),
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: openEditUserModal,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            openDeleteModal(novost);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          );
+        } else {
+          return const Text('No data available');
+        }
+      },
     );
   }
 }

@@ -1,12 +1,10 @@
 import 'package:e_cakeshop/desktop/modals/add_user_modal.dart';
 import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
+import 'package:e_cakeshop/desktop/modals/edit_user_modal.dart';
+import 'package:e_cakeshop/models/korisnik.dart';
+import 'package:e_cakeshop/providers/korisnik_provider.dart';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MaterialApp(
-    home: UserScreen(),
-  ));
-}
+import 'package:provider/provider.dart';
 
 class UserScreen extends StatefulWidget {
   @override
@@ -16,10 +14,14 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> {
   bool isDeleteModalOpen = false;
   bool isAddUserModalOpen = false;
+  bool isEditUserModalOpen = false;
+  late KorisnikProvider korisnikProvider;
+  Korisnik? korisnikToDelete;
 
-  void openDeleteModal() {
+  void openDeleteModal(Korisnik korisnik) {
     setState(() {
       isDeleteModalOpen = true;
+      korisnikToDelete = korisnik;
     });
   }
 
@@ -41,8 +43,42 @@ class _UserScreenState extends State<UserScreen> {
     });
   }
 
+  void openEditUserModal() {
+    setState(() {
+      isEditUserModalOpen = true;
+    });
+  }
+
+  void closeEditUserModal() {
+    setState(() {
+      isEditUserModalOpen = false;
+    });
+  }
+
+  void deleteKorisnik(Korisnik korisnik) async {
+    try {
+      await korisnikProvider.delete(korisnik.korisnikID!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User deleted successfully'),
+        ),
+      );
+      setState(() {
+        korisnikToDelete = null;
+      });
+    } catch (e) {
+      print("Error deleting user: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete user'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Users List', style: TextStyle(color: Colors.black)),
@@ -88,61 +124,17 @@ class _UserScreenState extends State<UserScreen> {
                               backgroundColor:
                                   const Color.fromRGBO(97, 142, 246, 1),
                             ),
-                            onPressed:
-                                openAddUserModal, // Open the AddUserModal
+                            onPressed: openAddUserModal,
                             child: const Text('Add User'),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  DataTable(
-                    columns: [
-                      DataColumn(label: Text('ID')),
-                      DataColumn(label: Text('Name')),
-                      DataColumn(label: Text('Surname')),
-                      DataColumn(label: Text('Username')),
-                      DataColumn(label: Text('Date of Birth')),
-                      DataColumn(label: Text('Email')),
-                      DataColumn(label: Text('Telephone')),
-                      DataColumn(label: Text('City')),
-                      DataColumn(label: Text('Country')),
-                      DataColumn(
-                          label: Text('Actions')), // New column for actions
-                    ],
-                    rows: [
-                      DataRow(
-                        cells: [
-                          DataCell(Text('1')),
-                          DataCell(Text('John')),
-                          DataCell(Text('Doe')),
-                          DataCell(Text('johndoe')),
-                          DataCell(Text('01/01/1990')),
-                          DataCell(Text('john.doe@example.com')),
-                          DataCell(Text('123-456-7890')),
-                          DataCell(Text('New York')),
-                          DataCell(Text('USA')),
-                          DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () {
-                                    // Implement edit functionality here
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed:
-                                      openDeleteModal, // Open the DeleteModal
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Add more DataRow entries for additional users
-                    ],
+                  UsersTable(
+                    openEditUserModal: openEditUserModal,
+                    openDeleteModal: openDeleteModal,
+                    korisnikProvider: korisnikProvider,
                   ),
                 ],
               ),
@@ -150,8 +142,7 @@ class _UserScreenState extends State<UserScreen> {
                 Center(
                   child: DeleteModal(
                     onDeletePressed: () {
-                      // Handle delete action here
-                      // ...
+                      deleteKorisnik(korisnikToDelete!);
                       closeDeleteModal();
                     },
                     onCancelPressed: closeDeleteModal,
@@ -160,15 +151,98 @@ class _UserScreenState extends State<UserScreen> {
               if (isAddUserModalOpen)
                 Center(
                   child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: AddUserModal(
-                        onCancelPressed: closeAddUserModal,
-                      )),
+                    borderRadius: BorderRadius.circular(10),
+                    child: AddUserModal(
+                      onCancelPressed: closeAddUserModal,
+                    ),
+                  ),
+                ),
+              if (isEditUserModalOpen)
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: EditUserModal(
+                      onCancelPressed: closeEditUserModal,
+                      onSavePressed: closeEditUserModal,
+                    ),
+                  ),
                 ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class UsersTable extends StatelessWidget {
+  final void Function() openEditUserModal;
+  final void Function(Korisnik) openDeleteModal;
+  final KorisnikProvider korisnikProvider;
+
+  UsersTable({
+    required this.openEditUserModal,
+    required this.openDeleteModal,
+    required this.korisnikProvider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Korisnik>>(
+      future: korisnikProvider.Get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          return DataTable(
+            columns: const [
+              DataColumn(label: Text('ID')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('Surname')),
+              DataColumn(label: Text('Username')),
+              DataColumn(label: Text('Date of Birth')),
+              DataColumn(label: Text('Email')),
+              DataColumn(label: Text('Telephone')),
+              DataColumn(label: Text('Actions')),
+            ],
+            rows: snapshot.data!.map((korisnik) {
+              return DataRow(
+                cells: [
+                  DataCell(Text(korisnik.korisnikID.toString())),
+                  DataCell(Text(korisnik.ime ?? '')),
+                  DataCell(Text(korisnik.prezime ?? '')),
+                  DataCell(Text(korisnik.korisnickoIme ?? '')),
+                  DataCell(korisnik.datumRodjenja != null
+                      ? Text(korisnik.datumRodjenja.toString())
+                      : const Text('')),
+                  DataCell(Text(korisnik.email ?? '')),
+                  DataCell(Text(korisnik.telefon ?? '')),
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: openEditUserModal,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            openDeleteModal(korisnik);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          );
+        } else {
+          return const Text('No data available');
+        }
+      },
     );
   }
 }
