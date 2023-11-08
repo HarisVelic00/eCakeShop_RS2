@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:e_cakeshop/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
@@ -8,12 +9,13 @@ class BaseProvider<T> with ChangeNotifier {
   String? _endpoint;
   static String? _baseUrl;
   String? fullUrl;
+
   HttpClient client = HttpClient();
   IOClient? http;
 
   BaseProvider(String endpoint) {
     _baseUrl = const String.fromEnvironment("baseUrl",
-        defaultValue: "https://localhost:7166");
+        defaultValue: "https://localhost:7166/");
     if (_baseUrl!.endsWith("/") == false) {
       _baseUrl = _baseUrl! + "/";
     }
@@ -35,17 +37,7 @@ class BaseProvider<T> with ChangeNotifier {
 
     var uri = Uri.parse(url);
 
-    // Commented out the Authorization lines
-    // String username = Authorization.Username!;
-    // String passowrd = Authorization.Password!;
-
-    // String basicAuth =
-    //     "Basic ${base64Encode(utf8.encode('$username:$passowrd'))}";
-
-    Map<String, String> headers = {
-      "Content-Type": "application/json",
-      // "Authorization": basicAuth,
-    };
+    Map<String, String> headers = getHeaders();
 
     var response = await http!.get(uri, headers: headers);
 
@@ -61,10 +53,7 @@ class BaseProvider<T> with ChangeNotifier {
   Future<T> getById(int id) async {
     var url = Uri.parse("$_baseUrl$_endpoint/$id");
 
-    Map<String, String> headers = {
-      "Content-Type": "application/json",
-      // "Authorization": basicAuth,
-    };
+    Map<String, String> headers = getHeaders();
 
     var response = await http!.get(url, headers: headers);
 
@@ -79,9 +68,15 @@ class BaseProvider<T> with ChangeNotifier {
   Future<T> delete(int id) async {
     var url = Uri.parse("$_baseUrl$_endpoint/$id");
 
+    String username = Authorization.Username!;
+    String password = Authorization.Password!;
+
+    String basicAuth =
+        "Basic ${base64Encode(utf8.encode('$username:$password'))}";
+
     Map<String, String> headers = {
       "Content-Type": "application/json",
-      // "Authorization": basicAuth,
+      "Authorization": basicAuth,
     };
 
     var response = await http!.delete(url, headers: headers);
@@ -98,11 +93,7 @@ class BaseProvider<T> with ChangeNotifier {
     var url = "$_baseUrl$_endpoint";
     var uri = Uri.parse(url);
 
-    var headers = {
-      "Content-Type": "application/json",
-      // "Authorization": basicAuth,
-    };
-
+    var headers = getHeaders();
     var jsonRequest = jsonEncode(request);
     var response = await http!.post(uri, headers: headers, body: jsonRequest);
 
@@ -118,11 +109,7 @@ class BaseProvider<T> with ChangeNotifier {
     var url = "$_baseUrl$_endpoint/$id";
     var uri = Uri.parse(url);
 
-    var headers = {
-      "Content-Type": "application/json",
-      // "Authorization": basicAuth,
-    };
-
+    var headers = getHeaders();
     var jsonRequest = jsonEncode(request);
     var response = await http!.put(uri, headers: headers, body: jsonRequest);
 
@@ -139,16 +126,15 @@ class BaseProvider<T> with ChangeNotifier {
   }
 
   Map<String, String> getHeaders() {
-    // Commented out the Authorization lines
-    // String username = Authorization.Username!;
-    // String passowrd = Authorization.Password!;
+    String username = Authorization.Username!;
+    String passowrd = Authorization.Password!;
 
-    // String basicAuth =
-    //     "Basic ${base64Encode(utf8.encode('$username:$passowrd'))}";
+    String basicAuth =
+        "Basic ${base64Encode(utf8.encode('$username:$passowrd'))}";
 
     var headers = {
       "Content-Type": "application/json",
-      // "Authorization": basicAuth,
+      "Authorization": basicAuth
     };
 
     return headers;
