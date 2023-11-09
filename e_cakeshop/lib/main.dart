@@ -49,22 +49,23 @@ class LoginScreen extends StatelessWidget {
         Authorization.Username = _username.text;
         Authorization.Password = _password.text;
         Authorization.korisnik = await _korisnikProvider.Authenticate();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login successful!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+
         Navigator.of(context).pushNamedAndRemoveUntil(
           HomeScreen.routeName,
           (route) => false,
         );
       } catch (e) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text("Error"),
-            content: Text(e.toString()),
-            actions: [
-              TextButton(
-                child: Text("Ok"),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login failed. Please check your credentials.'),
+            duration: Duration(seconds: 3),
           ),
         );
       }

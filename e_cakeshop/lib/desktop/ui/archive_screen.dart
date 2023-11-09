@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
 import 'package:e_cakeshop/desktop/modals/edit_archive_modal.dart';
 import 'package:e_cakeshop/models/narudzba.dart';
 import 'package:e_cakeshop/providers/narudzba_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class ArchiveScreen extends StatefulWidget {
   @override
@@ -61,6 +64,56 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     }
   }
 
+  Future<void> generatePdfReport(List<Narudzba> data) async {
+    try {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          build: (context) {
+            return pw.TableHelper.fromTextArray(
+              context: context,
+              data: <List<String>>[
+                [
+                  'Order Number',
+                  'Date',
+                  'User',
+                  'Price',
+                  'Is Shipped',
+                  'Is Canceled'
+                ],
+                for (var narudzba in data)
+                  [
+                    narudzba.brojNarudzbe.toString(),
+                    narudzba.datumNarudzbe.toString(),
+                    narudzba.korisnik.toString(),
+                    narudzba.ukupnaCijena.toString(),
+                    narudzba.isShipped.toString(),
+                    narudzba.isCanceled.toString()
+                  ],
+              ],
+            );
+          },
+        ),
+      );
+
+      final file = File('report.pdf');
+      await file.writeAsBytes(await pdf.save());
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PDF report generated successfully'),
+        ),
+      );
+    } catch (e) {
+      print("Error generating PDF report: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to generate PDF report'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     arhivaProvider = Provider.of<NarudzbaProvider>(context, listen: false);
@@ -108,10 +161,15 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                               backgroundColor:
                                   const Color.fromRGBO(97, 142, 246, 1),
                             ),
-                            onPressed: () {
-                              // Call any other function you want here
+                            onPressed: () async {
+                              // Get the data for the report
+                              List<Narudzba> reportData =
+                                  await arhivaProvider.Get();
+
+                              // Generate and print the PDF report
+                              await generatePdfReport(reportData);
                             },
-                            child: const Text('Button Text'),
+                            child: const Text('Print Report'),
                           ),
                         ),
                       ],
