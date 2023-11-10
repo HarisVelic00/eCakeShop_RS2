@@ -17,6 +17,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   bool isEditOrderModalOpen = false;
   late NarudzbaProvider narudzbaProvider;
   Narudzba? narudzbaToDelete;
+  late String _searchQuery = '';
 
   void openDeleteModal(Narudzba narudzba) {
     setState(() {
@@ -109,7 +110,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 border: InputBorder.none,
                               ),
                               onChanged: (text) {
-                                // Implement search functionality here
+                                setState(() {
+                                  _searchQuery = text;
+                                });
                               },
                             ),
                           ),
@@ -134,6 +137,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     openEditUserModal: openEditOrderModal,
                     openDeleteModal: openDeleteModal,
                     narudzbaProvider: narudzbaProvider,
+                    searchQuery: _searchQuery,
                   )
                 ],
               ),
@@ -176,11 +180,13 @@ class OrdersTable extends StatelessWidget {
   final void Function() openEditUserModal;
   final void Function(Narudzba) openDeleteModal;
   final NarudzbaProvider narudzbaProvider;
+  final String searchQuery;
 
   OrdersTable({
     required this.openEditUserModal,
     required this.openDeleteModal,
     required this.narudzbaProvider,
+    required this.searchQuery,
   });
 
   @override
@@ -193,8 +199,16 @@ class OrdersTable extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
+          List<Narudzba> filteredNarudzba = snapshot.data!.where((narudzba) {
+            String orderNumber = '${narudzba.brojNarudzbe}';
+            return orderNumber
+                .toLowerCase()
+                .contains(searchQuery.toLowerCase());
+          }).toList();
+
           return DataTable(
             columns: const [
+              DataColumn(label: Text('ID')),
               DataColumn(label: Text('Order Number')),
               DataColumn(label: Text('User')),
               DataColumn(label: Text('Date')),
@@ -203,9 +217,10 @@ class OrdersTable extends StatelessWidget {
               DataColumn(label: Text('Is Canceled')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: snapshot.data!.map((narudzba) {
+            rows: filteredNarudzba.map((narudzba) {
               return DataRow(
                 cells: [
+                  DataCell(Text(narudzba.narudzbaID.toString())),
                   DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
                   DataCell(Text(narudzba.korisnik.toString())),
                   DataCell(Text(narudzba.datumNarudzbe.toString())),

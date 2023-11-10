@@ -17,6 +17,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
   bool isEditImageModalOpen = false;
   late SlikaProvider slikaProvider;
   Slika? slikaToDelete;
+  late String _searchQuery = '';
 
   void openDeleteModal(Slika slika) {
     setState(() {
@@ -110,7 +111,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
                                 border: InputBorder.none,
                               ),
                               onChanged: (text) {
-                                // Implement search functionality here
+                                setState(() {
+                                  _searchQuery = text;
+                                });
                               },
                             ),
                           ),
@@ -135,6 +138,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     openEditUserModal: openEditImageModal,
                     openDeleteModal: openDeleteModal,
                     slikaProvider: slikaProvider,
+                    searchQuery: _searchQuery,
                   )
                 ],
               ),
@@ -178,11 +182,13 @@ class ImagesTable extends StatelessWidget {
   final void Function() openEditUserModal;
   final void Function(Slika) openDeleteModal;
   final SlikaProvider slikaProvider;
+  final String searchQuery;
 
   ImagesTable({
     required this.openEditUserModal,
     required this.openDeleteModal,
     required this.slikaProvider,
+    required this.searchQuery,
   });
 
   @override
@@ -195,13 +201,18 @@ class ImagesTable extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
+          List<Slika> filteredSlika = snapshot.data!.where((slika) {
+            String imageName = '${slika.opis}';
+            return imageName.toLowerCase().contains(searchQuery.toLowerCase());
+          }).toList();
+
           return DataTable(
             columns: const [
               DataColumn(label: Text('ID')),
               DataColumn(label: Text('Description')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: snapshot.data!.map((slika) {
+            rows: filteredSlika.map((slika) {
               return DataRow(
                 cells: [
                   DataCell(Text(slika.slikaID?.toString() ?? '')),

@@ -18,6 +18,7 @@ class _ProductScreenState extends State<ProductScreen> {
   bool isEditProductModalOpen = false;
   late ProizvodProvider proizvodProvider;
   Proizvod? proizvodToDelete;
+  late String _searchQuery = '';
 
   void openDeleteModal(Proizvod proizvod) {
     setState(() {
@@ -112,7 +113,9 @@ class _ProductScreenState extends State<ProductScreen> {
                                 border: InputBorder.none,
                               ),
                               onChanged: (text) {
-                                // Implement search functionality here
+                                setState(() {
+                                  _searchQuery = text;
+                                });
                               },
                             ),
                           ),
@@ -137,6 +140,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     openEditUserModal: openEditProductModal,
                     openDeleteModal: openDeleteModal,
                     proizvodProvider: proizvodProvider,
+                    searchQuery: _searchQuery,
                   )
                 ],
               ),
@@ -181,11 +185,13 @@ class ProductTable extends StatelessWidget {
   final void Function() openEditUserModal;
   final void Function(Proizvod) openDeleteModal;
   final ProizvodProvider proizvodProvider;
+  final String searchQuery;
 
   ProductTable({
     required this.openEditUserModal,
     required this.openDeleteModal,
     required this.proizvodProvider,
+    required this.searchQuery,
   });
 
   @override
@@ -198,6 +204,13 @@ class ProductTable extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
+          List<Proizvod> filteredProizvod = snapshot.data!.where((proizvod) {
+            String productName = '${proizvod.naziv}';
+            return productName
+                .toLowerCase()
+                .contains(searchQuery.toLowerCase());
+          }).toList();
+
           return DataTable(
             columns: const [
               DataColumn(label: Text('ID')),
@@ -208,7 +221,7 @@ class ProductTable extends StatelessWidget {
               DataColumn(label: Text('Description')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: snapshot.data!.map((proizvod) {
+            rows: filteredProizvod.map((proizvod) {
               return DataRow(
                 cells: [
                   DataCell(Text(proizvod.proizvodID?.toString() ?? '')),
@@ -226,7 +239,9 @@ class ProductTable extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: openEditUserModal,
+                          onPressed: () {
+                            openEditUserModal();
+                          },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),

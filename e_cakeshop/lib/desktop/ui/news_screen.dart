@@ -17,6 +17,7 @@ class _NewsScreenState extends State<NewsScreen> {
   bool isEditNewsModalOpen = false;
   late NovostProvider novostProvider;
   Novost? novostToDelete;
+  late String _searchQuery = '';
 
   void openDeleteModal(Novost novost) {
     setState(() {
@@ -109,7 +110,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                 border: InputBorder.none,
                               ),
                               onChanged: (text) {
-                                // Implement search functionality here
+                                setState(() {
+                                  _searchQuery = text;
+                                });
                               },
                             ),
                           ),
@@ -134,6 +137,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     openEditUserModal: openEditNewsModal,
                     openDeleteModal: openDeleteModal,
                     novostProvider: novostProvider,
+                    searchQuery: _searchQuery,
                   )
                 ],
               ),
@@ -173,11 +177,13 @@ class NewsTable extends StatelessWidget {
   final void Function() openEditUserModal;
   final void Function(Novost) openDeleteModal;
   final NovostProvider novostProvider;
+  final String searchQuery;
 
   NewsTable({
     required this.openEditUserModal,
     required this.openDeleteModal,
     required this.novostProvider,
+    required this.searchQuery,
   });
 
   @override
@@ -190,6 +196,11 @@ class NewsTable extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
+          List<Novost> filteredNovost = snapshot.data!.where((novost) {
+            String title = '${novost.naslov}';
+            return title.toLowerCase().contains(searchQuery.toLowerCase());
+          }).toList();
+
           return DataTable(
             columns: const [
               DataColumn(label: Text('ID')),
@@ -197,7 +208,7 @@ class NewsTable extends StatelessWidget {
               DataColumn(label: Text('Content')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: snapshot.data!.map((novost) {
+            rows: filteredNovost.map((novost) {
               return DataRow(
                 cells: [
                   DataCell(Text(novost.novostID.toString())),

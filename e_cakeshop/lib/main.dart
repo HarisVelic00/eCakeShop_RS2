@@ -30,6 +30,8 @@ class MainApp extends StatelessWidget {
         onGenerateRoute: (settings) {
           if (settings.name == HomeScreen.routeName) {
             return MaterialPageRoute(builder: ((context) => HomeScreen()));
+          } else if (settings.name == LoginScreen.routeName) {
+            return MaterialPageRoute(builder: ((context) => LoginScreen()));
           }
         },
       ),
@@ -42,6 +44,7 @@ class LoginScreen extends StatelessWidget {
   TextEditingController _password = TextEditingController();
   late KorisnikProvider _korisnikProvider;
   final _formKey = GlobalKey<FormState>();
+  static const String routeName = "/login";
 
   void handleLogin(BuildContext context) async {
     if (_formKey.currentState!.validate()) {

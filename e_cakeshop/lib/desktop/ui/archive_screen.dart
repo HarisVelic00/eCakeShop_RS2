@@ -18,6 +18,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
   bool isEditArchiveModalOpen = false;
   late NarudzbaProvider arhivaProvider;
   Narudzba? arhiviranaNarudzbaToDelete;
+  late String _searchQuery = '';
 
   void openDeleteModal(Narudzba arhiviranaNarudzba) {
     setState(() {
@@ -67,7 +68,6 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
   Future<void> generatePdfReport(List<Narudzba> data) async {
     try {
       final pdf = pw.Document();
-
       pdf.addPage(
         pw.Page(
           build: (context) {
@@ -148,7 +148,11 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                                 prefixIcon: Icon(Icons.search),
                                 border: InputBorder.none,
                               ),
-                              onChanged: (text) {},
+                              onChanged: (text) {
+                                setState(() {
+                                  _searchQuery = text;
+                                });
+                              },
                             ),
                           ),
                         ),
@@ -162,11 +166,8 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                                   const Color.fromRGBO(97, 142, 246, 1),
                             ),
                             onPressed: () async {
-                              // Get the data for the report
                               List<Narudzba> reportData =
                                   await arhivaProvider.Get();
-
-                              // Generate and print the PDF report
                               await generatePdfReport(reportData);
                             },
                             child: const Text('Print Report'),
@@ -176,9 +177,11 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     ),
                   ),
                   ArchiveTable(
-                      openEditUserModal: openEditArchiveModal,
-                      openDeleteModal: openDeleteModal,
-                      arhivaProvider: arhivaProvider)
+                    openEditUserModal: openEditArchiveModal,
+                    openDeleteModal: openDeleteModal,
+                    arhivaProvider: arhivaProvider,
+                    searchQuery: _searchQuery,
+                  )
                 ],
               ),
               if (isDeleteModalOpen)
@@ -211,11 +214,13 @@ class ArchiveTable extends StatelessWidget {
   final void Function() openEditUserModal;
   final void Function(Narudzba) openDeleteModal;
   final NarudzbaProvider arhivaProvider;
+  final String searchQuery;
 
   ArchiveTable({
     required this.openEditUserModal,
     required this.openDeleteModal,
     required this.arhivaProvider,
+    required this.searchQuery,
   });
 
   @override
@@ -228,6 +233,14 @@ class ArchiveTable extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
+          List<Narudzba> archivedOrder =
+              snapshot.data!.where((arhiviranaNarudzba) {
+            String brojNarudzbe = '${arhiviranaNarudzba.brojNarudzbe}';
+            return brojNarudzbe
+                .toLowerCase()
+                .contains(searchQuery.toLowerCase());
+          }).toList();
+
           return DataTable(
             columns: const [
               DataColumn(label: Text('Order Number')),
@@ -239,7 +252,7 @@ class ArchiveTable extends StatelessWidget {
               DataColumn(label: Text('Is Canceled')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: snapshot.data!.map((narudzba) {
+            rows: archivedOrder.map((narudzba) {
               return DataRow(
                 cells: [
                   DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),

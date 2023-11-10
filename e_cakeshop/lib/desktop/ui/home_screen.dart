@@ -4,6 +4,8 @@ import 'package:e_cakeshop/desktop/ui/orders_screen.dart';
 import 'package:e_cakeshop/desktop/ui/pictures_screen.dart';
 import 'package:e_cakeshop/desktop/ui/product_screen.dart';
 import 'package:e_cakeshop/desktop/ui/user_screen.dart';
+import 'package:e_cakeshop/main.dart';
+import 'package:e_cakeshop/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -113,6 +115,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                   ),
+                  const SizedBox(height: 320),
+                  NavItem(
+                      title: 'Logout',
+                      onTap: () {
+                        Authorization.Username = '';
+                        Authorization.Password = '';
+                        Authorization.korisnik = null;
+
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          LoginScreen.routeName,
+                          (route) => false,
+                        );
+                      },
+                      onSelect: (item) {
+                        setState(() {
+                          selectedNavItem = item;
+                        });
+                        (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        };
+                      }),
                 ],
               ),
             ),

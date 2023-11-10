@@ -17,6 +17,7 @@ class _UserScreenState extends State<UserScreen> {
   bool isEditUserModalOpen = false;
   late KorisnikProvider korisnikProvider;
   Korisnik? korisnikToDelete;
+  late String _searchQuery = '';
 
   void openDeleteModal(Korisnik korisnik) {
     setState(() {
@@ -110,7 +111,9 @@ class _UserScreenState extends State<UserScreen> {
                                 border: InputBorder.none,
                               ),
                               onChanged: (text) {
-                                // Implement search functionality here
+                                setState(() {
+                                  _searchQuery = text;
+                                });
                               },
                             ),
                           ),
@@ -135,6 +138,7 @@ class _UserScreenState extends State<UserScreen> {
                     openEditUserModal: openEditUserModal,
                     openDeleteModal: openDeleteModal,
                     korisnikProvider: korisnikProvider,
+                    searchQuery: _searchQuery,
                   ),
                 ],
               ),
@@ -179,11 +183,13 @@ class UsersTable extends StatelessWidget {
   final void Function() openEditUserModal;
   final void Function(Korisnik) openDeleteModal;
   final KorisnikProvider korisnikProvider;
+  final String searchQuery;
 
   UsersTable({
     required this.openEditUserModal,
     required this.openDeleteModal,
     required this.korisnikProvider,
+    required this.searchQuery,
   });
 
   @override
@@ -196,6 +202,12 @@ class UsersTable extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {
+          List<Korisnik> filteredKorisnik = snapshot.data!.where((korisnik) {
+            String fullName =
+                '${korisnik.ime} ${korisnik.prezime} ${korisnik.korisnickoIme}';
+            return fullName.toLowerCase().contains(searchQuery.toLowerCase());
+          }).toList();
+
           return DataTable(
             columns: const [
               DataColumn(label: Text('ID')),
@@ -207,7 +219,7 @@ class UsersTable extends StatelessWidget {
               DataColumn(label: Text('Telephone')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: snapshot.data!.map((korisnik) {
+            rows: filteredKorisnik.map((korisnik) {
               return DataRow(
                 cells: [
                   DataCell(Text(korisnik.korisnikID.toString())),
