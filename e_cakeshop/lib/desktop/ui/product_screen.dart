@@ -197,7 +197,7 @@ class ProductTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Proizvod>>(
-      future: proizvodProvider.Get(),
+      future: proizvodProvider.Get({'includeVrstaProizvoda ': true}),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -218,6 +218,7 @@ class ProductTable extends StatelessWidget {
               DataColumn(label: Text('Code')),
               DataColumn(label: Text('Price')),
               DataColumn(label: Text('Image')),
+              DataColumn(label: Text('Type')),
               DataColumn(label: Text('Description')),
               DataColumn(label: Text('Actions')),
             ],
@@ -233,6 +234,7 @@ class ProductTable extends StatelessWidget {
                         ? Image.memory(dataFromBase64String(proizvod.slika!))
                         : const Text('No Image'),
                   ),
+                  DataCell(Text(proizvod.vrstaProizvodaID?.toString() ?? '')),
                   DataCell(Text(proizvod.opis ?? '')),
                   DataCell(
                     Row(

@@ -53,9 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Username',
-                    style: TextStyle(
+                  Text(
+                    Authorization.korisnik?.ime ?? 'Guest',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -115,7 +115,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                   ),
-                  const SizedBox(height: 320),
                   NavItem(
                       title: 'Logout',
                       onTap: () {

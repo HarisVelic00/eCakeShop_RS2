@@ -192,7 +192,7 @@ class OrdersTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Narudzba>>(
-      future: narudzbaProvider.Get(),
+      future: narudzbaProvider.Get({'includeNarudzbaProizvodi': true}),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -206,47 +206,49 @@ class OrdersTable extends StatelessWidget {
                 .contains(searchQuery.toLowerCase());
           }).toList();
 
-          return DataTable(
-            columns: const [
-              DataColumn(label: Text('ID')),
-              DataColumn(label: Text('Order Number')),
-              DataColumn(label: Text('User')),
-              DataColumn(label: Text('Date')),
-              DataColumn(label: Text('Products')),
-              DataColumn(label: Text('Is Shipped')),
-              DataColumn(label: Text('Is Canceled')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: filteredNarudzba.map((narudzba) {
-              return DataRow(
-                cells: [
-                  DataCell(Text(narudzba.narudzbaID.toString())),
-                  DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
-                  DataCell(Text(narudzba.korisnik.toString())),
-                  DataCell(Text(narudzba.datumNarudzbe.toString())),
-                  DataCell(Text(narudzba.narudzbaProizvodi ?? '')),
-                  DataCell(Text(narudzba.isShipped.toString())),
-                  DataCell(Text(narudzba.isCanceled.toString())),
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: openEditUserModal,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            openDeleteModal(
-                                narudzba); // Pass the narudzba object
-                          },
-                        ),
-                      ],
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('ID')),
+                DataColumn(label: Text('Order Number')),
+                DataColumn(label: Text('User')),
+                DataColumn(label: Text('Date')),
+                DataColumn(label: Text('Products')),
+                DataColumn(label: Text('Is Shipped')),
+                DataColumn(label: Text('Is Canceled')),
+                DataColumn(label: Text('Actions')),
+              ],
+              rows: filteredNarudzba.map((narudzba) {
+                return DataRow(
+                  cells: [
+                    DataCell(Text(narudzba.narudzbaID.toString())),
+                    DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
+                    DataCell(Text(narudzba.korisnik?.ime ?? '')),
+                    DataCell(Text(narudzba.datumNarudzbe.toString())),
+                    DataCell(Text(narudzba.narudzbaProizvodi ?? '')),
+                    DataCell(Text(narudzba.isShipped.toString())),
+                    DataCell(Text(narudzba.isCanceled.toString())),
+                    DataCell(
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: openEditUserModal,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              openDeleteModal(narudzba);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }).toList(),
+                  ],
+                );
+              }).toList(),
+            ),
           );
         } else {
           return const Text('No data available');
