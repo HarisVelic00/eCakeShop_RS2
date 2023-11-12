@@ -1,11 +1,18 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/narudzba.dart';
 import 'package:flutter/material.dart';
 
 class EditOrderModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
-
-  EditOrderModal({required this.onCancelPressed});
+  final VoidCallback onSavePressed;
+  final void Function(int, dynamic) onUpdatePressed;
+  final Narudzba? narudzbaToEdit;
+  EditOrderModal(
+      {required this.onCancelPressed,
+      required this.onSavePressed,
+      required this.onUpdatePressed,
+      required this.narudzbaToEdit});
 
   @override
   _EditOrderModalState createState() => _EditOrderModalState();
@@ -18,6 +25,15 @@ class _EditOrderModalState extends State<EditOrderModal> {
   final TextEditingController productsController = TextEditingController();
   final TextEditingController isShippedController = TextEditingController();
   final TextEditingController isCanceledController = TextEditingController();
+
+  late Narudzba? _narudzbaToEdit; // Local variable
+
+  @override
+  void initState() {
+    super.initState();
+    _narudzbaToEdit = widget.narudzbaToEdit; // Initialize the local variable
+    // TODO: Initialize controllers with data if needed
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +103,15 @@ class _EditOrderModalState extends State<EditOrderModal> {
                         final isShipped = isShippedController.text;
                         final isCanceled = isCanceledController.text;
 
-                        // Handle the update action here
+                        widget.onUpdatePressed(_narudzbaToEdit!.narudzbaID!, {
+                          'brojNarudzbe': orderNumber,
+                          'korisnik': user,
+                          'datumNarudzbe': date,
+                          'proizvodi': products,
+                          'isCanceled': isCanceled,
+                          'isShipped': isShipped,
+                        });
+                        widget.onSavePressed();
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),

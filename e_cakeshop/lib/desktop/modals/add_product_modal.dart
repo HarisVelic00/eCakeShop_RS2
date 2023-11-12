@@ -1,11 +1,16 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/proizvod.dart';
+import 'package:e_cakeshop/models/vrstaproizvoda.dart';
+import 'package:e_cakeshop/providers/vrstaproizvoda_provider.dart';
 import 'package:flutter/material.dart';
 
 class AddProductModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final Function(Proizvod) onAddProductPressed;
 
-  AddProductModal({required this.onCancelPressed});
+  AddProductModal(
+      {required this.onCancelPressed, required this.onAddProductPressed});
 
   @override
   _AddProductModalState createState() => _AddProductModalState();
@@ -18,6 +23,27 @@ class _AddProductModalState extends State<AddProductModal> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController imageController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
+
+  List<VrstaProizvoda> vrstaProizvodaList = [];
+  VrstaProizvoda selectedVrstaProizvoda = VrstaProizvoda();
+
+  Future<void> fetchData() async {
+    try {
+      vrstaProizvodaList = await VrstaProizvodaProvider().Get();
+      if (vrstaProizvodaList.isNotEmpty) {
+        selectedVrstaProizvoda = vrstaProizvodaList.first;
+      }
+      setState(() {});
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +82,29 @@ class _AddProductModalState extends State<AddProductModal> {
                   controller: descriptionController,
                   decoration: const InputDecoration(labelText: 'Description'),
                 ),
-                TextField(
-                  controller: imageController,
-                  decoration: const InputDecoration(labelText: 'Image URL'),
-                ),
-                TextField(
-                  controller: typeController,
+                // TextField(
+                //   controller: imageController,
+                //   decoration: const InputDecoration(labelText: 'Image URL'),
+                // ),
+
+                DropdownButtonFormField<VrstaProizvoda>(
+                  value: selectedVrstaProizvoda,
+                  onChanged: (VrstaProizvoda? value) {
+                    setState(() {
+                      selectedVrstaProizvoda = value!;
+                    });
+                  },
+                  items:
+                      vrstaProizvodaList.map((VrstaProizvoda vrstaProizvoda) {
+                    return DropdownMenuItem<VrstaProizvoda>(
+                      value: vrstaProizvoda,
+                      child: Text(vrstaProizvoda.naziv ?? ''),
+                    );
+                  }).toList(),
                   decoration: const InputDecoration(labelText: 'Type'),
+                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
                 ),
+
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -80,13 +121,29 @@ class _AddProductModalState extends State<AddProductModal> {
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
                       onPressed: () {
-                        final name = nameController.text;
-                        final code = codeController.text;
-                        final price = priceController.text;
-                        final description = descriptionController.text;
-                        final image = imageController.text;
-                        final type = typeController.text;
-                        Navigator.pop(context);
+                        try {
+                          final name = nameController.text;
+                          final code = codeController.text;
+                          final price = priceController.text;
+                          final description = descriptionController.text;
+                          //final image = imageController.text;
+                          VrstaProizvoda vrstaProizvoda =
+                              selectedVrstaProizvoda;
+
+                          Proizvod newProizvod = Proizvod(
+                            naziv: name,
+                            sifra: code,
+                            cijena: double.tryParse(price),
+                            opis: description,
+                            //slika: image,
+                            vrstaProizvoda: vrstaProizvoda,
+                          );
+
+                          Navigator.pop(context);
+                          setState(() {});
+                        } catch (e) {
+                          print("Error adding user: $e");
+                        }
                       },
                       child: const Text('OK'),
                     ),

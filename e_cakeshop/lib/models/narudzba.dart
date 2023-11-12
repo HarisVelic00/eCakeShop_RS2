@@ -16,7 +16,18 @@ class Narudzba {
   Korisnik? korisnik;
   List<NarudzbaProizvodi>? narudzbaProizvodis;
 
-  Narudzba();
+  Narudzba({
+    this.narudzbaID,
+    this.brojNarudzbe,
+    this.korisnikID,
+    this.datumNarudzbe,
+    this.narudzbaProizvodi,
+    this.ukupnaCijena,
+    this.isCanceled,
+    this.isShipped,
+    this.korisnik,
+    this.narudzbaProizvodis,
+  });
 
   factory Narudzba.fromJson(Map<String, dynamic> json) =>
       _$NarudzbaFromJson(json);

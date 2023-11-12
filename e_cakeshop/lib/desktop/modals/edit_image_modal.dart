@@ -1,11 +1,19 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/slika.dart';
 import 'package:flutter/material.dart';
 
 class EditImageModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final VoidCallback onSavePressed;
+  final void Function(int, dynamic) onUpdatePressed;
+  final Slika? slikaToEdit;
 
-  EditImageModal({required this.onCancelPressed});
+  EditImageModal(
+      {required this.onCancelPressed,
+      required this.onUpdatePressed,
+      required this.slikaToEdit,
+      required this.onSavePressed});
 
   @override
   _EditImageModalState createState() => _EditImageModalState();
@@ -14,6 +22,14 @@ class EditImageModal extends StatefulWidget {
 class _EditImageModalState extends State<EditImageModal> {
   final TextEditingController imageDescriptionController =
       TextEditingController();
+
+  late Slika? _slikaToEdit;
+  @override
+  void initState() {
+    super.initState();
+    _slikaToEdit = widget.slikaToEdit; // Initialize the local variable
+    // TODO: Initialize controllers with data if needed
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +76,10 @@ class _EditImageModalState extends State<EditImageModal> {
                         final imageDescription =
                             imageDescriptionController.text;
 
-                        // Perform your desired actions with the edited image description
+                        widget.onUpdatePressed(
+                            _slikaToEdit!.slikaID!, {'opis': imageDescription});
 
+                        widget.onSavePressed();
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),

@@ -17,6 +17,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
   bool isEditImageModalOpen = false;
   late SlikaProvider slikaProvider;
   Slika? slikaToDelete;
+  Slika? slikaToEdit;
   late String _searchQuery = '';
 
   void openDeleteModal(Slika slika) {
@@ -45,9 +46,10 @@ class _PicturesScreenState extends State<PicturesScreen> {
     });
   }
 
-  void openEditImageModal() {
+  void openEditImageModal(Slika slika) {
     setState(() {
       isEditImageModalOpen = true;
+      slikaToEdit = slika;
     });
   }
 
@@ -73,6 +75,60 @@ class _PicturesScreenState extends State<PicturesScreen> {
           content: Text('Failed to delete picture'),
         ),
       );
+    }
+  }
+
+  void addNewSlika(Slika newSlika) async {
+    try {
+      // Call the insert method from KorisnikProvider
+      await slikaProvider.insert(newSlika);
+
+      // Refresh the user list by calling the Get method
+      setState(() {});
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Image added successfully'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error adding Image: $e");
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to add image'),
+          ),
+        );
+      }
+    }
+  }
+
+  void updateSlika(int id, dynamic request) async {
+    try {
+      var updatedUser = await slikaProvider.update(id, request);
+
+      if (updatedUser != null) {
+        // Handle successful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User updated successfully'),
+          ),
+        );
+      } else {
+        // Handle unsuccessful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update user'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating user: $e");
     }
   }
 
@@ -135,7 +191,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     ),
                   ),
                   ImagesTable(
-                    openEditUserModal: openEditImageModal,
+                    openEditSlikaModal: openEditImageModal,
                     openDeleteModal: openDeleteModal,
                     slikaProvider: slikaProvider,
                     searchQuery: _searchQuery,
@@ -158,6 +214,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: AddImageModal(
                       onCancelPressed: closeAddPictureModal,
+                      onAddSlikaPressed: addNewSlika,
                     ),
                   ),
                 ),
@@ -167,6 +224,13 @@ class _PicturesScreenState extends State<PicturesScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: EditImageModal(
                       onCancelPressed: closeEditImageModal,
+                      onSavePressed: closeEditImageModal,
+                      onUpdatePressed: (id, request) {
+                        // Call the update method from the provider here
+                        updateSlika(id, request);
+                      },
+                      slikaToEdit:
+                          slikaToEdit, // Make sure you are passing korisnikToEdit
                     ),
                   ),
                 ),
@@ -179,13 +243,13 @@ class _PicturesScreenState extends State<PicturesScreen> {
 }
 
 class ImagesTable extends StatelessWidget {
-  final void Function() openEditUserModal;
+  final void Function(Slika) openEditSlikaModal;
   final void Function(Slika) openDeleteModal;
   final SlikaProvider slikaProvider;
   final String searchQuery;
 
   ImagesTable({
-    required this.openEditUserModal,
+    required this.openEditSlikaModal,
     required this.openDeleteModal,
     required this.slikaProvider,
     required this.searchQuery,
@@ -222,7 +286,7 @@ class ImagesTable extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: openEditUserModal,
+                          onPressed: () => openEditSlikaModal(slika),
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),

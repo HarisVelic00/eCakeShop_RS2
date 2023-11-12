@@ -1,11 +1,14 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/slika.dart';
 import 'package:flutter/material.dart';
 
 class AddImageModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final Function(Slika) onAddSlikaPressed;
 
-  AddImageModal({required this.onCancelPressed});
+  AddImageModal(
+      {required this.onCancelPressed, required this.onAddSlikaPressed});
 
   @override
   _AddImageModalState createState() => _AddImageModalState();
@@ -57,12 +60,20 @@ class _AddImageModalState extends State<AddImageModal> {
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
                       onPressed: () {
-                        final imageDescription =
-                            imageDescriptionController.text;
+                        try {
+                          final imageDescription =
+                              imageDescriptionController.text;
 
-                        // Perform your desired actions with the image and its description
+                          Slika newSlika = Slika(
+                            opis: imageDescription,
+                          );
 
-                        Navigator.pop(context);
+                          widget.onAddSlikaPressed(newSlika);
+                          Navigator.pop(context);
+                          setState(() {});
+                        } catch (e) {
+                          print("Error adding user: $e");
+                        }
                       },
                       child: const Text('OK'),
                     ),

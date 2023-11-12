@@ -1,11 +1,13 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/novost.dart';
 import 'package:flutter/material.dart';
 
 class AddNewsModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final Function(Novost) onAddNewsPressed;
 
-  AddNewsModal({required this.onCancelPressed});
+  AddNewsModal({required this.onCancelPressed, required this.onAddNewsPressed});
 
   @override
   _AddNewsModalState createState() => _AddNewsModalState();
@@ -45,10 +47,10 @@ class _AddNewsModalState extends State<AddNewsModal> {
                   controller: contentController,
                   decoration: const InputDecoration(labelText: 'Content'),
                 ),
-                TextField(
-                  controller: thumbnailController,
-                  decoration: const InputDecoration(labelText: 'Thumbnail URL'),
-                ),
+                // TextField(
+                //   controller: thumbnailController,
+                //   decoration: const InputDecoration(labelText: 'Thumbnail URL'),
+                // ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -67,9 +69,26 @@ class _AddNewsModalState extends State<AddNewsModal> {
                       onPressed: () {
                         final title = titleController.text;
                         final content = contentController.text;
-                        final thumbnail = thumbnailController.text;
 
-                        Navigator.pop(context);
+                        Novost newNews = Novost(
+                          naslov: title, 
+                          sadrzaj: content);
+
+
+
+
+
+
+
+
+
+
+
+
+                        widget.onAddNewsPressed(newNews);
+
+                          Navigator.pop(context);
+                          setState(() {});
                       },
                       child: const Text('OK'),
                     ),

@@ -17,6 +17,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   bool isEditOrderModalOpen = false;
   late NarudzbaProvider narudzbaProvider;
   Narudzba? narudzbaToDelete;
+  Narudzba? narudzbaToEdit;
   late String _searchQuery = '';
 
   void openDeleteModal(Narudzba narudzba) {
@@ -45,9 +46,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
     });
   }
 
-  void openEditOrderModal() {
+  void openEditOrderModal(Narudzba narudzba) {
     setState(() {
       isEditOrderModalOpen = true;
+      narudzbaToEdit = narudzba;
     });
   }
 
@@ -73,6 +75,60 @@ class _OrdersScreenState extends State<OrdersScreen> {
           content: Text('Failed to delete order'),
         ),
       );
+    }
+  }
+
+  void addNewOrder(Narudzba newOrder) async {
+    try {
+      // Call the insert method from KorisnikProvider
+      await narudzbaProvider.insert(newOrder);
+
+      // Refresh the user list by calling the Get method
+      setState(() {});
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order added successfully'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error adding order: $e");
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to add order'),
+          ),
+        );
+      }
+    }
+  }
+
+  void updateOrder(int id, dynamic request) async {
+    try {
+      var updatedUser = await narudzbaProvider.update(id, request);
+
+      if (updatedUser != null) {
+        // Handle successful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order updated successfully'),
+          ),
+        );
+      } else {
+        // Handle unsuccessful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update order'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating order: $e");
     }
   }
 
@@ -134,7 +190,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                   ),
                   OrdersTable(
-                    openEditUserModal: openEditOrderModal,
+                    openEditOrderModal: openEditOrderModal,
                     openDeleteModal: openDeleteModal,
                     narudzbaProvider: narudzbaProvider,
                     searchQuery: _searchQuery,
@@ -159,13 +215,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: AddOrderModal(
                       onCancelPressed: closeAddOrderModal,
+                      onAddOrderPressed: addNewOrder,
                     ),
                   ),
                 ),
               if (isEditOrderModalOpen)
                 Center(
-                  child: EditOrderModal(
-                    onCancelPressed: closeEditOrderModal,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: EditOrderModal(
+                      onCancelPressed: closeEditOrderModal,
+                      onSavePressed: closeEditOrderModal,
+                      onUpdatePressed: (id, request) {
+                        // Call the update method from the provider here
+                        updateOrder(id, request);
+                      },
+                      narudzbaToEdit:
+                          narudzbaToEdit, // Make sure you are passing korisnikToEdit
+                    ),
                   ),
                 ),
             ],
@@ -177,13 +244,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
 }
 
 class OrdersTable extends StatelessWidget {
-  final void Function() openEditUserModal;
+  final void Function(Narudzba) openEditOrderModal;
   final void Function(Narudzba) openDeleteModal;
   final NarudzbaProvider narudzbaProvider;
   final String searchQuery;
 
   OrdersTable({
-    required this.openEditUserModal,
+    required this.openEditOrderModal,
     required this.openDeleteModal,
     required this.narudzbaProvider,
     required this.searchQuery,
@@ -208,46 +275,57 @@ class OrdersTable extends StatelessWidget {
 
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Order Number')),
-                DataColumn(label: Text('User')),
-                DataColumn(label: Text('Date')),
-                DataColumn(label: Text('Products')),
-                DataColumn(label: Text('Is Shipped')),
-                DataColumn(label: Text('Is Canceled')),
-                DataColumn(label: Text('Actions')),
-              ],
-              rows: filteredNarudzba.map((narudzba) {
-                return DataRow(
-                  cells: [
-                    DataCell(Text(narudzba.narudzbaID.toString())),
-                    DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
-                    DataCell(Text(narudzba.korisnik?.ime ?? '')),
-                    DataCell(Text(narudzba.datumNarudzbe.toString())),
-                    DataCell(Text(narudzba.narudzbaProizvodi ?? '')),
-                    DataCell(Text(narudzba.isShipped.toString())),
-                    DataCell(Text(narudzba.isCanceled.toString())),
-                    DataCell(
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: openEditUserModal,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              openDeleteModal(narudzba);
-                            },
-                          ),
-                        ],
+            child: SingleChildScrollView(
+              child: DataTable(
+                dataRowHeight: 90.0, // Adjust the value as needed
+                columns: const [
+                  DataColumn(label: Text('ID')),
+                  DataColumn(label: Text('Order Number')),
+                  DataColumn(label: Text('User')),
+                  DataColumn(label: Text('Date')),
+                  DataColumn(label: Text('Products')),
+                  DataColumn(label: Text('Is Shipped')),
+                  DataColumn(label: Text('Is Canceled')),
+                  DataColumn(label: Text('Actions')),
+                ],
+                rows: filteredNarudzba.map((narudzba) {
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(narudzba.narudzbaID.toString())),
+                      DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
+                      DataCell(Text(narudzba.korisnik?.ime ?? '')),
+                      DataCell(Text(narudzba.datumNarudzbe.toString())),
+                      DataCell(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: narudzba.narudzbaProizvodi!
+                              .split(',')
+                              .map((product) => Text(product.trim()))
+                              .toList(),
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              }).toList(),
+                      DataCell(Text(narudzba.isShipped.toString())),
+                      DataCell(Text(narudzba.isCanceled.toString())),
+                      DataCell(
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => openEditOrderModal(narudzba),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                openDeleteModal(narudzba);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
             ),
           );
         } else {

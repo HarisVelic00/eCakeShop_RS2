@@ -1,11 +1,14 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/narudzba.dart';
 import 'package:flutter/material.dart';
 
 class AddOrderModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final Function(Narudzba) onAddOrderPressed;
 
-  AddOrderModal({required this.onCancelPressed});
+  AddOrderModal(
+      {required this.onCancelPressed, required this.onAddOrderPressed});
 
   @override
   _AddOrderModalState createState() => _AddOrderModalState();
@@ -80,14 +83,27 @@ class _AddOrderModalState extends State<AddOrderModal> {
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
                       onPressed: () {
-                        final orderNumber = orderNumberController.text;
-                        final user = userController.text;
-                        final date = dateController.text;
-                        final products = productsController.text;
-                        final isShipped = isShippedController.text;
-                        final isCanceled = isCanceledController.text;
+                        try {
+                          final orderNumber = orderNumberController.text;
+                          final user = userController.text;
+                          final date = dateController.text;
+                          final products = productsController.text;
+                          final isShipped = isShippedController.text;
+                          final isCanceled = isCanceledController.text;
 
-                        Navigator.pop(context);
+                          Narudzba newOrder = Narudzba(
+                            brojNarudzbe: orderNumber,
+                            // korisnik: user,
+                            // datumNarudzbe: date,
+                            // proizvodi: products,
+                            // isCanceled: isCanceled,
+                            // isShipped: isShipped,
+                          );
+                          Navigator.pop(context);
+                          setState(() {});
+                        } catch (e) {
+                          print("Error adding user: $e");
+                        }
                       },
                       child: const Text('OK'),
                     ),

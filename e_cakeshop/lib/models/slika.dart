@@ -7,7 +7,11 @@ class Slika {
   String? slikaByte;
   String? opis;
 
-  Slika();
+  Slika({
+    this.slikaID,
+    this.slikaByte,
+    this.opis,
+  });
 
   factory Slika.fromJson(Map<String, dynamic> json) => _$SlikaFromJson(json);
 

@@ -13,7 +13,16 @@ class Novost {
   int? korisnikID;
   Korisnik? korisnik;
 
-  Novost();
+  Novost({
+    this.novostID,
+    this.naslov,
+    this.sadrzaj,
+    this.thumbnail,
+    this.opis,
+    this.datumKreiranja,
+    this.korisnikID,
+    this.korisnik,
+  });
 
   factory Novost.fromJson(Map<String, dynamic> json) => _$NovostFromJson(json);
 

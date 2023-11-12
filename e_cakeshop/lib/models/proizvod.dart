@@ -13,7 +13,16 @@ class Proizvod {
   int? vrstaProizvodaID;
   VrstaProizvoda? vrstaProizvoda;
 
-  Proizvod();
+  Proizvod({
+    this.proizvodID,
+    this.naziv,
+    this.sifra,
+    this.cijena,
+    this.slika,
+    this.opis,
+    this.vrstaProizvodaID,
+    this.vrstaProizvoda,
+  });
 
   factory Proizvod.fromJson(Map<String, dynamic> json) =>
       _$ProizvodFromJson(json);

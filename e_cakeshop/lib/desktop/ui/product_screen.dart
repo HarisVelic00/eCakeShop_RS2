@@ -18,6 +18,7 @@ class _ProductScreenState extends State<ProductScreen> {
   bool isEditProductModalOpen = false;
   late ProizvodProvider proizvodProvider;
   Proizvod? proizvodToDelete;
+  Proizvod? proizvodToEdit;
   late String _searchQuery = '';
 
   void openDeleteModal(Proizvod proizvod) {
@@ -45,9 +46,10 @@ class _ProductScreenState extends State<ProductScreen> {
     });
   }
 
-  void openEditProductModal() {
+  void openEditProductModal(Proizvod proizvod) {
     setState(() {
       isEditProductModalOpen = true;
+      proizvodToEdit = proizvod;
     });
   }
 
@@ -75,6 +77,60 @@ class _ProductScreenState extends State<ProductScreen> {
           content: Text('Failed to delete product'),
         ),
       );
+    }
+  }
+
+  void addNewProduct(Proizvod newProduct) async {
+    try {
+      // Call the insert method from KorisnikProvider
+      await proizvodProvider.insert(newProduct);
+
+      // Refresh the user list by calling the Get method
+      setState(() {});
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Product added successfully'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error adding product: $e");
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to add product'),
+          ),
+        );
+      }
+    }
+  }
+
+  void updateProduct(int id, dynamic request) async {
+    try {
+      var updatedUser = await proizvodProvider.update(id, request);
+
+      if (updatedUser != null) {
+        // Handle successful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Product updated successfully'),
+          ),
+        );
+      } else {
+        // Handle unsuccessful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update product'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating product: $e");
     }
   }
 
@@ -137,7 +193,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                   ),
                   ProductTable(
-                    openEditUserModal: openEditProductModal,
+                    openEditProductModal: openEditProductModal,
                     openDeleteModal: openDeleteModal,
                     proizvodProvider: proizvodProvider,
                     searchQuery: _searchQuery,
@@ -164,13 +220,24 @@ class _ProductScreenState extends State<ProductScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: AddProductModal(
                       onCancelPressed: closeAddProductModal,
+                      onAddProductPressed: addNewProduct,
                     ),
                   ),
                 ),
               if (isEditProductModalOpen)
                 Center(
-                  child: EditProductModal(
-                    onCancelPressed: closeEditProductModal,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: EditProductModal(
+                      onCancelPressed: closeEditProductModal,
+                      onSavePressed: closeEditProductModal,
+                      onUpdatePressed: (id, request) {
+                        // Call the update method from the provider here
+                        updateProduct(id, request);
+                      },
+                      proizvodToEdit:
+                          proizvodToEdit, // Make sure you are passing korisnikToEdit
+                    ),
                   ),
                 ),
             ],
@@ -182,13 +249,13 @@ class _ProductScreenState extends State<ProductScreen> {
 }
 
 class ProductTable extends StatelessWidget {
-  final void Function() openEditUserModal;
+  final void Function(Proizvod) openEditProductModal;
   final void Function(Proizvod) openDeleteModal;
   final ProizvodProvider proizvodProvider;
   final String searchQuery;
 
   ProductTable({
-    required this.openEditUserModal,
+    required this.openEditProductModal,
     required this.openDeleteModal,
     required this.proizvodProvider,
     required this.searchQuery,
@@ -197,7 +264,7 @@ class ProductTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Proizvod>>(
-      future: proizvodProvider.Get({'includeVrstaProizvoda ': true}),
+      future: proizvodProvider.Get({'includeVrstaProizvoda': true}),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -234,17 +301,14 @@ class ProductTable extends StatelessWidget {
                         ? Image.memory(dataFromBase64String(proizvod.slika!))
                         : const Text('No Image'),
                   ),
-                  DataCell(Text(proizvod.vrstaProizvodaID?.toString() ?? '')),
+                  DataCell(Text(proizvod.vrstaProizvoda?.naziv ?? '')),
                   DataCell(Text(proizvod.opis ?? '')),
                   DataCell(
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            openEditUserModal();
-                          },
-                        ),
+                            icon: const Icon(Icons.edit),
+                            onPressed: () => openEditProductModal(proizvod)),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {

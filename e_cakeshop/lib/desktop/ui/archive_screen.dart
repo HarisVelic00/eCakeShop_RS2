@@ -18,6 +18,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
   bool isEditArchiveModalOpen = false;
   late NarudzbaProvider arhivaProvider;
   Narudzba? arhiviranaNarudzbaToDelete;
+  Narudzba? arhiviranaNarudzbaToEdit;
   late String _searchQuery = '';
 
   void openDeleteModal(Narudzba arhiviranaNarudzba) {
@@ -34,9 +35,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     });
   }
 
-  void openEditArchiveModal() {
+  void openEditArchiveModal(Narudzba narudzba) {
     setState(() {
       isEditArchiveModalOpen = true;
+      arhiviranaNarudzbaToEdit = narudzba;
     });
   }
 
@@ -114,6 +116,30 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     }
   }
 
+  void updateArhiviranaNarudzba(int id, dynamic request) async {
+    try {
+      var updatedUser = await arhivaProvider.update(id, request);
+
+      if (updatedUser != null) {
+        // Handle successful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Archived order updated successfully'),
+          ),
+        );
+      } else {
+        // Handle unsuccessful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update archived order'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating archived order: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     arhivaProvider = Provider.of<NarudzbaProvider>(context, listen: false);
@@ -177,7 +203,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     ),
                   ),
                   ArchiveTable(
-                    openEditUserModal: openEditArchiveModal,
+                    openEditArchivedOrderModal: openEditArchiveModal,
                     openDeleteModal: openDeleteModal,
                     arhivaProvider: arhivaProvider,
                     searchQuery: _searchQuery,
@@ -198,8 +224,18 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                 ),
               if (isEditArchiveModalOpen)
                 Center(
-                  child: EditArchiveModal(
-                    onCancelPressed: closeEditArchiveModal,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: EditArchiveModal(
+                      onCancelPressed: closeEditArchiveModal,
+                      onSavePressed: closeEditArchiveModal,
+                      onUpdatePressed: (id, request) {
+                        // Call the update method from the provider here
+                        updateArhiviranaNarudzba(id, request);
+                      },
+                      narudzbaToEdit:
+                          arhiviranaNarudzbaToEdit, // Make sure you are passing korisnikToEdit
+                    ),
                   ),
                 ),
             ],
@@ -211,13 +247,13 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
 }
 
 class ArchiveTable extends StatelessWidget {
-  final void Function() openEditUserModal;
+  final void Function(Narudzba) openEditArchivedOrderModal;
   final void Function(Narudzba) openDeleteModal;
   final NarudzbaProvider arhivaProvider;
   final String searchQuery;
 
   ArchiveTable({
-    required this.openEditUserModal,
+    required this.openEditArchivedOrderModal,
     required this.openDeleteModal,
     required this.arhivaProvider,
     required this.searchQuery,
@@ -241,49 +277,59 @@ class ArchiveTable extends StatelessWidget {
                 .contains(searchQuery.toLowerCase());
           }).toList();
           return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Order Number')),
-                DataColumn(label: Text('Date')),
-                DataColumn(label: Text('User')),
-                DataColumn(label: Text('Products')),
-                DataColumn(label: Text('Price')),
-                DataColumn(label: Text('Is Shipped')),
-                DataColumn(label: Text('Is Canceled')),
-                DataColumn(label: Text('Actions')),
-              ],
-              rows: archivedOrder.map((narudzba) {
-                return DataRow(
-                  cells: [
-                    DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
-                    DataCell(Text(narudzba.datumNarudzbe.toString())),
-                    DataCell(Text(narudzba.korisnik?.ime ?? '')),
-                    DataCell(Text(narudzba.narudzbaProizvodi ?? '')),
-                    DataCell(Text(narudzba.ukupnaCijena.toString())),
-                    DataCell(Text(narudzba.isShipped.toString())),
-                    DataCell(Text(narudzba.isCanceled.toString())),
-                    DataCell(
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: openEditUserModal,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              openDeleteModal(narudzba);
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+              scrollDirection: Axis.horizontal,
+              child: SingleChildScrollView(
+                child: DataTable(
+                  dataRowHeight: 90.0,
+                  columns: const [
+                    DataColumn(label: Text('Order Number')),
+                    DataColumn(label: Text('Date')),
+                    DataColumn(label: Text('User')),
+                    DataColumn(label: Text('Products')),
+                    DataColumn(label: Text('Price')),
+                    DataColumn(label: Text('Is Shipped')),
+                    DataColumn(label: Text('Is Canceled')),
+                    DataColumn(label: Text('Actions')),
                   ],
-                );
-              }).toList(),
-            ),
-          );
+                  rows: archivedOrder.map((narudzba) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
+                        DataCell(Text(narudzba.datumNarudzbe.toString())),
+                        DataCell(Text(narudzba.korisnik?.ime ?? '')),
+                        DataCell(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: narudzba.narudzbaProizvodi!
+                                .split(',')
+                                .map((product) => Text(product.trim()))
+                                .toList(),
+                          ),
+                        ),
+                        DataCell(Text(narudzba.ukupnaCijena.toString())),
+                        DataCell(Text(narudzba.isShipped.toString())),
+                        DataCell(Text(narudzba.isCanceled.toString())),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () =>
+                                      openEditArchivedOrderModal(narudzba)),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  openDeleteModal(narudzba);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ));
         } else {
           return const Text('No data available');
         }

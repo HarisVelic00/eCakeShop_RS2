@@ -17,6 +17,7 @@ class _UserScreenState extends State<UserScreen> {
   bool isEditUserModalOpen = false;
   late KorisnikProvider korisnikProvider;
   Korisnik? korisnikToDelete;
+  Korisnik? korisnikToEdit;
   late String _searchQuery = '';
 
   void openDeleteModal(Korisnik korisnik) {
@@ -44,9 +45,10 @@ class _UserScreenState extends State<UserScreen> {
     });
   }
 
-  void openEditUserModal() {
+  void openEditUserModal(Korisnik korisnik) {
     setState(() {
       isEditUserModalOpen = true;
+      korisnikToEdit = korisnik;
     });
   }
 
@@ -74,6 +76,60 @@ class _UserScreenState extends State<UserScreen> {
           content: Text('Failed to delete user'),
         ),
       );
+    }
+  }
+
+  void addNewUser(Korisnik newUser) async {
+    try {
+      // Call the insert method from KorisnikProvider
+      await korisnikProvider.insert(newUser);
+
+      // Refresh the user list by calling the Get method
+      setState(() {});
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User added successfully'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error adding user: $e");
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to add user'),
+          ),
+        );
+      }
+    }
+  }
+
+  void updateUser(int id, dynamic request) async {
+    try {
+      var updatedUser = await korisnikProvider.update(id, request);
+
+      if (updatedUser != null) {
+        // Handle successful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User updated successfully'),
+          ),
+        );
+      } else {
+        // Handle unsuccessful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update user'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating user: $e");
     }
   }
 
@@ -158,6 +214,7 @@ class _UserScreenState extends State<UserScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: AddUserModal(
                       onCancelPressed: closeAddUserModal,
+                      onAddUserPressed: addNewUser, // Pass the callback here
                     ),
                   ),
                 ),
@@ -168,6 +225,12 @@ class _UserScreenState extends State<UserScreen> {
                     child: EditUserModal(
                       onCancelPressed: closeEditUserModal,
                       onSavePressed: closeEditUserModal,
+                      onUpdatePressed: (id, request) {
+                        // Call the update method from the provider here
+                        updateUser(id, request);
+                      },
+                      korisnikToEdit:
+                          korisnikToEdit, // Make sure you are passing korisnikToEdit
                     ),
                   ),
                 ),
@@ -180,7 +243,7 @@ class _UserScreenState extends State<UserScreen> {
 }
 
 class UsersTable extends StatelessWidget {
-  final void Function() openEditUserModal;
+  final void Function(Korisnik) openEditUserModal;
   final void Function(Korisnik) openDeleteModal;
   final KorisnikProvider korisnikProvider;
   final String searchQuery;
@@ -195,7 +258,8 @@ class UsersTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Korisnik>>(
-      future: korisnikProvider.Get(),
+      future:
+          korisnikProvider.Get({'includeGrad': true, 'includeDrzava': true}),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -216,6 +280,8 @@ class UsersTable extends StatelessWidget {
               DataColumn(label: Text('Username')),
               DataColumn(label: Text('Date of Birth')),
               DataColumn(label: Text('Email')),
+              DataColumn(label: Text('City')),
+              DataColumn(label: Text('Country')),
               DataColumn(label: Text('Telephone')),
               DataColumn(label: Text('Actions')),
             ],
@@ -230,13 +296,15 @@ class UsersTable extends StatelessWidget {
                       ? Text(korisnik.datumRodjenja.toString())
                       : const Text('')),
                   DataCell(Text(korisnik.email ?? '')),
+                  DataCell(Text(korisnik.grad?.naziv ?? '')),
+                  DataCell(Text(korisnik.drzava?.naziv ?? '')),
                   DataCell(Text(korisnik.telefon ?? '')),
                   DataCell(
                     Row(
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: openEditUserModal,
+                          onPressed: () => openEditUserModal(korisnik),
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),

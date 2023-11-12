@@ -1,11 +1,19 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/narudzba.dart';
 import 'package:flutter/material.dart';
 
 class EditArchiveModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final VoidCallback onSavePressed;
+  final void Function(int, dynamic) onUpdatePressed;
+  final Narudzba? narudzbaToEdit;
 
-  EditArchiveModal({required this.onCancelPressed});
+  EditArchiveModal(
+      {required this.onCancelPressed,
+      required this.onSavePressed,
+      required this.onUpdatePressed,
+      required this.narudzbaToEdit});
 
   @override
   _EditArchiveModalState createState() => _EditArchiveModalState();
@@ -19,6 +27,16 @@ class _EditArchiveModalState extends State<EditArchiveModal> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController isCanceledController = TextEditingController();
   final TextEditingController isShippedController = TextEditingController();
+
+  late Narudzba? _arhiviranaNarudzbaToEdit;
+
+  @override
+  void initState() {
+    super.initState();
+    _arhiviranaNarudzbaToEdit =
+        widget.narudzbaToEdit; // Initialize the local variable
+    // TODO: Initialize controllers with data if needed
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +111,18 @@ class _EditArchiveModalState extends State<EditArchiveModal> {
                         final isCanceled = isCanceledController.text;
                         final isShipped = isShippedController.text;
 
-                        // Perform your desired actions with the edited data
+                        widget.onUpdatePressed(
+                            _arhiviranaNarudzbaToEdit!.narudzbaID!, {
+                          'brojNarudzbe': orderNumber,
+                          'datumNarudzbe': date,
+                          'korisnik': user,
+                          'proizvodi': product,
+                          'cijena': price,
+                          'isCanceled': isCanceled,
+                          'isShipped': isShipped,
+                        });
 
+                        widget.onSavePressed();
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),

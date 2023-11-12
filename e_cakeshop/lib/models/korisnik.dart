@@ -18,7 +18,19 @@ class Korisnik {
   Grad? grad;
   Drzava? drzava;
 
-  Korisnik() {}
+  Korisnik({
+    this.ime,
+    this.prezime,
+    this.korisnickoIme,
+    this.datumRodjenja,
+    this.email,
+    this.telefon,
+    this.lokacija,
+    this.gradID,
+    this.drzavaID,
+    this.grad,
+    this.drzava,
+  }) {}
 
   factory Korisnik.fromJson(Map<String, dynamic> json) =>
       _$KorisnikFromJson(json);

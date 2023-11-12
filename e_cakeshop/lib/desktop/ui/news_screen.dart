@@ -17,6 +17,7 @@ class _NewsScreenState extends State<NewsScreen> {
   bool isEditNewsModalOpen = false;
   late NovostProvider novostProvider;
   Novost? novostToDelete;
+  Novost? novostToEdit;
   late String _searchQuery = '';
 
   void openDeleteModal(Novost novost) {
@@ -45,9 +46,10 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
-  void openEditNewsModal() {
+  void openEditNewsModal(Novost novost) {
     setState(() {
       isEditNewsModalOpen = true;
+      novostToEdit = novost;
     });
   }
 
@@ -73,6 +75,60 @@ class _NewsScreenState extends State<NewsScreen> {
           content: Text('Failed to delete news'),
         ),
       );
+    }
+  }
+
+  void addNewUser(Novost newNews) async {
+    try {
+      // Call the insert method from KorisnikProvider
+      await novostProvider.insert(newNews);
+
+      // Refresh the user list by calling the Get method
+      setState(() {});
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('News added successfully'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error adding news: $e");
+
+      // Check if the widget is still mounted before showing the SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to add news'),
+          ),
+        );
+      }
+    }
+  }
+
+  void updateNews(int id, dynamic request) async {
+    try {
+      var updatedUser = await novostProvider.update(id, request);
+
+      if (updatedUser != null) {
+        // Handle successful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('News updated successfully'),
+          ),
+        );
+      } else {
+        // Handle unsuccessful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update news'),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating news: $e");
     }
   }
 
@@ -134,7 +190,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     ),
                   ),
                   NewsTable(
-                    openEditUserModal: openEditNewsModal,
+                    openEditNewsModal: openEditNewsModal,
                     openDeleteModal: openDeleteModal,
                     novostProvider: novostProvider,
                     searchQuery: _searchQuery,
@@ -156,13 +212,24 @@ class _NewsScreenState extends State<NewsScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: AddNewsModal(
                       onCancelPressed: closeAddNewsModal,
+                      onAddNewsPressed: addNewUser,
                     ),
                   ),
                 ),
               if (isEditNewsModalOpen)
                 Center(
-                  child: EditNewsModal(
-                    onCancelPressed: closeEditNewsModal,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: EditNewsModal(
+                      onCancelPressed: closeEditNewsModal,
+                      onSavePressed: closeEditNewsModal,
+                      onUpdatePressed: (id, request) {
+                        // Call the update method from the provider here
+                        updateNews(id, request);
+                      },
+                      novostToEdit:
+                          novostToEdit, // Make sure you are passing korisnikToEdit
+                    ),
                   ),
                 ),
             ],
@@ -174,13 +241,13 @@ class _NewsScreenState extends State<NewsScreen> {
 }
 
 class NewsTable extends StatelessWidget {
-  final void Function() openEditUserModal;
+  final void Function(Novost) openEditNewsModal;
   final void Function(Novost) openDeleteModal;
   final NovostProvider novostProvider;
   final String searchQuery;
 
   NewsTable({
-    required this.openEditUserModal,
+    required this.openEditNewsModal,
     required this.openDeleteModal,
     required this.novostProvider,
     required this.searchQuery,
@@ -219,7 +286,7 @@ class NewsTable extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: openEditUserModal,
+                          onPressed: () => openEditNewsModal(novost),
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),

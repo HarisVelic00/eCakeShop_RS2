@@ -1,11 +1,19 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/novost.dart';
 import 'package:flutter/material.dart';
 
 class EditNewsModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final VoidCallback onSavePressed;
+  final void Function(int, dynamic) onUpdatePressed;
+  final Novost? novostToEdit;
 
-  EditNewsModal({required this.onCancelPressed});
+  EditNewsModal(
+      {required this.onCancelPressed,
+      required this.onSavePressed,
+      required this.onUpdatePressed,
+      required this.novostToEdit});
 
   @override
   _EditNewsModalState createState() => _EditNewsModalState();
@@ -15,6 +23,15 @@ class _EditNewsModalState extends State<EditNewsModal> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController thumbnailController = TextEditingController();
+
+  late Novost? _novostToEdit;
+
+  @override
+  void initState() {
+    super.initState();
+    _novostToEdit = widget.novostToEdit; // Initialize the local variable
+    // TODO: Initialize controllers with data if needed
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +84,15 @@ class _EditNewsModalState extends State<EditNewsModal> {
                       onPressed: () {
                         final title = titleController.text;
                         final content = contentController.text;
-                        final thumbnail = thumbnailController.text;
+                        //final thumbnail = thumbnailController.text;
 
-                        // Handle the update action here
+                        widget.onUpdatePressed(_novostToEdit!.novostID!, {
+                          'naslov': title,
+                          'sadrzaj': content,
+                          //'slika': thumbnail,
+                        });
+
+                        widget.onSavePressed();
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),

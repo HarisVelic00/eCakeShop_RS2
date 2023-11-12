@@ -9,7 +9,6 @@ class ProizvodProvider extends BaseProvider<Proizvod> {
 
   @override
   fromJson(x) {
-    // TODO: implement fromJson
     return Proizvod.fromJson(x);
   }
 

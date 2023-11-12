@@ -1,11 +1,21 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:e_cakeshop/models/proizvod.dart';
+import 'package:e_cakeshop/models/vrstaproizvoda.dart';
+import 'package:e_cakeshop/providers/vrstaproizvoda_provider.dart';
 import 'package:flutter/material.dart';
 
 class EditProductModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
+  final VoidCallback onSavePressed;
+  final void Function(int, dynamic) onUpdatePressed;
+  final Proizvod? proizvodToEdit;
 
-  EditProductModal({required this.onCancelPressed});
+  EditProductModal(
+      {required this.onCancelPressed,
+      required this.onSavePressed,
+      required this.onUpdatePressed,
+      required this.proizvodToEdit});
 
   @override
   _EditProductModalState createState() => _EditProductModalState();
@@ -18,6 +28,29 @@ class _EditProductModalState extends State<EditProductModal> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController imageController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
+
+  late Proizvod? _proizvodToEdit;
+  List<VrstaProizvoda> vrstaProizvodaList = [];
+  VrstaProizvoda selectedVrstaProizvoda = VrstaProizvoda();
+
+  Future<void> fetchData() async {
+    try {
+      vrstaProizvodaList = await VrstaProizvodaProvider().Get();
+      if (vrstaProizvodaList.isNotEmpty) {
+        selectedVrstaProizvoda = vrstaProizvodaList.first;
+      }
+      setState(() {});
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _proizvodToEdit = widget.proizvodToEdit;
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +89,26 @@ class _EditProductModalState extends State<EditProductModal> {
                   controller: descriptionController,
                   decoration: const InputDecoration(labelText: 'Description'),
                 ),
-                TextField(
-                  controller: imageController,
-                  decoration: const InputDecoration(labelText: 'Image URL'),
-                ),
-                TextField(
-                  controller: typeController,
+                // TextField(
+                //   controller: imageController,
+                //   decoration: const InputDecoration(labelText: 'Image URL'),
+                // ),
+                DropdownButtonFormField<VrstaProizvoda>(
+                  value: selectedVrstaProizvoda,
+                  onChanged: (VrstaProizvoda? value) {
+                    setState(() {
+                      selectedVrstaProizvoda = value!;
+                    });
+                  },
+                  items:
+                      vrstaProizvodaList.map((VrstaProizvoda vrstaProizvoda) {
+                    return DropdownMenuItem<VrstaProizvoda>(
+                      value: vrstaProizvoda,
+                      child: Text(vrstaProizvoda.naziv ?? ''),
+                    );
+                  }).toList(),
                   decoration: const InputDecoration(labelText: 'Type'),
+                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -84,9 +130,18 @@ class _EditProductModalState extends State<EditProductModal> {
                         final code = codeController.text;
                         final price = priceController.text;
                         final description = descriptionController.text;
-                        final image = imageController.text;
-                        final type = typeController.text;
-                        // Save the edited product data here
+                        // final image = imageController.text;
+                        VrstaProizvoda vrstaProizvoda = selectedVrstaProizvoda;
+
+                        widget.onUpdatePressed(_proizvodToEdit!.proizvodID!, {
+                          'naziv': name,
+                          'sifra': code,
+                          'cijena': price,
+                          'opis': description,
+                          // 'slika': image,
+                          vrstaProizvoda: vrstaProizvoda,
+                        });
+
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),
