@@ -80,13 +80,8 @@ class _PicturesScreenState extends State<PicturesScreen> {
 
   void addNewSlika(Slika newSlika) async {
     try {
-      // Call the insert method from KorisnikProvider
       await slikaProvider.insert(newSlika);
-
-      // Refresh the user list by calling the Get method
       setState(() {});
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -96,8 +91,6 @@ class _PicturesScreenState extends State<PicturesScreen> {
       }
     } catch (e) {
       print("Error adding Image: $e");
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -110,17 +103,15 @@ class _PicturesScreenState extends State<PicturesScreen> {
 
   void updateSlika(int id, dynamic request) async {
     try {
-      var updatedUser = await slikaProvider.update(id, request);
+      var updatedImage = await slikaProvider.update(id, request);
 
-      if (updatedUser != null) {
-        // Handle successful update
+      if (updatedImage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('User updated successfully'),
           ),
         );
       } else {
-        // Handle unsuccessful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update user'),
@@ -226,11 +217,9 @@ class _PicturesScreenState extends State<PicturesScreen> {
                       onCancelPressed: closeEditImageModal,
                       onSavePressed: closeEditImageModal,
                       onUpdatePressed: (id, request) {
-                        // Call the update method from the provider here
                         updateSlika(id, request);
                       },
-                      slikaToEdit:
-                          slikaToEdit, // Make sure you are passing korisnikToEdit
+                      slikaToEdit: slikaToEdit,
                     ),
                   ),
                 ),

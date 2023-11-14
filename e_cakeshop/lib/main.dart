@@ -135,6 +135,7 @@ class LoginScreen extends StatelessWidget {
                     return null;
                   },
                   controller: _password,
+                  obscureText: true,
                   decoration: const InputDecoration(labelText: "Password"),
                   maxLines: 1,
                   style: TextStyle(fontSize: fontSize),

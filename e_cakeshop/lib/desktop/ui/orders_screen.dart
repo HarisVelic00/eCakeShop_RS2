@@ -80,13 +80,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   void addNewOrder(Narudzba newOrder) async {
     try {
-      // Call the insert method from KorisnikProvider
       await narudzbaProvider.insert(newOrder);
-
-      // Refresh the user list by calling the Get method
       setState(() {});
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -96,8 +91,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       }
     } catch (e) {
       print("Error adding order: $e");
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -111,16 +104,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
   void updateOrder(int id, dynamic request) async {
     try {
       var updatedUser = await narudzbaProvider.update(id, request);
-
       if (updatedUser != null) {
-        // Handle successful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Order updated successfully'),
           ),
         );
       } else {
-        // Handle unsuccessful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update order'),
@@ -227,11 +217,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       onCancelPressed: closeEditOrderModal,
                       onSavePressed: closeEditOrderModal,
                       onUpdatePressed: (id, request) {
-                        // Call the update method from the provider here
                         updateOrder(id, request);
                       },
-                      narudzbaToEdit:
-                          narudzbaToEdit, // Make sure you are passing korisnikToEdit
+                      narudzbaToEdit: narudzbaToEdit,
                     ),
                   ),
                 ),

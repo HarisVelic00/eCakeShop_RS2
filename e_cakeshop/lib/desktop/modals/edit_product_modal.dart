@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:e_cakeshop/models/proizvod.dart';
 import 'package:e_cakeshop/models/vrstaproizvoda.dart';
 import 'package:e_cakeshop/providers/vrstaproizvoda_provider.dart';
@@ -33,7 +31,7 @@ class _EditProductModalState extends State<EditProductModal> {
   List<VrstaProizvoda> vrstaProizvodaList = [];
   VrstaProizvoda selectedVrstaProizvoda = VrstaProizvoda();
 
-  Future<void> fetchData() async {
+  Future<void> GetVrstaProizvoda() async {
     try {
       vrstaProizvodaList = await VrstaProizvodaProvider().Get();
       if (vrstaProizvodaList.isNotEmpty) {
@@ -49,7 +47,7 @@ class _EditProductModalState extends State<EditProductModal> {
   void initState() {
     super.initState();
     _proizvodToEdit = widget.proizvodToEdit;
-    fetchData();
+    GetVrstaProizvoda();
   }
 
   @override

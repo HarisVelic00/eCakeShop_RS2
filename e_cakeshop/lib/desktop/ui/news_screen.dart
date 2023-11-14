@@ -78,15 +78,10 @@ class _NewsScreenState extends State<NewsScreen> {
     }
   }
 
-  void addNewUser(Novost newNews) async {
+  void addNewNews(Novost newNews) async {
     try {
-      // Call the insert method from KorisnikProvider
       await novostProvider.insert(newNews);
-
-      // Refresh the user list by calling the Get method
       setState(() {});
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -96,8 +91,6 @@ class _NewsScreenState extends State<NewsScreen> {
       }
     } catch (e) {
       print("Error adding news: $e");
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -110,17 +103,14 @@ class _NewsScreenState extends State<NewsScreen> {
 
   void updateNews(int id, dynamic request) async {
     try {
-      var updatedUser = await novostProvider.update(id, request);
-
-      if (updatedUser != null) {
-        // Handle successful update
+      var updatedNews = await novostProvider.update(id, request);
+      if (updatedNews != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('News updated successfully'),
           ),
         );
       } else {
-        // Handle unsuccessful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update news'),
@@ -212,7 +202,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: AddNewsModal(
                       onCancelPressed: closeAddNewsModal,
-                      onAddNewsPressed: addNewUser,
+                      onAddNewsPressed: addNewNews,
                     ),
                   ),
                 ),
@@ -224,11 +214,9 @@ class _NewsScreenState extends State<NewsScreen> {
                       onCancelPressed: closeEditNewsModal,
                       onSavePressed: closeEditNewsModal,
                       onUpdatePressed: (id, request) {
-                        // Call the update method from the provider here
                         updateNews(id, request);
                       },
-                      novostToEdit:
-                          novostToEdit, // Make sure you are passing korisnikToEdit
+                      novostToEdit: novostToEdit,
                     ),
                   ),
                 ),

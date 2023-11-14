@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:e_cakeshop/models/novost.dart';
 import 'package:flutter/material.dart';
 
@@ -29,8 +27,7 @@ class _EditNewsModalState extends State<EditNewsModal> {
   @override
   void initState() {
     super.initState();
-    _novostToEdit = widget.novostToEdit; // Initialize the local variable
-    // TODO: Initialize controllers with data if needed
+    _novostToEdit = widget.novostToEdit;
   }
 
   @override

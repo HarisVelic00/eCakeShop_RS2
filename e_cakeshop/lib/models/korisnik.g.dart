@@ -6,25 +6,29 @@ part of 'korisnik.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Korisnik _$KorisnikFromJson(Map<String, dynamic> json) => Korisnik()
-  ..korisnikID = json['korisnikID'] as int?
-  ..ime = json['ime'] as String?
-  ..prezime = json['prezime'] as String?
-  ..korisnickoIme = json['korisnickoIme'] as String?
-  ..datumRodjenja = json['datumRodjenja'] == null
-      ? null
-      : DateTime.parse(json['datumRodjenja'] as String)
-  ..email = json['email'] as String?
-  ..telefon = json['telefon'] as String?
-  ..lokacija = json['lokacija'] as String?
-  ..gradID = json['gradID'] as int?
-  ..drzavaID = json['drzavaID'] as int?
-  ..grad = json['grad'] == null
-      ? null
-      : Grad.fromJson(json['grad'] as Map<String, dynamic>)
-  ..drzava = json['drzava'] == null
-      ? null
-      : Drzava.fromJson(json['drzava'] as Map<String, dynamic>);
+Korisnik _$KorisnikFromJson(Map<String, dynamic> json) => Korisnik(
+      ime: json['ime'] as String?,
+      prezime: json['prezime'] as String?,
+      korisnickoIme: json['korisnickoIme'] as String?,
+      datumRodjenja: json['datumRodjenja'] == null
+          ? null
+          : DateTime.parse(json['datumRodjenja'] as String),
+      email: json['email'] as String?,
+      telefon: json['telefon'] as String?,
+      lokacija: json['lokacija'] as String?,
+      gradID: json['gradID'] as int?,
+      drzavaID: json['drzavaID'] as int?,
+      grad: json['grad'] == null
+          ? null
+          : Grad.fromJson(json['grad'] as Map<String, dynamic>),
+      drzava: json['drzava'] == null
+          ? null
+          : Drzava.fromJson(json['drzava'] as Map<String, dynamic>),
+      lozinka: json['lozinka'] as String?,
+      uloga: json['uloga'] == null
+          ? null
+          : Uloga.fromJson(json['uloga'] as Map<String, dynamic>),
+    )..korisnikID = json['korisnikID'] as int?;
 
 Map<String, dynamic> _$KorisnikToJson(Korisnik instance) => <String, dynamic>{
       'korisnikID': instance.korisnikID,
@@ -39,4 +43,6 @@ Map<String, dynamic> _$KorisnikToJson(Korisnik instance) => <String, dynamic>{
       'drzavaID': instance.drzavaID,
       'grad': instance.grad,
       'drzava': instance.drzava,
+      'lozinka': instance.lozinka,
+      'uloga': instance.uloga,
     };

@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:e_cakeshop/models/narudzba.dart';
 import 'package:flutter/material.dart';
 
@@ -33,9 +31,7 @@ class _EditArchiveModalState extends State<EditArchiveModal> {
   @override
   void initState() {
     super.initState();
-    _arhiviranaNarudzbaToEdit =
-        widget.narudzbaToEdit; // Initialize the local variable
-    // TODO: Initialize controllers with data if needed
+    _arhiviranaNarudzbaToEdit = widget.narudzbaToEdit;
   }
 
   @override

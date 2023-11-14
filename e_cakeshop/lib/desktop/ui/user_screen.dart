@@ -14,7 +14,8 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> {
   bool isDeleteModalOpen = false;
   bool isAddUserModalOpen = false;
-  bool isEditUserModalOpen = false;
+  bool _isEditUserModalOpen = false;
+
   late KorisnikProvider korisnikProvider;
   Korisnik? korisnikToDelete;
   Korisnik? korisnikToEdit;
@@ -34,28 +35,32 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   void openAddUserModal() {
-    setState(() {
-      isAddUserModalOpen = true;
-    });
-  }
-
-  void closeAddUserModal() {
-    setState(() {
-      isAddUserModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddUserModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onAddUserPressed: addNewUser,
+        );
+      },
+    );
   }
 
   void openEditUserModal(Korisnik korisnik) {
-    setState(() {
-      isEditUserModalOpen = true;
-      korisnikToEdit = korisnik;
-    });
-  }
-
-  void closeEditUserModal() {
-    setState(() {
-      isEditUserModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EditUserModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onUpdatePressed: updateUser,
+          korisnikToEdit: korisnik,
+        );
+      },
+    );
   }
 
   void deleteKorisnik(Korisnik korisnik) async {
@@ -79,49 +84,36 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
-  void addNewUser(Korisnik newUser) async {
+  dynamic addNewUser(Map<String, dynamic> newUser) async {
     try {
-      // Call the insert method from KorisnikProvider
       await korisnikProvider.insert(newUser);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User added successfully'),
+        ),
+      );
 
-      // Refresh the user list by calling the Get method
-      setState(() {});
-
-      // Check if the widget is still mounted before showing the SnackBar
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('User added successfully'),
-          ),
-        );
-      }
+      Navigator.pop(context);
     } catch (e) {
       print("Error adding user: $e");
-
-      // Check if the widget is still mounted before showing the SnackBar
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to add user'),
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to add user'),
+        ),
+      );
     }
   }
 
   void updateUser(int id, dynamic request) async {
     try {
       var updatedUser = await korisnikProvider.update(id, request);
-
       if (updatedUser != null) {
-        // Handle successful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('User updated successfully'),
           ),
         );
       } else {
-        // Handle unsuccessful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update user'),
@@ -191,8 +183,8 @@ class _UserScreenState extends State<UserScreen> {
                     ),
                   ),
                   UsersTable(
-                    openEditUserModal: openEditUserModal,
                     openDeleteModal: openDeleteModal,
+                    openEditUserModal: openEditUserModal,
                     korisnikProvider: korisnikProvider,
                     searchQuery: _searchQuery,
                   ),
@@ -213,24 +205,24 @@ class _UserScreenState extends State<UserScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: AddUserModal(
-                      onCancelPressed: closeAddUserModal,
-                      onAddUserPressed: addNewUser, // Pass the callback here
+                      onCancelPressed: () {
+                        Navigator.pop(context); // Close the AddUserModal
+                      },
+                      onAddUserPressed: addNewUser,
                     ),
                   ),
                 ),
-              if (isEditUserModalOpen)
+              if (_isEditUserModalOpen)
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: EditUserModal(
-                      onCancelPressed: closeEditUserModal,
-                      onSavePressed: closeEditUserModal,
-                      onUpdatePressed: (id, request) {
-                        // Call the update method from the provider here
-                        updateUser(id, request);
+                  child: AlertDialog(
+                    content: EditUserModal(
+                      onCancelPressed: () {
+                        setState(() {
+                          _isEditUserModalOpen = false;
+                        });
                       },
-                      korisnikToEdit:
-                          korisnikToEdit, // Make sure you are passing korisnikToEdit
+                      onUpdatePressed: updateUser,
+                      korisnikToEdit: korisnikToEdit,
                     ),
                   ),
                 ),
@@ -243,14 +235,14 @@ class _UserScreenState extends State<UserScreen> {
 }
 
 class UsersTable extends StatelessWidget {
-  final void Function(Korisnik) openEditUserModal;
   final void Function(Korisnik) openDeleteModal;
+  final void Function(Korisnik) openEditUserModal;
   final KorisnikProvider korisnikProvider;
   final String searchQuery;
 
   UsersTable({
-    required this.openEditUserModal,
     required this.openDeleteModal,
+    required this.openEditUserModal,
     required this.korisnikProvider,
     required this.searchQuery,
   });
@@ -303,9 +295,10 @@ class UsersTable extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => openEditUserModal(korisnik),
-                        ),
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              openEditUserModal(korisnik);
+                            }),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {

@@ -1,19 +1,19 @@
 import 'package:e_cakeshop/models/drzava.dart';
 import 'package:e_cakeshop/models/grad.dart';
 import 'package:e_cakeshop/models/korisnik.dart';
+import 'package:e_cakeshop/models/uloga.dart';
 import 'package:e_cakeshop/providers/drzava_provider.dart';
 import 'package:e_cakeshop/providers/grad_provider.dart';
+import 'package:e_cakeshop/providers/uloga_provider.dart';
 import 'package:flutter/material.dart';
 
 class EditUserModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
-  final VoidCallback onSavePressed;
   final void Function(int, dynamic) onUpdatePressed;
   final Korisnik? korisnikToEdit;
 
   EditUserModal({
     required this.onCancelPressed,
-    required this.onSavePressed,
     required this.onUpdatePressed,
     required this.korisnikToEdit,
   });
@@ -25,31 +25,59 @@ class EditUserModal extends StatefulWidget {
 class _EditUserModalState extends State<EditUserModal> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController dobController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController telephoneController = TextEditingController();
+  final TextEditingController roleController = TextEditingController();
 
   late Korisnik? _korisnikToEdit;
-  Grad? selectedCity;
-  Drzava? selectedCountry;
   List<Grad> gradList = [];
   List<Drzava> drzavaList = [];
+  List<Uloga> ulogaList = [];
+  String? selectedGrad;
+  String? selectedDrzava;
+  String? selectedUloga;
 
-  Grad selectedGrad = Grad();
-  Drzava selectedDrzava = Drzava();
+  int extractIdFromList<T>(
+    String? selectedValue,
+    List<T> list,
+    int Function(T) getId,
+  ) {
+    if (selectedValue != null) {
+      T selectedObject = list.firstWhere(
+        (item) => getId(item).toString() == selectedValue,
+        orElse: () => list.first,
+      );
 
-  Future<void> fetchData() async {
+      return getId(selectedObject);
+    }
+    return -1;
+  }
+
+  int findIdFromName<T>(
+    String? selectedValue,
+    List<T> list,
+    String Function(T) getName,
+    int Function(T) getId,
+  ) {
+    if (selectedValue != null) {
+      T selectedObject = list.firstWhere(
+        (item) => getName(item) == selectedValue,
+        orElse: () => list.first,
+      );
+
+      return getId(selectedObject);
+    }
+    return -1;
+  }
+
+  Future<void> loadData() async {
     try {
       gradList = await GradProvider().Get();
       drzavaList = await DrzavaProvider().Get();
-      if (gradList.isNotEmpty) {
-        selectedGrad = gradList.first;
+      ulogaList = await UlogaProvider().Get();
+      if (mounted) {
+        setState(() {});
       }
-      if (drzavaList.isNotEmpty) {
-        selectedDrzava = drzavaList.first;
-      }
-      setState(() {});
     } catch (e) {
       print('Error fetching data: $e');
     }
@@ -59,18 +87,17 @@ class _EditUserModalState extends State<EditUserModal> {
   void initState() {
     super.initState();
     _korisnikToEdit = widget.korisnikToEdit;
-    fetchData();
+    loadData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Material(
-          color: const Color.fromRGBO(227, 232, 247, 1),
-          child: Container(
-            width: 300,
+    return Dialog(
+      child: Container(
+        color: Color.fromRGBO(227, 232, 247, 1),
+        width: MediaQuery.of(context).size.width * 0.2,
+        child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -82,7 +109,6 @@ class _EditUserModalState extends State<EditUserModal> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
@@ -92,14 +118,6 @@ class _EditUserModalState extends State<EditUserModal> {
                   decoration: const InputDecoration(labelText: 'Surname'),
                 ),
                 TextField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(labelText: 'Username'),
-                ),
-                TextField(
-                  controller: dobController,
-                  decoration: const InputDecoration(labelText: 'Date of Birth'),
-                ),
-                TextField(
                   controller: emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                 ),
@@ -107,37 +125,41 @@ class _EditUserModalState extends State<EditUserModal> {
                   controller: telephoneController,
                   decoration: const InputDecoration(labelText: 'Telephone'),
                 ),
-                DropdownButtonFormField<Grad>(
-                  value: selectedCity,
-                  onChanged: (Grad? value) {
+                DropdownButtonFormField<String>(
+                  value: selectedGrad,
+                  onChanged: (String? value) {
                     setState(() {
-                      selectedCity = value;
+                      selectedGrad = value!;
                     });
                   },
                   items: gradList.map((Grad grad) {
-                    return DropdownMenuItem<Grad>(
-                      value: grad,
+                    return DropdownMenuItem<String>(
+                      value: grad.naziv,
                       child: Text(grad.naziv ?? ''),
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'City'),
                   dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
                 ),
-                DropdownButtonFormField<Drzava>(
-                  value: selectedCountry,
-                  onChanged: (Drzava? value) {
+                DropdownButtonFormField<String>(
+                  value: selectedDrzava,
+                  onChanged: (String? value) {
                     setState(() {
-                      selectedCountry = value;
+                      selectedDrzava = value!;
                     });
                   },
                   items: drzavaList.map((Drzava drzava) {
-                    return DropdownMenuItem<Drzava>(
-                      value: drzava,
+                    return DropdownMenuItem<String>(
+                      value: drzava.naziv,
                       child: Text(drzava.naziv ?? ''),
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Country'),
                   dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                ),
+                TextField(
+                  controller: roleController,
+                  decoration: const InputDecoration(labelText: 'Uloga'),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -157,25 +179,32 @@ class _EditUserModalState extends State<EditUserModal> {
                       onPressed: () {
                         final name = nameController.text;
                         final surname = surnameController.text;
-                        final username = usernameController.text;
-                        final dob = dobController.text;
                         final email = emailController.text;
                         final telephone = telephoneController.text;
-                        Grad grad = selectedGrad;
-                        Drzava drzava = selectedDrzava;
+                        final role = roleController.text;
+
+                        int gradID = findIdFromName(
+                          selectedGrad,
+                          gradList,
+                          (Grad grad) => grad.naziv ?? '',
+                          (Grad grad) => grad.gradID ?? -1,
+                        );
+                        int drzavaID = findIdFromName(
+                          selectedDrzava,
+                          drzavaList,
+                          (Drzava drzava) => drzava.naziv ?? '',
+                          (Drzava drzava) => drzava.drzavaID ?? -1,
+                        );
 
                         widget.onUpdatePressed(_korisnikToEdit!.korisnikID!, {
                           'ime': name,
                           'prezime': surname,
-                          'korisnickoIme': username,
-                          'datumRodjenja': DateTime.parse(dob),
                           'email': email,
                           'telefon': telephone,
-                          'grad': grad,
-                          'drzava': drzava,
+                          "gradID": gradID,
+                          "drzavaID": drzavaID,
+                          'uloga': role,
                         });
-
-                        widget.onSavePressed();
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),

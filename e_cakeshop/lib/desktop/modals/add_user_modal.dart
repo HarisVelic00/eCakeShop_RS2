@@ -1,17 +1,20 @@
-// ignore_for_file: unused_local_variable
-
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:e_cakeshop/models/drzava.dart';
 import 'package:e_cakeshop/models/grad.dart';
-import 'package:e_cakeshop/models/korisnik.dart';
+import 'package:e_cakeshop/models/uloga.dart';
 import 'package:e_cakeshop/providers/drzava_provider.dart';
 import 'package:e_cakeshop/providers/grad_provider.dart';
-import 'package:flutter/material.dart';
+import 'package:e_cakeshop/providers/uloga_provider.dart';
 
 class AddUserModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
-  final Function(Korisnik) onAddUserPressed;
+  final Function(Map<String, dynamic>) onAddUserPressed;
 
-  AddUserModal({required this.onCancelPressed, required this.onAddUserPressed});
+  AddUserModal({
+    required this.onCancelPressed,
+    required this.onAddUserPressed,
+  });
 
   @override
   _AddUserModalState createState() => _AddUserModalState();
@@ -24,45 +27,75 @@ class _AddUserModalState extends State<AddUserModal> {
   final TextEditingController dobController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController telephoneController = TextEditingController();
-  
+  final TextEditingController passwordController = TextEditingController();
 
   List<Grad> gradList = [];
   List<Drzava> drzavaList = [];
-  Grad selectedGrad = Grad();
-  Drzava selectedDrzava = Drzava();
+  List<Uloga> ulogaList = [];
+  String? selectedGrad;
+  String? selectedDrzava;
+  String? selectedUloga;
 
-  Future<void> fetchData() async {
+  int extractIdFromList<T>(
+    String? selectedValue,
+    List<T> list,
+    int Function(T) getId,
+  ) {
+    if (selectedValue != null) {
+      T selectedObject = list.firstWhere(
+        (item) => getId(item).toString() == selectedValue,
+        orElse: () => list.first,
+      );
+
+      return getId(selectedObject);
+    }
+    return -1;
+  }
+
+  int findIdFromName<T>(
+    String? selectedValue,
+    List<T> list,
+    String Function(T) getName,
+    int Function(T) getId,
+  ) {
+    if (selectedValue != null) {
+      T selectedObject = list.firstWhere(
+        (item) => getName(item) == selectedValue,
+        orElse: () => list.first,
+      );
+
+      return getId(selectedObject);
+    }
+    return -1;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
     try {
       gradList = await GradProvider().Get();
       drzavaList = await DrzavaProvider().Get();
-      if (gradList.isNotEmpty) {
-        selectedGrad = gradList.first;
+      ulogaList = await UlogaProvider().Get();
+      if (mounted) {
+        setState(() {});
       }
-      if (drzavaList.isNotEmpty) {
-        selectedDrzava = drzavaList.first;
-      }
-      setState(() {});
     } catch (e) {
       print('Error fetching data: $e');
     }
   }
 
   @override
-  void initState() {
-    fetchData();
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Material(
-          color: const Color.fromRGBO(227, 232, 247, 1),
-          child: Container(
-            width: 300,
+    return Dialog(
+      child: Container(
+        color: Color.fromRGBO(227, 232, 247, 1),
+        width: MediaQuery.of(context).size.width * 0.2,
+        child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -74,7 +107,6 @@ class _AddUserModalState extends State<AddUserModal> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
@@ -82,10 +114,6 @@ class _AddUserModalState extends State<AddUserModal> {
                 TextField(
                   controller: surnameController,
                   decoration: const InputDecoration(labelText: 'Surname'),
-                ),
-                TextField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(labelText: 'Username'),
                 ),
                 TextField(
                   controller: dobController,
@@ -99,36 +127,63 @@ class _AddUserModalState extends State<AddUserModal> {
                   controller: telephoneController,
                   decoration: const InputDecoration(labelText: 'Telephone'),
                 ),
-                DropdownButtonFormField<Grad>(
+                DropdownButtonFormField<String>(
                   value: selectedGrad,
-                  onChanged: (Grad? value) {
+                  onChanged: (String? value) {
                     setState(() {
                       selectedGrad = value!;
                     });
                   },
                   items: gradList.map((Grad grad) {
-                    return DropdownMenuItem<Grad>(
-                      value: grad,
+                    return DropdownMenuItem<String>(
+                      value: grad.naziv,
                       child: Text(grad.naziv ?? ''),
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'City'),
                   dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
                 ),
-                DropdownButtonFormField<Drzava>(
+                DropdownButtonFormField<String>(
                   value: selectedDrzava,
-                  onChanged: (Drzava? value) {
+                  onChanged: (String? value) {
                     setState(() {
                       selectedDrzava = value!;
                     });
                   },
                   items: drzavaList.map((Drzava drzava) {
-                    return DropdownMenuItem<Drzava>(
-                      value: drzava,
+                    return DropdownMenuItem<String>(
+                      value: drzava.naziv,
                       child: Text(drzava.naziv ?? ''),
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Country'),
+                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                ),
+                TextField(
+                  controller: usernameController,
+                  decoration: const InputDecoration(labelText: 'Username'),
+                ),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                  ),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedUloga,
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedUloga = value!;
+                    });
+                  },
+                  items: ulogaList.map((Uloga uloga) {
+                    return DropdownMenuItem<String>(
+                      value: uloga.naziv,
+                      child: Text(uloga.naziv ?? ''),
+                    );
+                  }).toList(),
+                  decoration: const InputDecoration(labelText: 'Uloga'),
                   dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
                 ),
                 const SizedBox(height: 20),
@@ -151,23 +206,49 @@ class _AddUserModalState extends State<AddUserModal> {
                           final dob = dobController.text;
                           final email = emailController.text;
                           final telephone = telephoneController.text;
-                          Grad grad = selectedGrad;
-                          Drzava drzava = selectedDrzava;
+                          final password = passwordController.text;
 
-                          Korisnik newUser = Korisnik(
-                            ime: name,
-                            prezime: surname,
-                            korisnickoIme: username,
-                            datumRodjenja: DateTime.parse(dob),
-                            email: email,
-                            telefon: telephone,
-                            grad: grad,
-                            drzava: drzava,
+                          DateTime tempDate =
+                              DateFormat("dd-MM-yyyy").parse(dob);
+
+                          int gradID = findIdFromName(
+                            selectedGrad,
+                            gradList,
+                            (Grad grad) => grad.naziv ?? '',
+                            (Grad grad) => grad.gradID ?? -1,
+                          );
+                          int drzavaID = findIdFromName(
+                            selectedDrzava,
+                            drzavaList,
+                            (Drzava drzava) => drzava.naziv ?? '',
+                            (Drzava drzava) => drzava.drzavaID ?? -1,
+                          );
+                          int ulogaID = findIdFromName(
+                            selectedUloga,
+                            ulogaList,
+                            (Uloga uloga) => uloga.naziv ?? '',
+                            (Uloga uloga) => uloga.ulogaID ?? -1,
                           );
 
-                          widget.onAddUserPressed(newUser);
-                          Navigator.pop(context);
-                          setState(() {});
+                          if (gradID != -1 && drzavaID != -1 && ulogaID != -1) {
+                            Map<String, dynamic> newUser = {
+                              "ime": name,
+                              "prezime": surname,
+                              "datumRodjenja": tempDate.toIso8601String(),
+                              "korisnickoIme": username,
+                              "email": email,
+                              "telefon": telephone,
+                              "gradID": gradID,
+                              "drzavaID": drzavaID,
+                              "ulogeID": [ulogaID],
+                              "lozinka": password,
+                            };
+
+                            widget.onAddUserPressed(newUser);
+                            setState(() {});
+                          } else {
+                            print("Error: Some selected values are not set");
+                          }
                         } catch (e) {
                           print("Error adding user: $e");
                         }

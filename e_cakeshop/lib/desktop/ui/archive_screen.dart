@@ -98,7 +98,6 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
           },
         ),
       );
-
       final file = File('report.pdf');
       await file.writeAsBytes(await pdf.save());
       ScaffoldMessenger.of(context).showSnackBar(
@@ -118,17 +117,14 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
 
   void updateArhiviranaNarudzba(int id, dynamic request) async {
     try {
-      var updatedUser = await arhivaProvider.update(id, request);
-
-      if (updatedUser != null) {
-        // Handle successful update
+      var updatedOrder = await arhivaProvider.update(id, request);
+      if (updatedOrder != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Archived order updated successfully'),
           ),
         );
       } else {
-        // Handle unsuccessful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update archived order'),
@@ -230,11 +226,9 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                       onCancelPressed: closeEditArchiveModal,
                       onSavePressed: closeEditArchiveModal,
                       onUpdatePressed: (id, request) {
-                        // Call the update method from the provider here
                         updateArhiviranaNarudzba(id, request);
                       },
-                      narudzbaToEdit:
-                          arhiviranaNarudzbaToEdit, // Make sure you are passing korisnikToEdit
+                      narudzbaToEdit: arhiviranaNarudzbaToEdit,
                     ),
                   ),
                 ),

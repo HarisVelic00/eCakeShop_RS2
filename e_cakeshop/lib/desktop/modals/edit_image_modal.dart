@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:e_cakeshop/models/slika.dart';
 import 'package:flutter/material.dart';
 
@@ -27,8 +25,7 @@ class _EditImageModalState extends State<EditImageModal> {
   @override
   void initState() {
     super.initState();
-    _slikaToEdit = widget.slikaToEdit; // Initialize the local variable
-    // TODO: Initialize controllers with data if needed
+    _slikaToEdit = widget.slikaToEdit;
   }
 
   @override

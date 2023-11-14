@@ -1,5 +1,6 @@
 import 'package:e_cakeshop/models/drzava.dart';
 import 'package:e_cakeshop/models/grad.dart';
+import 'package:e_cakeshop/models/uloga.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'korisnik.g.dart';
 
@@ -17,6 +18,8 @@ class Korisnik {
   int? drzavaID;
   Grad? grad;
   Drzava? drzava;
+  String? lozinka;
+  Uloga? uloga;
 
   Korisnik({
     this.ime,
@@ -30,6 +33,8 @@ class Korisnik {
     this.drzavaID,
     this.grad,
     this.drzava,
+    this.lozinka,
+    this.uloga,
   }) {}
 
   factory Korisnik.fromJson(Map<String, dynamic> json) =>

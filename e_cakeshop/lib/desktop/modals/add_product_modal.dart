@@ -27,7 +27,7 @@ class _AddProductModalState extends State<AddProductModal> {
   List<VrstaProizvoda> vrstaProizvodaList = [];
   VrstaProizvoda selectedVrstaProizvoda = VrstaProizvoda();
 
-  Future<void> fetchData() async {
+  Future<void> GetVrstaProizvoda() async {
     try {
       vrstaProizvodaList = await VrstaProizvodaProvider().Get();
       if (vrstaProizvodaList.isNotEmpty) {
@@ -41,7 +41,7 @@ class _AddProductModalState extends State<AddProductModal> {
 
   @override
   void initState() {
-    fetchData();
+    GetVrstaProizvoda();
     super.initState();
   }
 

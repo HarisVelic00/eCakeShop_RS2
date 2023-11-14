@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:e_cakeshop/models/novost.dart';
 import 'package:flutter/material.dart';
 
@@ -70,25 +68,13 @@ class _AddNewsModalState extends State<AddNewsModal> {
                         final title = titleController.text;
                         final content = contentController.text;
 
-                        Novost newNews = Novost(
-                          naslov: title, 
-                          sadrzaj: content);
-
-
-
-
-
-
-
-
-
-
-
+                        Novost newNews =
+                            Novost(naslov: title, sadrzaj: content);
 
                         widget.onAddNewsPressed(newNews);
 
-                          Navigator.pop(context);
-                          setState(() {});
+                        Navigator.pop(context);
+                        setState(() {});
                       },
                       child: const Text('OK'),
                     ),

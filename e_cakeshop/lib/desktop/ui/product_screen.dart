@@ -82,13 +82,8 @@ class _ProductScreenState extends State<ProductScreen> {
 
   void addNewProduct(Proizvod newProduct) async {
     try {
-      // Call the insert method from KorisnikProvider
       await proizvodProvider.insert(newProduct);
-
-      // Refresh the user list by calling the Get method
       setState(() {});
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -98,8 +93,6 @@ class _ProductScreenState extends State<ProductScreen> {
       }
     } catch (e) {
       print("Error adding product: $e");
-
-      // Check if the widget is still mounted before showing the SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -115,14 +108,12 @@ class _ProductScreenState extends State<ProductScreen> {
       var updatedUser = await proizvodProvider.update(id, request);
 
       if (updatedUser != null) {
-        // Handle successful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Product updated successfully'),
           ),
         );
       } else {
-        // Handle unsuccessful update
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update product'),
@@ -232,11 +223,9 @@ class _ProductScreenState extends State<ProductScreen> {
                       onCancelPressed: closeEditProductModal,
                       onSavePressed: closeEditProductModal,
                       onUpdatePressed: (id, request) {
-                        // Call the update method from the provider here
                         updateProduct(id, request);
                       },
-                      proizvodToEdit:
-                          proizvodToEdit, // Make sure you are passing korisnikToEdit
+                      proizvodToEdit: proizvodToEdit,
                     ),
                   ),
                 ),
