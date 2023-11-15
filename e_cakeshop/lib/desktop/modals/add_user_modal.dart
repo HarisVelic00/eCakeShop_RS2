@@ -92,7 +92,7 @@ class _AddUserModalState extends State<AddUserModal> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        color: Color.fromRGBO(227, 232, 247, 1),
+        color: const Color.fromRGBO(227, 232, 247, 1),
         width: MediaQuery.of(context).size.width * 0.2,
         child: SingleChildScrollView(
           child: Padding(
@@ -117,7 +117,11 @@ class _AddUserModalState extends State<AddUserModal> {
                 ),
                 TextField(
                   controller: dobController,
-                  decoration: const InputDecoration(labelText: 'Date of Birth'),
+                  decoration: const InputDecoration(
+                    labelText: 'Date of Birth',
+                    hintText: 'YYYY-MM-DD',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 TextField(
                   controller: emailController,
@@ -125,7 +129,11 @@ class _AddUserModalState extends State<AddUserModal> {
                 ),
                 TextField(
                   controller: telephoneController,
-                  decoration: const InputDecoration(labelText: 'Telephone'),
+                  decoration: const InputDecoration(
+                    labelText: 'Telephone',
+                    hintText: 'Example 037-123-456',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 DropdownButtonFormField<String>(
                   value: selectedGrad,
@@ -208,46 +216,66 @@ class _AddUserModalState extends State<AddUserModal> {
                           final telephone = telephoneController.text;
                           final password = passwordController.text;
 
-                          DateTime tempDate =
-                              DateFormat("dd-MM-yyyy").parse(dob);
-
-                          int gradID = findIdFromName(
-                            selectedGrad,
-                            gradList,
-                            (Grad grad) => grad.naziv ?? '',
-                            (Grad grad) => grad.gradID ?? -1,
-                          );
-                          int drzavaID = findIdFromName(
-                            selectedDrzava,
-                            drzavaList,
-                            (Drzava drzava) => drzava.naziv ?? '',
-                            (Drzava drzava) => drzava.drzavaID ?? -1,
-                          );
-                          int ulogaID = findIdFromName(
-                            selectedUloga,
-                            ulogaList,
-                            (Uloga uloga) => uloga.naziv ?? '',
-                            (Uloga uloga) => uloga.ulogaID ?? -1,
-                          );
-
-                          if (gradID != -1 && drzavaID != -1 && ulogaID != -1) {
-                            Map<String, dynamic> newUser = {
-                              "ime": name,
-                              "prezime": surname,
-                              "datumRodjenja": tempDate.toIso8601String(),
-                              "korisnickoIme": username,
-                              "email": email,
-                              "telefon": telephone,
-                              "gradID": gradID,
-                              "drzavaID": drzavaID,
-                              "ulogeID": [ulogaID],
-                              "lozinka": password,
-                            };
-
-                            widget.onAddUserPressed(newUser);
-                            setState(() {});
+                          if (name.isEmpty ||
+                              surname.isEmpty ||
+                              username.isEmpty ||
+                              dob.isEmpty ||
+                              email.isEmpty ||
+                              telephone.isEmpty ||
+                              selectedGrad == null ||
+                              selectedDrzava == null ||
+                              selectedUloga == null ||
+                              password.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please fill all fields'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
                           } else {
-                            print("Error: Some selected values are not set");
+                            DateTime tempDate =
+                                DateFormat("dd-MM-yyyy").parse(dob);
+
+                            int gradID = findIdFromName(
+                              selectedGrad,
+                              gradList,
+                              (Grad grad) => grad.naziv ?? '',
+                              (Grad grad) => grad.gradID ?? -1,
+                            );
+                            int drzavaID = findIdFromName(
+                              selectedDrzava,
+                              drzavaList,
+                              (Drzava drzava) => drzava.naziv ?? '',
+                              (Drzava drzava) => drzava.drzavaID ?? -1,
+                            );
+                            int ulogaID = findIdFromName(
+                              selectedUloga,
+                              ulogaList,
+                              (Uloga uloga) => uloga.naziv ?? '',
+                              (Uloga uloga) => uloga.ulogaID ?? -1,
+                            );
+
+                            if (gradID != -1 &&
+                                drzavaID != -1 &&
+                                ulogaID != -1) {
+                              Map<String, dynamic> newUser = {
+                                "ime": name,
+                                "prezime": surname,
+                                "datumRodjenja": tempDate.toIso8601String(),
+                                "korisnickoIme": username,
+                                "email": email,
+                                "telefon": telephone,
+                                "gradID": gradID,
+                                "drzavaID": drzavaID,
+                                "ulogeID": [ulogaID],
+                                "lozinka": password,
+                              };
+
+                              widget.onAddUserPressed(newUser);
+                              setState(() {});
+                            } else {
+                              print("Error: Some selected values are not set");
+                            }
                           }
                         } catch (e) {
                           print("Error adding user: $e");

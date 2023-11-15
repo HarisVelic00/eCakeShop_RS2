@@ -307,10 +307,6 @@ class ArchiveTable extends StatelessWidget {
                           Row(
                             children: [
                               IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  onPressed: () =>
-                                      openEditArchivedOrderModal(narudzba)),
-                              IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
                                   openDeleteModal(narudzba);

@@ -14,7 +14,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   bool isDeleteModalOpen = false;
   bool isAddNewsModalOpen = false;
-  bool isEditNewsModalOpen = false;
+  bool _isEditNewsModalOpen = false;
   late NovostProvider novostProvider;
   Novost? novostToDelete;
   Novost? novostToEdit;
@@ -35,28 +35,32 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   void openAddNewsModal() {
-    setState(() {
-      isAddNewsModalOpen = true;
-    });
-  }
-
-  void closeAddNewsModal() {
-    setState(() {
-      isAddNewsModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddNewsModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onAddNewsPressed: addNewNovost,
+        );
+      },
+    );
   }
 
   void openEditNewsModal(Novost novost) {
-    setState(() {
-      isEditNewsModalOpen = true;
-      novostToEdit = novost;
-    });
-  }
-
-  void closeEditNewsModal() {
-    setState(() {
-      isEditNewsModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EditNewsModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onUpdatePressed: updateNews,
+          novostToEdit: novost,
+        );
+      },
+    );
   }
 
   void deleteNovost(Novost novost) async {
@@ -78,7 +82,7 @@ class _NewsScreenState extends State<NewsScreen> {
     }
   }
 
-  void addNewNews(Novost newNews) async {
+  dynamic addNewNovost(Map<String, dynamic> newNews) async {
     try {
       await novostProvider.insert(newNews);
       setState(() {});
@@ -201,21 +205,23 @@ class _NewsScreenState extends State<NewsScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: AddNewsModal(
-                      onCancelPressed: closeAddNewsModal,
-                      onAddNewsPressed: addNewNews,
+                      onCancelPressed: () {
+                        Navigator.pop(context);
+                      },
+                      onAddNewsPressed: addNewNovost,
                     ),
                   ),
                 ),
-              if (isEditNewsModalOpen)
+              if (_isEditNewsModalOpen)
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: EditNewsModal(
-                      onCancelPressed: closeEditNewsModal,
-                      onSavePressed: closeEditNewsModal,
-                      onUpdatePressed: (id, request) {
-                        updateNews(id, request);
+                  child: AlertDialog(
+                    content: EditNewsModal(
+                      onCancelPressed: () {
+                        setState(() {
+                          _isEditNewsModalOpen = false;
+                        });
                       },
+                      onUpdatePressed: updateNews,
                       novostToEdit: novostToEdit,
                     ),
                   ),

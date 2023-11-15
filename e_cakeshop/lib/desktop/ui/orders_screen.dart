@@ -14,7 +14,7 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen> {
   bool isDeleteModalOpen = false;
   bool isAddOrderModalOpen = false;
-  bool isEditOrderModalOpen = false;
+  bool _isEditOrderModalOpen = false;
   late NarudzbaProvider narudzbaProvider;
   Narudzba? narudzbaToDelete;
   Narudzba? narudzbaToEdit;
@@ -35,28 +35,32 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   void openAddOrderModal() {
-    setState(() {
-      isAddOrderModalOpen = true;
-    });
-  }
-
-  void closeAddOrderModal() {
-    setState(() {
-      isAddOrderModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddOrderModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onAddOrderPressed: addNewOrder,
+        );
+      },
+    );
   }
 
   void openEditOrderModal(Narudzba narudzba) {
-    setState(() {
-      isEditOrderModalOpen = true;
-      narudzbaToEdit = narudzba;
-    });
-  }
-
-  void closeEditOrderModal() {
-    setState(() {
-      isEditOrderModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EditOrderModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onUpdatePressed: updateOrder,
+          narudzbaToEdit: narudzba,
+        );
+      },
+    );
   }
 
   void deleteNarudzba(Narudzba narudzba) async {
@@ -78,7 +82,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
   }
 
-  void addNewOrder(Narudzba newOrder) async {
+  dynamic addNewOrder(Map<String, dynamic> newOrder) async {
     try {
       await narudzbaProvider.insert(newOrder);
       setState(() {});
@@ -204,25 +208,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: AddOrderModal(
-                      onCancelPressed: closeAddOrderModal,
+                      onCancelPressed: () {
+                        Navigator.pop(context);
+                      },
                       onAddOrderPressed: addNewOrder,
                     ),
                   ),
                 ),
-              if (isEditOrderModalOpen)
+              if (_isEditOrderModalOpen)
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: EditOrderModal(
-                      onCancelPressed: closeEditOrderModal,
-                      onSavePressed: closeEditOrderModal,
-                      onUpdatePressed: (id, request) {
-                        updateOrder(id, request);
-                      },
-                      narudzbaToEdit: narudzbaToEdit,
-                    ),
-                  ),
-                ),
+                    child: AlertDialog(
+                        content: EditOrderModal(
+                  onCancelPressed: () {
+                    setState(() {
+                      _isEditOrderModalOpen = false;
+                    });
+                  },
+                  onUpdatePressed: updateOrder,
+                  narudzbaToEdit: narudzbaToEdit,
+                )))
             ],
           ),
         ),
@@ -265,7 +269,7 @@ class OrdersTable extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: SingleChildScrollView(
               child: DataTable(
-                dataRowHeight: 90.0, // Adjust the value as needed
+                dataRowHeight: 90.0,
                 columns: const [
                   DataColumn(label: Text('ID')),
                   DataColumn(label: Text('Order Number')),

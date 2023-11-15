@@ -15,7 +15,7 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   bool isDeleteModalOpen = false;
   bool isAddProductModalOpen = false;
-  bool isEditProductModalOpen = false;
+  bool _isEditProductModalOpen = false;
   late ProizvodProvider proizvodProvider;
   Proizvod? proizvodToDelete;
   Proizvod? proizvodToEdit;
@@ -35,28 +35,32 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void openAddProductModal() {
-    setState(() {
-      isAddProductModalOpen = true;
-    });
-  }
-
-  void closeAddProductModal() {
-    setState(() {
-      isAddProductModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddProductModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onAddProductPressed: addNewProduct,
+        );
+      },
+    );
   }
 
   void openEditProductModal(Proizvod proizvod) {
-    setState(() {
-      isEditProductModalOpen = true;
-      proizvodToEdit = proizvod;
-    });
-  }
-
-  void closeEditProductModal() {
-    setState(() {
-      isEditProductModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EditProductModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onUpdatePressed: updateProduct,
+          proizvodToEdit: proizvod,
+        );
+      },
+    );
   }
 
   void deleteProizvod(Proizvod product) async {
@@ -80,7 +84,7 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
-  void addNewProduct(Proizvod newProduct) async {
+  dynamic addNewProduct(Map<String, dynamic> newProduct) async {
     try {
       await proizvodProvider.insert(newProduct);
       setState(() {});
@@ -210,21 +214,23 @@ class _ProductScreenState extends State<ProductScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: AddProductModal(
-                      onCancelPressed: closeAddProductModal,
+                      onCancelPressed: () {
+                        Navigator.pop(context);
+                      },
                       onAddProductPressed: addNewProduct,
                     ),
                   ),
                 ),
-              if (isEditProductModalOpen)
+              if (_isEditProductModalOpen)
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: EditProductModal(
-                      onCancelPressed: closeEditProductModal,
-                      onSavePressed: closeEditProductModal,
-                      onUpdatePressed: (id, request) {
-                        updateProduct(id, request);
+                  child: AlertDialog(
+                    content: EditProductModal(
+                      onCancelPressed: () {
+                        setState(() {
+                          _isEditProductModalOpen = false;
+                        });
                       },
+                      onUpdatePressed: updateProduct,
                       proizvodToEdit: proizvodToEdit,
                     ),
                   ),

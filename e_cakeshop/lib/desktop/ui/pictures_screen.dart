@@ -14,7 +14,7 @@ class PicturesScreen extends StatefulWidget {
 class _PicturesScreenState extends State<PicturesScreen> {
   bool isDeleteModalOpen = false;
   bool isAddPictureModalOpen = false;
-  bool isEditImageModalOpen = false;
+  bool _isEditImageModalOpen = false;
   late SlikaProvider slikaProvider;
   Slika? slikaToDelete;
   Slika? slikaToEdit;
@@ -34,29 +34,33 @@ class _PicturesScreenState extends State<PicturesScreen> {
     });
   }
 
-  void openAddPictureModal() {
-    setState(() {
-      isAddPictureModalOpen = true;
-    });
-  }
-
-  void closeAddPictureModal() {
-    setState(() {
-      isAddPictureModalOpen = false;
-    });
+  void openAddImageModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddImageModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onAddSlikaPressed: addNewSlika,
+        );
+      },
+    );
   }
 
   void openEditImageModal(Slika slika) {
-    setState(() {
-      isEditImageModalOpen = true;
-      slikaToEdit = slika;
-    });
-  }
-
-  void closeEditImageModal() {
-    setState(() {
-      isEditImageModalOpen = false;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EditImageModal(
+          onCancelPressed: () {
+            Navigator.pop(context);
+          },
+          onUpdatePressed: updateSlika,
+          slikaToEdit: slika,
+        );
+      },
+    );
   }
 
   void deleteSlika(Slika slika) async {
@@ -78,7 +82,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
     }
   }
 
-  void addNewSlika(Slika newSlika) async {
+  dynamic addNewSlika(Map<String, dynamic> newSlika) async {
     try {
       await slikaProvider.insert(newSlika);
       setState(() {});
@@ -174,7 +178,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
                               backgroundColor:
                                   const Color.fromRGBO(97, 142, 246, 1),
                             ),
-                            onPressed: openAddPictureModal,
+                            onPressed: openAddImageModal,
                             child: const Text('Add Picture'),
                           ),
                         ),
@@ -204,21 +208,23 @@ class _PicturesScreenState extends State<PicturesScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: AddImageModal(
-                      onCancelPressed: closeAddPictureModal,
+                      onCancelPressed: () {
+                        Navigator.pop(context);
+                      },
                       onAddSlikaPressed: addNewSlika,
                     ),
                   ),
                 ),
-              if (isEditImageModalOpen)
+              if (_isEditImageModalOpen)
                 Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: EditImageModal(
-                      onCancelPressed: closeEditImageModal,
-                      onSavePressed: closeEditImageModal,
-                      onUpdatePressed: (id, request) {
-                        updateSlika(id, request);
+                  child: AlertDialog(
+                    content: EditImageModal(
+                      onCancelPressed: () {
+                        setState(() {
+                          _isEditImageModalOpen = false;
+                        });
                       },
+                      onUpdatePressed: updateSlika,
                       slikaToEdit: slikaToEdit,
                     ),
                   ),

@@ -206,7 +206,7 @@ class _UserScreenState extends State<UserScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: AddUserModal(
                       onCancelPressed: () {
-                        Navigator.pop(context); // Close the AddUserModal
+                        Navigator.pop(context);
                       },
                       onAddUserPressed: addNewUser,
                     ),

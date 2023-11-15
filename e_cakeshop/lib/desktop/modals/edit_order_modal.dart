@@ -1,49 +1,46 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:e_cakeshop/models/narudzba.dart';
 import 'package:flutter/material.dart';
 
 class EditOrderModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
-  final VoidCallback onSavePressed;
-  final void Function(int, dynamic) onUpdatePressed;
+  final void Function(int, Map<String, dynamic>) onUpdatePressed;
   final Narudzba? narudzbaToEdit;
-  EditOrderModal(
-      {required this.onCancelPressed,
-      required this.onSavePressed,
-      required this.onUpdatePressed,
-      required this.narudzbaToEdit});
+
+  EditOrderModal({
+    required this.onCancelPressed,
+    required this.onUpdatePressed,
+    required this.narudzbaToEdit,
+  });
 
   @override
   _EditOrderModalState createState() => _EditOrderModalState();
 }
 
 class _EditOrderModalState extends State<EditOrderModal> {
-  final TextEditingController orderNumberController = TextEditingController();
-  final TextEditingController userController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController productsController = TextEditingController();
-  final TextEditingController isShippedController = TextEditingController();
-  final TextEditingController isCanceledController = TextEditingController();
+  late Narudzba? _narudzbaToEdit;
 
-  late Narudzba? _narudzbaToEdit; // Local variable
+  ValueNotifier<bool> isShippedController = ValueNotifier<bool>(false);
+  ValueNotifier<bool> isCanceledController = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
-    _narudzbaToEdit = widget.narudzbaToEdit; // Initialize the local variable
-    // TODO: Initialize controllers with data if needed
+    _narudzbaToEdit = widget.narudzbaToEdit;
+
+    if (_narudzbaToEdit != null) {
+      isShippedController.value = _narudzbaToEdit!.isShipped ?? false;
+      isCanceledController.value = _narudzbaToEdit!.isCanceled ?? false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Material(
-          color: const Color.fromRGBO(227, 232, 247, 1),
-          child: Container(
-            width: 300,
+    return Dialog(
+      child: Container(
+        color: const Color.fromRGBO(227, 232, 247, 1),
+        width: MediaQuery.of(context).size.width * 0.2,
+        child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -55,30 +52,46 @@ class _EditOrderModalState extends State<EditOrderModal> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: orderNumberController,
-                  decoration: const InputDecoration(labelText: 'Order Number'),
-                ),
-                TextField(
-                  controller: userController,
-                  decoration: const InputDecoration(labelText: 'User'),
-                ),
-                TextField(
-                  controller: dateController,
-                  decoration: const InputDecoration(labelText: 'Date'),
-                ),
-                TextField(
-                  controller: productsController,
-                  decoration: const InputDecoration(labelText: 'Products'),
-                ),
-                TextField(
-                  controller: isShippedController,
-                  decoration: const InputDecoration(labelText: 'Is Shipped'),
-                ),
-                TextField(
-                  controller: isCanceledController,
-                  decoration: const InputDecoration(labelText: 'Is Canceled'),
+                const SizedBox(height: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('Is Shipped'),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: isShippedController,
+                          builder: (context, value, child) {
+                            return Checkbox(
+                              value: value,
+                              onChanged: (bool? newValue) {
+                                isShippedController.value = newValue ?? false;
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('Is Canceled'),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: isCanceledController,
+                          builder: (context, value, child) {
+                            return Checkbox(
+                              value: value,
+                              onChanged: (bool? newValue) {
+                                isCanceledController.value = newValue ?? false;
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -96,22 +109,10 @@ class _EditOrderModalState extends State<EditOrderModal> {
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
                       onPressed: () {
-                        final orderNumber = orderNumberController.text;
-                        final user = userController.text;
-                        final date = dateController.text;
-                        final products = productsController.text;
-                        final isShipped = isShippedController.text;
-                        final isCanceled = isCanceledController.text;
-
                         widget.onUpdatePressed(_narudzbaToEdit!.narudzbaID!, {
-                          'brojNarudzbe': orderNumber,
-                          'korisnik': user,
-                          'datumNarudzbe': date,
-                          'proizvodi': products,
-                          'isCanceled': isCanceled,
-                          'isShipped': isShipped,
+                          "isShipped": isShippedController.value,
+                          "isCanceled": isCanceledController.value,
                         });
-                        widget.onSavePressed();
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),

@@ -9,7 +9,13 @@ class Uplata {
   String? brojTransakcije;
   int? korisnikID;
 
-  Uplata();
+  Uplata({
+    this.uplataID,
+    this.iznos,
+    this.datumTransakcije,
+    this.brojTransakcije,
+    this.korisnikID,
+  });
 
   factory Uplata.fromJson(Map<String, dynamic> json) => _$UplataFromJson(json);
 
