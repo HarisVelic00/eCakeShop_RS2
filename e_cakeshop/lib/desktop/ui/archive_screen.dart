@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
-import 'package:e_cakeshop/desktop/modals/edit_archive_modal.dart';
 import 'package:e_cakeshop/models/narudzba.dart';
 import 'package:e_cakeshop/providers/narudzba_provider.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +13,8 @@ class ArchiveScreen extends StatefulWidget {
 
 class _ArchiveScreenState extends State<ArchiveScreen> {
   bool isDeleteModalOpen = false;
-  bool isEditArchiveModalOpen = false;
   late NarudzbaProvider arhivaProvider;
   Narudzba? arhiviranaNarudzbaToDelete;
-  Narudzba? arhiviranaNarudzbaToEdit;
   late String _searchQuery = '';
 
   void openDeleteModal(Narudzba arhiviranaNarudzba) {
@@ -32,19 +28,6 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     setState(() {
       isDeleteModalOpen = false;
       arhiviranaNarudzbaToDelete = null;
-    });
-  }
-
-  void openEditArchiveModal(Narudzba narudzba) {
-    setState(() {
-      isEditArchiveModalOpen = true;
-      arhiviranaNarudzbaToEdit = narudzba;
-    });
-  }
-
-  void closeEditArchiveModal() {
-    setState(() {
-      isEditArchiveModalOpen = false;
     });
   }
 
@@ -115,27 +98,6 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     }
   }
 
-  void updateArhiviranaNarudzba(int id, dynamic request) async {
-    try {
-      var updatedOrder = await arhivaProvider.update(id, request);
-      if (updatedOrder != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Archived order updated successfully'),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to update archived order'),
-          ),
-        );
-      }
-    } catch (e) {
-      print("Error updating archived order: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     arhivaProvider = Provider.of<NarudzbaProvider>(context, listen: false);
@@ -199,7 +161,6 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     ),
                   ),
                   ArchiveTable(
-                    openEditArchivedOrderModal: openEditArchiveModal,
                     openDeleteModal: openDeleteModal,
                     arhivaProvider: arhivaProvider,
                     searchQuery: _searchQuery,
@@ -218,20 +179,6 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                     },
                   ),
                 ),
-              if (isEditArchiveModalOpen)
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: EditArchiveModal(
-                      onCancelPressed: closeEditArchiveModal,
-                      onSavePressed: closeEditArchiveModal,
-                      onUpdatePressed: (id, request) {
-                        updateArhiviranaNarudzba(id, request);
-                      },
-                      narudzbaToEdit: arhiviranaNarudzbaToEdit,
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
@@ -241,13 +188,11 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
 }
 
 class ArchiveTable extends StatelessWidget {
-  final void Function(Narudzba) openEditArchivedOrderModal;
   final void Function(Narudzba) openDeleteModal;
   final NarudzbaProvider arhivaProvider;
   final String searchQuery;
 
   ArchiveTable({
-    required this.openEditArchivedOrderModal,
     required this.openDeleteModal,
     required this.arhivaProvider,
     required this.searchQuery,

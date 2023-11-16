@@ -78,7 +78,7 @@ class _AddProductModalState extends State<AddProductModal> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        color: const Color.fromRGBO(227, 232, 247, 1),
+        color: const Color.fromRGBO(247, 249, 253, 1),
         width: MediaQuery.of(context).size.width * 0.2,
         child: SingleChildScrollView(
           child: Padding(
@@ -124,9 +124,10 @@ class _AddProductModalState extends State<AddProductModal> {
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Type'),
-                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                 ),
                 const SizedBox(height: 20),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -138,6 +139,9 @@ class _AddProductModalState extends State<AddProductModal> {
                       child: const Text('Cancel'),
                     ),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                      ),
                       onPressed: () {
                         try {
                           final name = nameController.text;

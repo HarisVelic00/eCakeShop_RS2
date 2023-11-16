@@ -31,7 +31,7 @@ class _EditImageModalState extends State<EditImageModal> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        color: const Color.fromRGBO(227, 232, 247, 1),
+        color: const Color.fromRGBO(247, 249, 253, 1),
         width: MediaQuery.of(context).size.width * 0.2,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -54,6 +54,7 @@ class _EditImageModalState extends State<EditImageModal> {
                 decoration: const InputDecoration(labelText: 'Description'),
               ),
               const SizedBox(height: 20),
+              const Divider(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
@@ -65,6 +66,9 @@ class _EditImageModalState extends State<EditImageModal> {
                     child: const Text('Cancel'),
                   ),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                    ),
                     onPressed: () {
                       final slika = imageByteController.text;
                       final opis = descriptionController.text;

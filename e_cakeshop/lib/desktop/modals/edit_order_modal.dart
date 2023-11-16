@@ -37,7 +37,7 @@ class _EditOrderModalState extends State<EditOrderModal> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        color: const Color.fromRGBO(227, 232, 247, 1),
+        color: const Color.fromRGBO(247, 249, 253, 1),
         width: MediaQuery.of(context).size.width * 0.2,
         child: SingleChildScrollView(
           child: Padding(
@@ -94,6 +94,7 @@ class _EditOrderModalState extends State<EditOrderModal> {
                   ],
                 ),
                 const SizedBox(height: 20),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[

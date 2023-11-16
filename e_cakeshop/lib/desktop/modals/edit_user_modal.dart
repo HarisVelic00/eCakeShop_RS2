@@ -94,7 +94,7 @@ class _EditUserModalState extends State<EditUserModal> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        color: const Color.fromRGBO(227, 232, 247, 1),
+        color: const Color.fromRGBO(247, 249, 253, 1),
         width: MediaQuery.of(context).size.width * 0.2,
         child: SingleChildScrollView(
           child: Padding(
@@ -143,7 +143,7 @@ class _EditUserModalState extends State<EditUserModal> {
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'City'),
-                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                 ),
                 DropdownButtonFormField<String>(
                   value: selectedDrzava,
@@ -159,13 +159,14 @@ class _EditUserModalState extends State<EditUserModal> {
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Country'),
-                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                 ),
                 TextField(
                   controller: roleController,
                   decoration: const InputDecoration(labelText: 'Uloga'),
                 ),
                 const SizedBox(height: 20),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[

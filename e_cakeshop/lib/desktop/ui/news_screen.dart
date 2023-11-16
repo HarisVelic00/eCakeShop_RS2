@@ -93,6 +93,7 @@ class _NewsScreenState extends State<NewsScreen> {
           ),
         );
       }
+      setState(() {});
     } catch (e) {
       print("Error adding news: $e");
       if (mounted) {
@@ -114,6 +115,7 @@ class _NewsScreenState extends State<NewsScreen> {
             content: Text('News updated successfully'),
           ),
         );
+        setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

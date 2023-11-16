@@ -92,7 +92,7 @@ class _AddUserModalState extends State<AddUserModal> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        color: const Color.fromRGBO(227, 232, 247, 1),
+        color: const Color.fromRGBO(247, 249, 253, 1),
         width: MediaQuery.of(context).size.width * 0.2,
         child: SingleChildScrollView(
           child: Padding(
@@ -149,7 +149,7 @@ class _AddUserModalState extends State<AddUserModal> {
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'City'),
-                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                 ),
                 DropdownButtonFormField<String>(
                   value: selectedDrzava,
@@ -165,7 +165,7 @@ class _AddUserModalState extends State<AddUserModal> {
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Country'),
-                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                 ),
                 TextField(
                   controller: usernameController,
@@ -192,9 +192,10 @@ class _AddUserModalState extends State<AddUserModal> {
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Uloga'),
-                  dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                 ),
                 const SizedBox(height: 20),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -206,6 +207,9 @@ class _AddUserModalState extends State<AddUserModal> {
                       child: const Text('Cancel'),
                     ),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                      ),
                       onPressed: () {
                         try {
                           final name = nameController.text;

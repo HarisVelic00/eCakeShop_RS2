@@ -95,6 +95,7 @@ class _ProductScreenState extends State<ProductScreen> {
           ),
         );
       }
+      setState(() {});
     } catch (e) {
       print("Error adding product: $e");
       if (mounted) {
@@ -117,6 +118,7 @@ class _ProductScreenState extends State<ProductScreen> {
             content: Text('Product updated successfully'),
           ),
         );
+        setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

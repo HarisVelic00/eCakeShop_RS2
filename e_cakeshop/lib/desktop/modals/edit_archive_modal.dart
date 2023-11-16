@@ -84,6 +84,7 @@ class _EditArchiveModalState extends State<EditArchiveModal> {
                   decoration: const InputDecoration(labelText: 'Is Shipped'),
                 ),
                 const SizedBox(height: 20),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[

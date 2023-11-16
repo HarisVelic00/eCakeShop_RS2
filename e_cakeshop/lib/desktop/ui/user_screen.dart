@@ -15,7 +15,6 @@ class _UserScreenState extends State<UserScreen> {
   bool isDeleteModalOpen = false;
   bool isAddUserModalOpen = false;
   bool _isEditUserModalOpen = false;
-
   late KorisnikProvider korisnikProvider;
   Korisnik? korisnikToDelete;
   Korisnik? korisnikToEdit;
@@ -84,7 +83,7 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
-  dynamic addNewUser(Map<String, dynamic> newUser) async {
+  void addNewUser(Map<String, dynamic> newUser) async {
     try {
       await korisnikProvider.insert(newUser);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +91,7 @@ class _UserScreenState extends State<UserScreen> {
           content: Text('User added successfully'),
         ),
       );
-
+      setState(() {});
       Navigator.pop(context);
     } catch (e) {
       print("Error adding user: $e");
@@ -113,6 +112,7 @@ class _UserScreenState extends State<UserScreen> {
             content: Text('User updated successfully'),
           ),
         );
+        setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

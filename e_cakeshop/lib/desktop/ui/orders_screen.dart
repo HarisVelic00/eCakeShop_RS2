@@ -93,6 +93,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
         );
       }
+      setState(() {});
     } catch (e) {
       print("Error adding order: $e");
       if (mounted) {
@@ -114,6 +115,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             content: Text('Order updated successfully'),
           ),
         );
+        setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -254,9 +256,9 @@ class OrdersTable extends StatelessWidget {
       future: narudzbaProvider.Get({'includeNarudzbaProizvodi': true}),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           List<Narudzba> filteredNarudzba = snapshot.data!.where((narudzba) {
             String orderNumber = '${narudzba.brojNarudzbe}';
@@ -288,12 +290,15 @@ class OrdersTable extends StatelessWidget {
                       DataCell(Text(narudzba.korisnik?.ime ?? '')),
                       DataCell(Text(narudzba.datumNarudzbe.toString())),
                       DataCell(
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: narudzba.narudzbaProizvodi!
-                              .split(',')
-                              .map((product) => Text(product.trim()))
-                              .toList(),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: narudzba.narudzbaProizvodi!
+                                .split(',')
+                                .map((product) => Text(product.trim()))
+                                .toList(),
+                          ),
                         ),
                       ),
                       DataCell(Text(narudzba.isShipped.toString())),
@@ -321,7 +326,7 @@ class OrdersTable extends StatelessWidget {
             ),
           );
         } else {
-          return const Text('No data available');
+          return const Center(child: Text('No data available'));
         }
       },
     );

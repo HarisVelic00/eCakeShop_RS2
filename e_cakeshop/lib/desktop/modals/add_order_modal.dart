@@ -1,17 +1,100 @@
+import 'package:flutter/material.dart';
+import 'package:e_cakeshop/models/proizvod.dart';
+import 'package:e_cakeshop/providers/proizvod_provider.dart';
 import 'package:e_cakeshop/models/korisnik.dart';
-import 'package:e_cakeshop/models/narudzbaproizvodi.dart';
 import 'package:e_cakeshop/models/uplata.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
-//import 'package:e_cakeshop/providers/narudzbaproizvodi_provider.dart';
 import 'package:e_cakeshop/providers/uplata_provider.dart';
-import 'package:flutter/material.dart';
+
+class MultiDropdownCheckbox extends StatefulWidget {
+  final List<Proizvod> products;
+  final Function(List<Map<String, dynamic>>) onSelectionChanged;
+
+  MultiDropdownCheckbox({
+    required this.products,
+    required this.onSelectionChanged,
+  });
+
+  @override
+  _MultiDropdownCheckboxState createState() => _MultiDropdownCheckboxState();
+}
+
+class _MultiDropdownCheckboxState extends State<MultiDropdownCheckbox> {
+  Map<int, int> _selectedProducts = {};
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Products'),
+        Wrap(
+          children: widget.products.map((proizvod) {
+            final proizvodID = proizvod.proizvodID ?? -1;
+            return Row(
+              children: [
+                Checkbox(
+                  value: _selectedProducts.containsKey(proizvodID),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value != null && value) {
+                        _selectedProducts[proizvodID] = 1;
+                      } else {
+                        _selectedProducts.remove(proizvodID);
+                      }
+                      widget.onSelectionChanged(
+                        _selectedProducts.entries
+                            .map((entry) => {
+                                  'proizvodID': entry.key,
+                                  'kolicina': entry.value,
+                                })
+                            .toList(),
+                      );
+                    });
+                  },
+                ),
+                Text(proizvod.naziv ?? ''),
+                const SizedBox(width: 10),
+                DropdownButton<int>(
+                  value: _selectedProducts[proizvodID] ?? 1,
+                  onChanged: (int? value) {
+                    setState(() {
+                      _selectedProducts[proizvodID] = value!;
+                      widget.onSelectionChanged(
+                        _selectedProducts.entries
+                            .map((entry) => {
+                                  'proizvodID': entry.key,
+                                  'kolicina': entry.value,
+                                })
+                            .toList(),
+                      );
+                    });
+                  },
+                  items: List.generate(
+                    10,
+                    (index) => DropdownMenuItem<int>(
+                      value: index + 1,
+                      child: Text((index + 1).toString()),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}
 
 class AddOrderModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
   final Function(Map<String, dynamic>) onAddOrderPressed;
 
-  AddOrderModal(
-      {required this.onCancelPressed, required this.onAddOrderPressed});
+  AddOrderModal({
+    required this.onCancelPressed,
+    required this.onAddOrderPressed,
+  });
 
   @override
   _AddOrderModalState createState() => _AddOrderModalState();
@@ -20,43 +103,10 @@ class AddOrderModal extends StatefulWidget {
 class _AddOrderModalState extends State<AddOrderModal> {
   List<Korisnik> korisnikList = [];
   List<Uplata> uplataList = [];
-  List<NarudzbaProizvodi> narudzbaProizvodiList = [];
+  List<Proizvod> ProizvodiList = [];
   String? selectedKorisnik;
   String? selectedUplata;
-  String? selectedNarudzba;
-
-  int extractIdFromList<T>(
-    String? selectedValue,
-    List<T> list,
-    int Function(T) getId,
-  ) {
-    if (selectedValue != null) {
-      T selectedObject = list.firstWhere(
-        (item) => getId(item).toString() == selectedValue,
-        orElse: () => list.first,
-      );
-
-      return getId(selectedObject);
-    }
-    return -1;
-  }
-
-  int findIdFromName<T>(
-    String? selectedValue,
-    List<T> list,
-    String Function(T) getName,
-    int Function(T) getId,
-  ) {
-    if (selectedValue != null) {
-      T selectedObject = list.firstWhere(
-        (item) => getName(item) == selectedValue,
-        orElse: () => list.first,
-      );
-
-      return getId(selectedObject);
-    }
-    return -1;
-  }
+  List<Map<String, dynamic>> selectedProducts = [];
 
   @override
   void initState() {
@@ -68,7 +118,7 @@ class _AddOrderModalState extends State<AddOrderModal> {
     try {
       korisnikList = await KorisnikProvider().Get();
       uplataList = await UplataProvider().Get();
-      //narudzbaProizvodiList = await NarudzbaProizvodiProvider().Get();
+      ProizvodiList = await ProizvodProvider().Get();
       if (mounted) {
         setState(() {});
       }
@@ -81,7 +131,7 @@ class _AddOrderModalState extends State<AddOrderModal> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        color: const Color.fromRGBO(227, 232, 247, 1),
+        color: const Color.fromRGBO(247, 249, 253, 1),
         width: MediaQuery.of(context).size.width * 0.2,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -109,7 +159,7 @@ class _AddOrderModalState extends State<AddOrderModal> {
                   );
                 }).toList(),
                 decoration: const InputDecoration(labelText: 'User'),
-                dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
               ),
               DropdownButtonFormField<String>(
                 value: selectedUplata,
@@ -125,26 +175,19 @@ class _AddOrderModalState extends State<AddOrderModal> {
                   );
                 }).toList(),
                 decoration: const InputDecoration(labelText: 'Payment'),
-                dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
-              ),
-              DropdownButtonFormField<String>(
-                value: selectedNarudzba,
-                onChanged: (String? value) {
-                  setState(() {
-                    selectedNarudzba = value!;
-                  });
-                },
-                items: narudzbaProizvodiList
-                    .map((NarudzbaProizvodi narudzbaProizvodi) {
-                  return DropdownMenuItem<String>(
-                    value: narudzbaProizvodi.proizvod?.naziv ?? '',
-                    child: Text(narudzbaProizvodi.proizvod?.naziv ?? ''),
-                  );
-                }).toList(),
-                decoration: const InputDecoration(labelText: 'Products'),
-                dropdownColor: const Color.fromRGBO(227, 232, 247, 1),
+                dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
               ),
               const SizedBox(height: 20),
+              MultiDropdownCheckbox(
+                products: ProizvodiList,
+                onSelectionChanged: (selectedProducts) {
+                  setState(() {
+                    this.selectedProducts = selectedProducts;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              const Divider(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
@@ -156,41 +199,33 @@ class _AddOrderModalState extends State<AddOrderModal> {
                     child: const Text('Cancel'),
                   ),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                    ),
                     onPressed: () {
                       try {
-                        int korisnikID = findIdFromName(
-                          selectedKorisnik,
-                          korisnikList,
-                          (Korisnik korisnik) => korisnik.ime ?? '',
-                          (Korisnik korisnik) => korisnik.korisnikID ?? -1,
-                        );
-                        int uplataID = findIdFromName(
-                          selectedUplata,
-                          uplataList,
-                          (Uplata uplata) => uplata.brojTransakcije ?? '',
-                          (Uplata uplata) => uplata.uplataID ?? -1,
-                        );
-                        // int narudzbaProizvodID = findIdFromName(
-                        //   selectedNarudzba,
-                        //   narudzbaProizvodiList,
-                        //   (NarudzbaProizvodi narudzbaProizvodi) =>
-                        //       narudzbaProizvodi.proizvod?.naziv ?? '',
-                        //   (NarudzbaProizvodi narudzbaProizvodi) =>
-                        //       narudzbaProizvodi.proizvodID ?? -1,
-                        // );
+                        int korisnikID = korisnikList
+                                .firstWhere((korisnik) =>
+                                    korisnik.ime == selectedKorisnik)
+                                .korisnikID ??
+                            -1;
+                        int uplataID = uplataList
+                                .firstWhere((uplata) =>
+                                    uplata.brojTransakcije == selectedUplata)
+                                .uplataID ??
+                            -1;
 
                         if (korisnikID != -1 &&
-                                uplataID !=
-                                    -1 /*&&
-                            narudzbaProizvodID != -1*/
-                            ) {
+                            uplataID != -1 &&
+                            selectedProducts.isNotEmpty) {
                           Map<String, dynamic> newOrder = {
                             "korisnikID": korisnikID,
                             "uplataID": uplataID,
-                            //"listaProizvoda": [narudzbaProizvodID]
+                            "listaProizvoda": selectedProducts,
                           };
 
                           widget.onAddOrderPressed(newOrder);
+                          Navigator.pop(context);
                           setState(() {});
                         } else {
                           print("Error: Some selected values are not set");

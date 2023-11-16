@@ -15,6 +15,8 @@ dependencies:
   provider: ^6.0.5
   flutter_config: ^2.0.2
   pdf: ^3.6.0
+  multiselect_formfield: ^0.1.7
+  
 
 dev_dependencies:
   flutter_test:

@@ -32,124 +32,130 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            width: leftContainerWidth,
-            margin: const EdgeInsets.fromLTRB(10, 20, 0, 20),
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(247, 249, 253, 1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  ClipOval(
-                    child: Image.asset(
-                      'lib/assets/images/logo.jpg',
-                      width: 160,
-                      height: 160,
-                      fit: BoxFit.cover,
+          Expanded(
+            flex: 2,
+            child: Container(
+              width: leftContainerWidth,
+              margin: const EdgeInsets.fromLTRB(10, 20, 0, 20),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(247, 249, 253, 1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    ClipOval(
+                      child: Image.asset(
+                        'lib/assets/images/logo.jpg',
+                        width: 160,
+                        height: 160,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    Authorization.korisnik?.ime ?? 'Guest',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 10),
+                    Text(
+                      Authorization.korisnik?.ime ?? 'Guest',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  NavItem(
-                    title: 'Users',
-                    onTap: () {},
-                    onSelect: (item) {
-                      setState(() {
-                        selectedNavItem = item;
-                      });
-                    },
-                  ),
-                  NavItem(
-                    title: 'Products',
-                    onTap: () {},
-                    onSelect: (item) {
-                      setState(() {
-                        selectedNavItem = item;
-                      });
-                    },
-                  ),
-                  NavItem(
-                    title: 'Orders',
-                    onTap: () {},
-                    onSelect: (item) {
-                      setState(() {
-                        selectedNavItem = item;
-                      });
-                    },
-                  ),
-                  NavItem(
-                    title: 'Pictures',
-                    onTap: () {},
-                    onSelect: (item) {
-                      setState(() {
-                        selectedNavItem = item;
-                      });
-                    },
-                  ),
-                  NavItem(
-                    title: 'News',
-                    onTap: () {},
-                    onSelect: (item) {
-                      setState(() {
-                        selectedNavItem = item;
-                      });
-                    },
-                  ),
-                  NavItem(
-                    title: 'Archive',
-                    onTap: () {},
-                    onSelect: (item) {
-                      setState(() {
-                        selectedNavItem = item;
-                      });
-                    },
-                  ),
-                  NavItem(
-                      title: 'Logout',
-                      onTap: () {
-                        Authorization.Username = '';
-                        Authorization.Password = '';
-                        Authorization.korisnik = null;
-
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          LoginScreen.routeName,
-                          (route) => false,
-                        );
-                      },
+                    const SizedBox(height: 40),
+                    NavItem(
+                      title: 'Users',
+                      onTap: () {},
                       onSelect: (item) {
                         setState(() {
                           selectedNavItem = item;
                         });
-                        (item) {
+                      },
+                    ),
+                    NavItem(
+                      title: 'Products',
+                      onTap: () {},
+                      onSelect: (item) {
+                        setState(() {
+                          selectedNavItem = item;
+                        });
+                      },
+                    ),
+                    NavItem(
+                      title: 'Orders',
+                      onTap: () {},
+                      onSelect: (item) {
+                        setState(() {
+                          selectedNavItem = item;
+                        });
+                      },
+                    ),
+                    NavItem(
+                      title: 'Pictures',
+                      onTap: () {},
+                      onSelect: (item) {
+                        setState(() {
+                          selectedNavItem = item;
+                        });
+                      },
+                    ),
+                    NavItem(
+                      title: 'News',
+                      onTap: () {},
+                      onSelect: (item) {
+                        setState(() {
+                          selectedNavItem = item;
+                        });
+                      },
+                    ),
+                    NavItem(
+                      title: 'Archive',
+                      onTap: () {},
+                      onSelect: (item) {
+                        setState(() {
+                          selectedNavItem = item;
+                        });
+                      },
+                    ),
+                    NavItem(
+                        title: 'Logout',
+                        onTap: () {
+                          Authorization.Username = '';
+                          Authorization.Password = '';
+                          Authorization.korisnik = null;
+
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            LoginScreen.routeName,
+                            (route) => false,
+                          );
+                        },
+                        onSelect: (item) {
                           setState(() {
                             selectedNavItem = item;
                           });
-                        };
-                      }),
-                ],
+                          (item) {
+                            setState(() {
+                              selectedNavItem = item;
+                            });
+                          };
+                        }),
+                  ],
+                ),
               ),
             ),
           ),
           const SizedBox(width: 10),
-          Container(
-            width: rightContainerWidth,
-            margin: const EdgeInsets.fromLTRB(0, 20, 10, 20),
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(247, 249, 253, 1),
-              borderRadius: BorderRadius.circular(10),
+          Expanded(
+            flex: 8,
+            child: Container(
+              width: rightContainerWidth,
+              margin: const EdgeInsets.fromLTRB(0, 20, 10, 20),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(247, 249, 253, 1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: _buildSelectedContent(),
             ),
-            child: _buildSelectedContent(),
           ),
         ],
       ),

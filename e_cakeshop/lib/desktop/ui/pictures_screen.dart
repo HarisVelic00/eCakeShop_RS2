@@ -93,6 +93,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
           ),
         );
       }
+      setState(() {});
     } catch (e) {
       print("Error adding Image: $e");
       if (mounted) {
@@ -108,13 +109,13 @@ class _PicturesScreenState extends State<PicturesScreen> {
   void updateSlika(int id, dynamic request) async {
     try {
       var updatedImage = await slikaProvider.update(id, request);
-
       if (updatedImage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('User updated successfully'),
           ),
         );
+        setState(() {});
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
