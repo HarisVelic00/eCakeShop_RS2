@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:e_cakeshop/models/novost.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class EditNewsModal extends StatefulWidget {
@@ -7,10 +11,11 @@ class EditNewsModal extends StatefulWidget {
   final void Function(int, dynamic) onUpdatePressed;
   final Novost? novostToEdit;
 
-  EditNewsModal(
-      {required this.onCancelPressed,
-      required this.onUpdatePressed,
-      required this.novostToEdit});
+  EditNewsModal({
+    required this.onCancelPressed,
+    required this.onUpdatePressed,
+    required this.novostToEdit,
+  });
 
   @override
   _EditNewsModalState createState() => _EditNewsModalState();
@@ -19,9 +24,23 @@ class EditNewsModal extends StatefulWidget {
 class _EditNewsModalState extends State<EditNewsModal> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
-  final TextEditingController thumbnailController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   late Novost? _novostToEdit;
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        if (pickedFile != null) {
+          _imageFile = File(pickedFile.path);
+        }
+      });
+    } catch (e) {
+      print("Error picking image: $e");
+    }
+  }
 
   @override
   void initState() {
@@ -55,10 +74,16 @@ class _EditNewsModalState extends State<EditNewsModal> {
                 controller: contentController,
                 decoration: const InputDecoration(labelText: 'Content'),
               ),
-              TextField(
-                controller: thumbnailController,
-                decoration: const InputDecoration(labelText: 'Thumbnail'),
-              ),
+              const SizedBox(height: 20),
+              _imageFile != null
+                  ? Image.file(_imageFile!)
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                      ),
+                      onPressed: _pickImage,
+                      child: const Text('Select Thumbnail'),
+                    ),
               TextField(
                 controller: dateController,
                 decoration: const InputDecoration(
@@ -83,37 +108,48 @@ class _EditNewsModalState extends State<EditNewsModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       try {
-                        final title = titleController.text;
-                        final content = contentController.text;
-                        final thumbnail = thumbnailController.text;
-                        final date = dateController.text;
+                        if (_imageFile != null) {
+                          List<int> imageBytes =
+                              await _imageFile!.readAsBytes();
+                          String base64Image = base64Encode(imageBytes);
 
-                        if (title.isEmpty ||
-                            content.isEmpty ||
-                            thumbnail.isEmpty ||
-                            date.isEmpty) {
+                          final title = titleController.text;
+                          final content = contentController.text;
+                          final date = dateController.text;
+
+                          if (title.isEmpty ||
+                              content.isEmpty ||
+                              date.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please fill all fields'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else {
+                            DateTime tempDate =
+                                DateFormat("yyyy-MM-dd").parse(date);
+
+                            widget.onUpdatePressed(
+                              _novostToEdit!.novostID!,
+                              {
+                                "naslov": title,
+                                "sadrzaj": content,
+                                "thumbnail": base64Image,
+                                "datumKreiranja": tempDate.toIso8601String(),
+                              },
+                            );
+                            Navigator.pop(context);
+                          }
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Please fill all fields'),
+                              content: Text('Please select an image'),
                               backgroundColor: Colors.red,
                             ),
                           );
-                        } else {
-                          DateTime tempDate =
-                              DateFormat("yyyy-MM-dd").parse(date);
-
-                          widget.onUpdatePressed(
-                            _novostToEdit!.novostID!,
-                            {
-                              "naslov": title,
-                              "sadrzaj": content,
-                              "thumbnail": thumbnail,
-                              "datumKreiranja": tempDate.toIso8601String(),
-                            },
-                          );
-                          Navigator.pop(context);
                         }
                       } catch (e) {
                         print("Error updating news: $e");

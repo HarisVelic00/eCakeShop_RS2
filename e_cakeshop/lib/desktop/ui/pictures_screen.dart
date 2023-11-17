@@ -3,6 +3,7 @@ import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
 import 'package:e_cakeshop/desktop/modals/edit_image_modal.dart';
 import 'package:e_cakeshop/models/slika.dart';
 import 'package:e_cakeshop/providers/slika_provider.dart';
+import 'package:e_cakeshop/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -254,7 +255,7 @@ class ImagesTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Slika>>(
-      future: slikaProvider.Get(),
+      future: slikaProvider.Get({'includeKorisnik': true}),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -269,6 +270,7 @@ class ImagesTable extends StatelessWidget {
           return DataTable(
             columns: const [
               DataColumn(label: Text('ID')),
+              DataColumn(label: Text('Image')),
               DataColumn(label: Text('Description')),
               DataColumn(label: Text('Actions')),
             ],
@@ -276,6 +278,11 @@ class ImagesTable extends StatelessWidget {
               return DataRow(
                 cells: [
                   DataCell(Text(slika.slikaID?.toString() ?? '')),
+                  DataCell(
+                    slika.slikaByte != null
+                        ? Image.memory(dataFromBase64String(slika.slikaByte!))
+                        : const Text('No Image'),
+                  ),
                   DataCell(Text(slika.opis ?? '')),
                   DataCell(
                     Row(

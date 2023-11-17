@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
 }
 
 class MainApp extends StatelessWidget {

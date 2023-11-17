@@ -1,17 +1,22 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:e_cakeshop/models/proizvod.dart';
 import 'package:e_cakeshop/models/vrstaproizvoda.dart';
 import 'package:e_cakeshop/providers/vrstaproizvoda_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProductModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
   final void Function(int, dynamic) onUpdatePressed;
   final Proizvod? proizvodToEdit;
 
-  EditProductModal(
-      {required this.onCancelPressed,
-      required this.onUpdatePressed,
-      required this.proizvodToEdit});
+  EditProductModal({
+    required this.onCancelPressed,
+    required this.onUpdatePressed,
+    required this.proizvodToEdit,
+  });
 
   @override
   _EditProductModalState createState() => _EditProductModalState();
@@ -19,42 +24,23 @@ class EditProductModal extends StatefulWidget {
 
 class _EditProductModalState extends State<EditProductModal> {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController codeController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
-  final TextEditingController typeController = TextEditingController();
-
   late Proizvod? _proizvodToEdit;
   List<VrstaProizvoda> vrstaProizvodaList = [];
   String? selectedVrstaProizvoda;
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
 
   Future<void> loadData() async {
     try {
-      vrstaProizvodaList =
-          vrstaProizvodaList = await VrstaProizvodaProvider().Get();
+      vrstaProizvodaList = await VrstaProizvodaProvider().Get();
       if (mounted) {
         setState(() {});
       }
     } catch (e) {
       print('Error fetching data: $e');
     }
-  }
-
-  int extractIdFromList<T>(
-    String? selectedValue,
-    List<T> list,
-    int Function(T) getId,
-  ) {
-    if (selectedValue != null) {
-      T selectedObject = list.firstWhere(
-        (item) => getId(item).toString() == selectedValue,
-        orElse: () => list.first,
-      );
-
-      return getId(selectedObject);
-    }
-    return -1;
   }
 
   int findIdFromName<T>(
@@ -72,6 +58,19 @@ class _EditProductModalState extends State<EditProductModal> {
       return getId(selectedObject);
     }
     return -1;
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        if (pickedFile != null) {
+          _imageFile = File(pickedFile.path);
+        }
+      });
+    } catch (e) {
+      print("Error picking image: $e");
+    }
   }
 
   @override
@@ -108,10 +107,17 @@ class _EditProductModalState extends State<EditProductModal> {
                   controller: priceController,
                   decoration: const InputDecoration(labelText: 'Price'),
                 ),
-                TextField(
-                  controller: imageController,
-                  decoration: const InputDecoration(labelText: 'Image'),
-                ),
+                const SizedBox(height: 20),
+                _imageFile != null
+                    ? Image.file(_imageFile!)
+                    : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
+                        ),
+                        onPressed: _pickImage,
+                        child: const Text('Select Image'),
+                      ),
                 TextField(
                   controller: descriptionController,
                   decoration: const InputDecoration(labelText: 'Description'),
@@ -149,45 +155,48 @@ class _EditProductModalState extends State<EditProductModal> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         try {
-                          final name = nameController.text;
-                          final price = priceController.text;
-                          final image = imageController.text;
-                          final description = descriptionController.text;
+                          if (_imageFile != null) {
+                            List<int> imageBytes =
+                                await _imageFile!.readAsBytes();
+                            String base64Image = base64Encode(imageBytes);
+                            final name = nameController.text;
+                            final price = double.tryParse(priceController.text);
+                            final description = descriptionController.text;
 
-                          if (name.isEmpty ||
-                              price.isEmpty ||
-                              image.isEmpty ||
-                              description.isEmpty ||
-                              selectedVrstaProizvoda == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please fill all fields'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          } else {
-                            int vrstaProizvodaID = findIdFromName(
-                              selectedVrstaProizvoda,
-                              vrstaProizvodaList,
-                              (VrstaProizvoda vrstaProizvoda) =>
-                                  vrstaProizvoda.naziv ?? '',
-                              (VrstaProizvoda vrstaProizvoda) =>
-                                  vrstaProizvoda.vrstaproizvodaID ?? -1,
-                            );
+                            if (name.isEmpty ||
+                                price == null ||
+                                description.isEmpty ||
+                                selectedVrstaProizvoda == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Please fill all fields'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            } else {
+                              int vrstaProizvodaID = findIdFromName(
+                                selectedVrstaProizvoda,
+                                vrstaProizvodaList,
+                                (VrstaProizvoda vrstaProizvoda) =>
+                                    vrstaProizvoda.naziv ?? '',
+                                (VrstaProizvoda vrstaProizvoda) =>
+                                    vrstaProizvoda.vrstaproizvodaID ?? -1,
+                              );
 
-                            widget.onUpdatePressed(
-                              _proizvodToEdit!.proizvodID!,
-                              {
-                                "naziv": name,
-                                "cijena": price,
-                                "slika": image,
-                                "opis": description,
-                                "vrstaProizvodaID": vrstaProizvodaID,
-                              },
-                            );
-                            Navigator.pop(context);
+                              widget.onUpdatePressed(
+                                _proizvodToEdit!.proizvodID!,
+                                {
+                                  "naziv": name,
+                                  "cijena": price,
+                                  "slika": base64Image,
+                                  "opis": description,
+                                  "vrstaProizvodaID": vrstaProizvodaID,
+                                },
+                              );
+                              Navigator.pop(context);
+                            }
                           }
                         } catch (e) {
                           print("Error adding product: $e");

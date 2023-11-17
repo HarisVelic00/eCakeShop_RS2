@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:e_cakeshop/models/slika.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditImageModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
@@ -17,9 +21,23 @@ class EditImageModal extends StatefulWidget {
 }
 
 class _EditImageModalState extends State<EditImageModal> {
-  final TextEditingController imageByteController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   late Slika? _slikaToEdit;
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        if (pickedFile != null) {
+          _imageFile = File(pickedFile.path);
+        }
+      });
+    } catch (e) {
+      print("Error picking image: $e");
+    }
+  }
 
   @override
   void initState() {
@@ -45,10 +63,16 @@ class _EditImageModalState extends State<EditImageModal> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              TextField(
-                controller: imageByteController,
-                decoration: const InputDecoration(labelText: 'Image'),
-              ),
+              const SizedBox(height: 20),
+              _imageFile != null
+                  ? Image.file(_imageFile!)
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                      ),
+                      onPressed: _pickImage,
+                      child: const Text('Select Image'),
+                    ),
               TextField(
                 controller: descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
@@ -69,27 +93,37 @@ class _EditImageModalState extends State<EditImageModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
-                    onPressed: () {
-                      final slika = imageByteController.text;
-                      final opis = descriptionController.text;
+                    onPressed: () async {
+                      if (_imageFile != null) {
+                        List<int> imageBytes = await _imageFile!.readAsBytes();
+                        String base64Image = base64Encode(imageBytes);
+                        final opis = descriptionController.text;
 
-                      if (slika.isEmpty || opis.isEmpty) {
+                        if (opis.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please fill all fields'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } else {
+                          try {
+                            widget.onUpdatePressed(_slikaToEdit!.slikaID!, {
+                              "slikaByte": base64Image,
+                              "opis": opis,
+                            });
+                            Navigator.pop(context);
+                          } catch (e) {
+                            print("Error adding image: $e");
+                          }
+                        }
+                      } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Please fill all fields'),
+                            content: Text('Please select an image'),
                             backgroundColor: Colors.red,
                           ),
                         );
-                      } else {
-                        try {
-                          widget.onUpdatePressed(_slikaToEdit!.slikaID!, {
-                            "slikaByte": slika,
-                            "opis": opis,
-                          });
-                          Navigator.pop(context);
-                        } catch (e) {
-                          print("Error adding image: $e");
-                        }
                       }
                     },
                     child: const Text('OK'),

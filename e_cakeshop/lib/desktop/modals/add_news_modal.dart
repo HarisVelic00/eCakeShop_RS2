@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:e_cakeshop/models/korisnik.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class AddNewsModal extends StatefulWidget {
@@ -21,6 +25,8 @@ class _AddNewsModalState extends State<AddNewsModal> {
 
   List<Korisnik> korisnikList = [];
   String? selectedKorisnik;
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
 
   int extractIdFromList<T>(
     String? selectedValue,
@@ -66,6 +72,66 @@ class _AddNewsModalState extends State<AddNewsModal> {
     }
   }
 
+  Future<void> _pickImage() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        if (pickedFile != null) {
+          _imageFile = File(pickedFile.path);
+        }
+      });
+    } catch (e) {
+      print("Error picking image: $e");
+    }
+  }
+
+  Future<void> _uploadThumbnail() async {
+    if (_imageFile != null) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
+      final title = titleController.text;
+      final content = contentController.text;
+      final date = dateController.text;
+
+      if (title.isEmpty || content.isEmpty || date.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        DateTime tempDate = DateFormat("yyyy-MM-dd").parse(date);
+
+        int korisnikID = findIdFromName(
+          selectedKorisnik,
+          korisnikList,
+          (Korisnik korisnik) => korisnik.ime ?? '',
+          (Korisnik korisnik) => korisnik.korisnikID ?? -1,
+        );
+
+        if (korisnikID != -1) {
+          Map<String, dynamic> newNews = {
+            "naslov": title,
+            "sadrzaj": content,
+            "thumbnail": base64Image,
+            "datumKreiranja": tempDate.toIso8601String(),
+            "korisnikID": korisnikID,
+          };
+
+          widget.onAddNewsPressed(newNews);
+          setState(() {});
+          Navigator.pop(context);
+        } else {
+          print("Error: Some selected values are not set");
+        }
+      }
+    } else {
+      print('No image selected');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -98,10 +164,16 @@ class _AddNewsModalState extends State<AddNewsModal> {
                 controller: contentController,
                 decoration: const InputDecoration(labelText: 'Content'),
               ),
-              TextField(
-                controller: thumbnailController,
-                decoration: const InputDecoration(labelText: 'Thumbnail'),
-              ),
+              const SizedBox(height: 20),
+              _imageFile != null
+                  ? Image.file(_imageFile!)
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                      ),
+                      onPressed: _pickImage,
+                      child: const Text('Select Thumbnail'),
+                    ),
               TextField(
                 controller: dateController,
                 decoration: const InputDecoration(
@@ -142,54 +214,7 @@ class _AddNewsModalState extends State<AddNewsModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
-                    onPressed: () {
-                      try {
-                        final title = titleController.text;
-                        final content = contentController.text;
-                        final thumbnail = thumbnailController.text;
-                        final date = dateController.text;
-
-                        if (title.isEmpty ||
-                            content.isEmpty ||
-                            thumbnail.isEmpty ||
-                            date.isEmpty ||
-                            selectedKorisnik == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill all fields'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } else {
-                          DateTime tempDate =
-                              DateFormat("yyyy-MM-dd").parse(date);
-
-                          int korisnikID = findIdFromName(
-                            selectedKorisnik,
-                            korisnikList,
-                            (Korisnik korisnik) => korisnik.ime ?? '',
-                            (Korisnik korisnik) => korisnik.korisnikID ?? -1,
-                          );
-
-                          if (korisnikID != -1) {
-                            Map<String, dynamic> newSlika = {
-                              "naslov": title,
-                              "sadrzaj": content,
-                              "thumbnail": thumbnail,
-                              "datumKreiranja": tempDate.toIso8601String(),
-                              "korisnikID": korisnikID
-                            };
-
-                            widget.onAddNewsPressed(newSlika);
-                            setState(() {});
-                          } else {
-                            print("Error: Selected user ID not found");
-                          }
-                        }
-                      } catch (e) {
-                        print("Error adding news: $e");
-                      }
-                    },
+                    onPressed: _uploadThumbnail,
                     child: const Text('OK'),
                   ),
                 ],

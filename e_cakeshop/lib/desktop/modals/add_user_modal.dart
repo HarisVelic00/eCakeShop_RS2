@@ -36,22 +36,6 @@ class _AddUserModalState extends State<AddUserModal> {
   String? selectedDrzava;
   String? selectedUloga;
 
-  int extractIdFromList<T>(
-    String? selectedValue,
-    List<T> list,
-    int Function(T) getId,
-  ) {
-    if (selectedValue != null) {
-      T selectedObject = list.firstWhere(
-        (item) => getId(item).toString() == selectedValue,
-        orElse: () => list.first,
-      );
-
-      return getId(selectedObject);
-    }
-    return -1;
-  }
-
   int findIdFromName<T>(
     String? selectedValue,
     List<T> list,

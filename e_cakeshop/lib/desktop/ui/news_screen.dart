@@ -3,6 +3,7 @@ import 'package:e_cakeshop/desktop/modals/delete_modal.dart';
 import 'package:e_cakeshop/desktop/modals/edit_news_modal.dart';
 import 'package:e_cakeshop/models/novost.dart';
 import 'package:e_cakeshop/providers/novost_provider.dart';
+import 'package:e_cakeshop/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -269,6 +270,8 @@ class NewsTable extends StatelessWidget {
               DataColumn(label: Text('ID')),
               DataColumn(label: Text('Title')),
               DataColumn(label: Text('Content')),
+              DataColumn(label: Text('Thumbnail')),
+              DataColumn(label: Text('Creation Date')),
               DataColumn(label: Text('Actions')),
             ],
             rows: filteredNovost.map((novost) {
@@ -277,6 +280,12 @@ class NewsTable extends StatelessWidget {
                   DataCell(Text(novost.novostID.toString())),
                   DataCell(Text(novost.naslov ?? '')),
                   DataCell(Text(novost.sadrzaj ?? '')),
+                  DataCell(
+                    novost.thumbnail != null
+                        ? Image.memory(dataFromBase64String(novost.thumbnail!))
+                        : const Text('No Image'),
+                  ),
+                  DataCell(Text(novost.datumKreiranja.toString())),
                   DataCell(
                     Row(
                       children: [

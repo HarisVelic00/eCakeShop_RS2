@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:e_cakeshop/models/korisnik.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddImageModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
@@ -14,26 +17,11 @@ class AddImageModal extends StatefulWidget {
 }
 
 class _AddImageModalState extends State<AddImageModal> {
-  final TextEditingController imageByteController = TextEditingController();
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
   final TextEditingController descriptionController = TextEditingController();
   List<Korisnik> korisnikList = [];
   String? selectedKorisnik;
-
-  int extractIdFromList<T>(
-    String? selectedValue,
-    List<T> list,
-    int Function(T) getId,
-  ) {
-    if (selectedValue != null) {
-      T selectedObject = list.firstWhere(
-        (item) => getId(item).toString() == selectedValue,
-        orElse: () => list.first,
-      );
-
-      return getId(selectedObject);
-    }
-    return -1;
-  }
 
   int findIdFromName<T>(
     String? selectedValue,
@@ -52,6 +40,12 @@ class _AddImageModalState extends State<AddImageModal> {
     return -1;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
   Future<void> loadData() async {
     try {
       korisnikList = await KorisnikProvider().Get();
@@ -63,10 +57,59 @@ class _AddImageModalState extends State<AddImageModal> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadData();
+  Future<void> _pickImage() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        if (pickedFile != null) {
+          _imageFile = File(pickedFile.path);
+        }
+      });
+    } catch (e) {
+      print("Error picking image: $e");
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_imageFile != null) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
+      final opis = descriptionController.text;
+
+      if (opis.isEmpty || selectedKorisnik == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      int korisnikID = findIdFromName(
+        selectedKorisnik,
+        korisnikList,
+        (Korisnik korisnik) => korisnik.ime ?? '',
+        (Korisnik korisnik) => korisnik.korisnikID ?? -1,
+      );
+
+      if (korisnikID != -1) {
+        Map<String, dynamic> newSlika = {
+          "slikaByte": base64Image,
+          "opis": opis,
+          "korisnikID": korisnikID,
+        };
+
+        widget.onAddSlikaPressed(newSlika);
+        setState(() {});
+        Navigator.pop(context);
+      } else {
+        print("Error: Some selected values are not set");
+      }
+    } else {
+      print('No image selected');
+    }
   }
 
   @override
@@ -87,10 +130,16 @@ class _AddImageModalState extends State<AddImageModal> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              TextField(
-                controller: imageByteController,
-                decoration: const InputDecoration(labelText: 'Image'),
-              ),
+              const SizedBox(height: 20),
+              _imageFile != null
+                  ? Image.file(_imageFile!)
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                      ),
+                      onPressed: _pickImage,
+                      child: const Text('Select Image'),
+                    ),
               TextField(
                 controller: descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
@@ -127,45 +176,7 @@ class _AddImageModalState extends State<AddImageModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
-                    onPressed: () {
-                      try {
-                        final slika = imageByteController.text;
-                        final opis = descriptionController.text;
-
-                        if (slika.isEmpty ||
-                            opis.isEmpty ||
-                            selectedKorisnik == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill all fields'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } else {
-                          int korisnikID = findIdFromName(
-                            selectedKorisnik,
-                            korisnikList,
-                            (Korisnik korisnik) => korisnik.ime ?? '',
-                            (Korisnik korisnik) => korisnik.korisnikID ?? -1,
-                          );
-
-                          if (korisnikID != -1) {
-                            Map<String, dynamic> newSlika = {
-                              "slika": slika,
-                              "opis": opis,
-                              "korisnikID": korisnikID,
-                            };
-
-                            widget.onAddSlikaPressed(newSlika);
-                            setState(() {});
-                          } else {
-                            print("Error: Some selected values are not set");
-                          }
-                        }
-                      } catch (e) {
-                        print("Error adding image: $e");
-                      }
-                    },
+                    onPressed: _uploadImage,
                     child: const Text('OK'),
                   ),
                 ],

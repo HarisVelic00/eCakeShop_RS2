@@ -7,7 +7,11 @@ class VrstaProizvoda {
   String? naziv;
   String? opis;
 
-  VrstaProizvoda();
+  VrstaProizvoda({
+    this.vrstaproizvodaID,
+    this.naziv,
+    this.opis,
+  });
 
   factory VrstaProizvoda.fromJson(Map<String, dynamic> json) =>
       _$VrstaProizvodaFromJson(json);
