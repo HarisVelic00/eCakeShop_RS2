@@ -1,7 +1,7 @@
 import 'package:e_cakeshop/desktop/ui/archive_screen.dart';
 import 'package:e_cakeshop/desktop/ui/news_screen.dart';
 import 'package:e_cakeshop/desktop/ui/orders_screen.dart';
-import 'package:e_cakeshop/desktop/ui/pictures_screen.dart';
+import 'package:e_cakeshop/desktop/ui/images_screen.dart';
 import 'package:e_cakeshop/desktop/ui/product_screen.dart';
 import 'package:e_cakeshop/desktop/ui/user_screen.dart';
 import 'package:e_cakeshop/main.dart';

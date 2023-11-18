@@ -28,22 +28,6 @@ class _AddNewsModalState extends State<AddNewsModal> {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
 
-  int extractIdFromList<T>(
-    String? selectedValue,
-    List<T> list,
-    int Function(T) getId,
-  ) {
-    if (selectedValue != null) {
-      T selectedObject = list.firstWhere(
-        (item) => getId(item).toString() == selectedValue,
-        orElse: () => list.first,
-      );
-
-      return getId(selectedObject);
-    }
-    return -1;
-  }
-
   int findIdFromName<T>(
     String? selectedValue,
     List<T> list,

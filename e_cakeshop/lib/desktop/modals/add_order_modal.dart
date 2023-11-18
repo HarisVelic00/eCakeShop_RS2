@@ -127,6 +127,35 @@ class _AddOrderModalState extends State<AddOrderModal> {
     }
   }
 
+  Future<void> _uploadOrder() async {
+    try {
+      int korisnikID = korisnikList
+              .firstWhere((korisnik) => korisnik.ime == selectedKorisnik)
+              .korisnikID ??
+          -1;
+      int uplataID = uplataList
+              .firstWhere((uplata) => uplata.brojTransakcije == selectedUplata)
+              .uplataID ??
+          -1;
+
+      if (korisnikID != -1 && uplataID != -1 && selectedProducts.isNotEmpty) {
+        Map<String, dynamic> newOrder = {
+          "korisnikID": korisnikID,
+          "uplataID": uplataID,
+          "listaProizvoda": selectedProducts,
+        };
+
+        widget.onAddOrderPressed(newOrder);
+        Navigator.pop(context);
+        setState(() {});
+      } else {
+        print("Error: Some selected values are not set");
+      }
+    } catch (e) {
+      print("Error adding user: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -202,38 +231,7 @@ class _AddOrderModalState extends State<AddOrderModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
-                    onPressed: () {
-                      try {
-                        int korisnikID = korisnikList
-                                .firstWhere((korisnik) =>
-                                    korisnik.ime == selectedKorisnik)
-                                .korisnikID ??
-                            -1;
-                        int uplataID = uplataList
-                                .firstWhere((uplata) =>
-                                    uplata.brojTransakcije == selectedUplata)
-                                .uplataID ??
-                            -1;
-
-                        if (korisnikID != -1 &&
-                            uplataID != -1 &&
-                            selectedProducts.isNotEmpty) {
-                          Map<String, dynamic> newOrder = {
-                            "korisnikID": korisnikID,
-                            "uplataID": uplataID,
-                            "listaProizvoda": selectedProducts,
-                          };
-
-                          widget.onAddOrderPressed(newOrder);
-                          Navigator.pop(context);
-                          setState(() {});
-                        } else {
-                          print("Error: Some selected values are not set");
-                        }
-                      } catch (e) {
-                        print("Error adding user: $e");
-                      }
-                    },
+                    onPressed: _uploadOrder,
                     child: const Text('OK'),
                   ),
                 ],

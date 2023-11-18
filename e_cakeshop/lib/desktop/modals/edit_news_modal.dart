@@ -42,6 +42,50 @@ class _EditNewsModalState extends State<EditNewsModal> {
     }
   }
 
+  Future<void> _editNews() async {
+    try {
+      if (_imageFile != null) {
+        List<int> imageBytes = await _imageFile!.readAsBytes();
+        String base64Image = base64Encode(imageBytes);
+
+        final title = titleController.text;
+        final content = contentController.text;
+        final date = dateController.text;
+
+        if (title.isEmpty || content.isEmpty || date.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please fill all fields'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else {
+          DateTime tempDate = DateFormat("yyyy-MM-dd").parse(date);
+
+          widget.onUpdatePressed(
+            _novostToEdit!.novostID!,
+            {
+              "naslov": title,
+              "sadrzaj": content,
+              "thumbnail": base64Image,
+              "datumKreiranja": tempDate.toIso8601String(),
+            },
+          );
+          Navigator.pop(context);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select an image'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating news: $e");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -108,53 +152,7 @@ class _EditNewsModalState extends State<EditNewsModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
-                    onPressed: () async {
-                      try {
-                        if (_imageFile != null) {
-                          List<int> imageBytes =
-                              await _imageFile!.readAsBytes();
-                          String base64Image = base64Encode(imageBytes);
-
-                          final title = titleController.text;
-                          final content = contentController.text;
-                          final date = dateController.text;
-
-                          if (title.isEmpty ||
-                              content.isEmpty ||
-                              date.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please fill all fields'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          } else {
-                            DateTime tempDate =
-                                DateFormat("yyyy-MM-dd").parse(date);
-
-                            widget.onUpdatePressed(
-                              _novostToEdit!.novostID!,
-                              {
-                                "naslov": title,
-                                "sadrzaj": content,
-                                "thumbnail": base64Image,
-                                "datumKreiranja": tempDate.toIso8601String(),
-                              },
-                            );
-                            Navigator.pop(context);
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please select an image'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        print("Error updating news: $e");
-                      }
-                    },
+                    onPressed: _editNews,
                     child: const Text('OK'),
                   ),
                 ],

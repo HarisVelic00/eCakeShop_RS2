@@ -37,22 +37,6 @@ class _EditUserModalState extends State<EditUserModal> {
   String? selectedDrzava;
   String? selectedUloga;
 
-  int extractIdFromList<T>(
-    String? selectedValue,
-    List<T> list,
-    int Function(T) getId,
-  ) {
-    if (selectedValue != null) {
-      T selectedObject = list.firstWhere(
-        (item) => getId(item).toString() == selectedValue,
-        orElse: () => list.first,
-      );
-
-      return getId(selectedObject);
-    }
-    return -1;
-  }
-
   int findIdFromName<T>(
     String? selectedValue,
     List<T> list,
@@ -80,6 +64,63 @@ class _EditUserModalState extends State<EditUserModal> {
       }
     } catch (e) {
       print('Error fetching data: $e');
+    }
+  }
+
+  Future<void> _editUser() async {
+    try {
+      final name = nameController.text;
+      final surname = surnameController.text;
+      final email = emailController.text;
+      final telephone = telephoneController.text;
+      final role = roleController.text;
+
+      if (name.isEmpty ||
+          surname.isEmpty ||
+          email.isEmpty ||
+          telephone.isEmpty ||
+          role.isEmpty ||
+          selectedGrad == null ||
+          selectedDrzava == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        int gradID = findIdFromName(
+          selectedGrad,
+          gradList,
+          (Grad grad) => grad.naziv ?? '',
+          (Grad grad) => grad.gradID ?? -1,
+        );
+        int drzavaID = findIdFromName(
+          selectedDrzava,
+          drzavaList,
+          (Drzava drzava) => drzava.naziv ?? '',
+          (Drzava drzava) => drzava.drzavaID ?? -1,
+        );
+
+        widget.onUpdatePressed(_korisnikToEdit!.korisnikID!, {
+          'ime': name,
+          'prezime': surname,
+          'email': email,
+          'telefon': telephone,
+          "gradID": gradID,
+          "drzavaID": drzavaID,
+          'uloga': role,
+        });
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print('Error editing user: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error editing user'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -181,52 +222,7 @@ class _EditUserModalState extends State<EditUserModal> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
-                      onPressed: () {
-                        final name = nameController.text;
-                        final surname = surnameController.text;
-                        final email = emailController.text;
-                        final telephone = telephoneController.text;
-                        final role = roleController.text;
-
-                        if (name.isEmpty ||
-                            surname.isEmpty ||
-                            email.isEmpty ||
-                            telephone.isEmpty ||
-                            role.isEmpty ||
-                            selectedGrad == null ||
-                            selectedDrzava == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill all fields'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } else {
-                          int gradID = findIdFromName(
-                            selectedGrad,
-                            gradList,
-                            (Grad grad) => grad.naziv ?? '',
-                            (Grad grad) => grad.gradID ?? -1,
-                          );
-                          int drzavaID = findIdFromName(
-                            selectedDrzava,
-                            drzavaList,
-                            (Drzava drzava) => drzava.naziv ?? '',
-                            (Drzava drzava) => drzava.drzavaID ?? -1,
-                          );
-
-                          widget.onUpdatePressed(_korisnikToEdit!.korisnikID!, {
-                            'ime': name,
-                            'prezime': surname,
-                            'email': email,
-                            'telefon': telephone,
-                            "gradID": gradID,
-                            "drzavaID": drzavaID,
-                            'uloga': role,
-                          });
-                          Navigator.pop(context);
-                        }
-                      },
+                      onPressed: _editUser,
                       child: const Text('Save'),
                     ),
                   ],

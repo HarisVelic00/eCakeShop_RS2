@@ -22,6 +22,24 @@ class _EditOrderModalState extends State<EditOrderModal> {
   ValueNotifier<bool> isShippedController = ValueNotifier<bool>(false);
   ValueNotifier<bool> isCanceledController = ValueNotifier<bool>(false);
 
+  Future<void> _editOrder() async {
+    try {
+      widget.onUpdatePressed(_narudzbaToEdit!.narudzbaID!, {
+        "isShipped": isShippedController.value,
+        "isCanceled": isCanceledController.value,
+      });
+      Navigator.pop(context);
+    } catch (e) {
+      print('Error editing order: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error editing order'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -109,13 +127,7 @@ class _EditOrderModalState extends State<EditOrderModal> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
-                      onPressed: () {
-                        widget.onUpdatePressed(_narudzbaToEdit!.narudzbaID!, {
-                          "isShipped": isShippedController.value,
-                          "isCanceled": isCanceledController.value,
-                        });
-                        Navigator.pop(context);
-                      },
+                      onPressed: _editOrder,
                       child: const Text('Save'),
                     ),
                   ],

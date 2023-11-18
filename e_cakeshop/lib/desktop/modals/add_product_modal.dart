@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:e_cakeshop/models/vrstaproizvoda.dart';
 import 'package:e_cakeshop/providers/vrstaproizvoda_provider.dart';
 import 'package:flutter/material.dart';
@@ -23,24 +22,13 @@ class _AddProductModalState extends State<AddProductModal> {
   final TextEditingController descriptionController = TextEditingController();
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
-  List<VrstaProizvoda> vrstaProizvodaList = [];
   String? selectedVrstaProizvoda;
+  List<VrstaProizvoda> vrstaProizvodaList = [];
 
   @override
   void initState() {
     super.initState();
     loadData();
-  }
-
-  Future<void> loadData() async {
-    try {
-      vrstaProizvodaList = await VrstaProizvodaProvider().Get();
-      if (mounted) {
-        setState(() {});
-      }
-    } catch (e) {
-      print('Error fetching data: $e');
-    }
   }
 
   Future<void> _pickImage() async {
@@ -56,60 +44,6 @@ class _AddProductModalState extends State<AddProductModal> {
     }
   }
 
-  Future<void> _uploadProizvod() async {
-    try {
-      if (_imageFile != null) {
-        List<int> imageBytes = await _imageFile!.readAsBytes();
-        String base64Image = base64Encode(imageBytes);
-        final name = nameController.text;
-        final price = double.tryParse(priceController.text);
-        final description = descriptionController.text;
-
-        print('Name: $name');
-        print('Price: $price');
-        print('Description: $description');
-        print('Selected Type: $selectedVrstaProizvoda');
-
-        if (name.isEmpty || price == null || description.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please fill all fields'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        } else {
-          int vrstaProizvodaID = findIdFromName(
-            selectedVrstaProizvoda,
-            vrstaProizvodaList,
-            (VrstaProizvoda vrstaProizvoda) => vrstaProizvoda.naziv ?? '',
-            (VrstaProizvoda vrstaProizvoda) =>
-                vrstaProizvoda.vrstaproizvodaID ?? -1,
-          );
-          print('VrstaProizvodaID: $vrstaProizvodaID');
-
-          if (vrstaProizvodaID != -1) {
-            Map<String, dynamic> newProduct = {
-              "naziv": name,
-              "cijena": price,
-              "slika": base64Image,
-              "opis": description,
-              "vrstaProizvodaID": vrstaProizvodaID,
-            };
-            widget.onAddProductPressed(newProduct);
-            setState(() {});
-            Navigator.pop(context);
-          } else {
-            print("Error: Some selected values are not set");
-          }
-        }
-      } else {
-        print('No image selected');
-      }
-    } catch (e) {
-      print("Error adding product: $e");
-    }
-  }
-
   int findIdFromName<T>(
     String? selectedValue,
     List<T> list,
@@ -117,20 +51,74 @@ class _AddProductModalState extends State<AddProductModal> {
     int Function(T) getId,
   ) {
     if (selectedValue != null) {
-      for (var item in list) {
-        print(getName(item)); // Check the name extracted from items in the list
-      }
-
       T selectedObject = list.firstWhere(
         (item) => getName(item) == selectedValue,
-        orElse: () {
-          throw StateError('Selected value not found in the list');
-        },
+        orElse: () => list.first,
       );
 
       return getId(selectedObject);
     }
     return -1;
+  }
+
+  Future<void> loadData() async {
+    try {
+      vrstaProizvodaList = await VrstaProizvodaProvider().Get();
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  Future<void> _uploadProizvod() async {
+    try {
+      final name = nameController.text;
+      final description = descriptionController.text;
+      final price = double.tryParse(priceController.text);
+
+      if (name.isEmpty ||
+          description.isEmpty ||
+          price == null ||
+          _imageFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields and select an image.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      int vrstaProizvodaID = findIdFromName(
+        selectedVrstaProizvoda,
+        vrstaProizvodaList,
+        (VrstaProizvoda _vrstaP) => _vrstaP.naziv ?? '',
+        (VrstaProizvoda _vrstaP) => _vrstaP.vrstaProizvodaID ?? -1,
+      );
+
+      if (vrstaProizvodaID != -1) {
+        List<int> imageBytes = await _imageFile!.readAsBytes();
+        String base64Image = base64Encode(imageBytes);
+
+        Map<String, dynamic> newProduct = {
+          "naziv": name,
+          "cijena": price,
+          "slika": base64Image,
+          "opis": description,
+          "vrstaProizvodaID": vrstaProizvodaID,
+        };
+
+        widget.onAddProductPressed(newProduct);
+        Navigator.pop(context);
+        setState(() {});
+      } else {
+        print("Error: Selected value not found in vrstaProizvodaList");
+      }
+    } catch (e) {
+      print("Error adding product: $e");
+    }
   }
 
   @override
@@ -179,18 +167,17 @@ class _AddProductModalState extends State<AddProductModal> {
                   value: selectedVrstaProizvoda,
                   onChanged: (String? value) {
                     setState(() {
-                      selectedVrstaProizvoda = value!;
+                      selectedVrstaProizvoda = value;
                     });
                   },
                   items:
-                      vrstaProizvodaList.map((VrstaProizvoda vrstaProizvoda) {
+                      vrstaProizvodaList.map((VrstaProizvoda _vrstaProizvoda) {
                     return DropdownMenuItem<String>(
-                      value: vrstaProizvoda.naziv,
-                      child: Text(vrstaProizvoda.naziv ?? ''),
+                      value: _vrstaProizvoda.naziv,
+                      child: Text(_vrstaProizvoda.naziv ?? ''),
                     );
                   }).toList(),
-                  decoration:
-                      const InputDecoration(labelText: 'Vrsta Proizvoda'),
+                  decoration: const InputDecoration(labelText: 'Product Type'),
                   dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                 ),
                 const SizedBox(height: 20),

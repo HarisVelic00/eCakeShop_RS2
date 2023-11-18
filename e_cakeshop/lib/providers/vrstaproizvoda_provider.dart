@@ -5,7 +5,7 @@ class VrstaProizvodaProvider extends BaseProvider<VrstaProizvoda> {
   VrstaProizvodaProvider() : super("VrstaProizvoda");
 
   @override
-  fromJson(x) {
+  VrstaProizvoda fromJson(x) {
     return VrstaProizvoda.fromJson(x);
   }
 }

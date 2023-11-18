@@ -80,6 +80,52 @@ class _EditProductModalState extends State<EditProductModal> {
     loadData();
   }
 
+  void _editProduct() async {
+    try {
+      if (_imageFile != null) {
+        List<int> imageBytes = await _imageFile!.readAsBytes();
+        String base64Image = base64Encode(imageBytes);
+        final name = nameController.text;
+        final price = double.tryParse(priceController.text);
+        final description = descriptionController.text;
+
+        if (name.isEmpty ||
+            price == null ||
+            description.isEmpty ||
+            selectedVrstaProizvoda == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please fill all fields'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else {
+          int vrstaProizvodaID = findIdFromName(
+            selectedVrstaProizvoda,
+            vrstaProizvodaList,
+            (VrstaProizvoda vrstaProizvoda) => vrstaProizvoda.naziv ?? '',
+            (VrstaProizvoda vrstaProizvoda) =>
+                vrstaProizvoda.vrstaProizvodaID ?? -1,
+          );
+
+          widget.onUpdatePressed(
+            _proizvodToEdit!.proizvodID!,
+            {
+              "naziv": name,
+              "cijena": price,
+              "slika": base64Image,
+              "opis": description,
+              "vrstaProizvodaID": vrstaProizvodaID,
+            },
+          );
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      print("Error adding product: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -155,53 +201,7 @@ class _EditProductModalState extends State<EditProductModal> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
-                      onPressed: () async {
-                        try {
-                          if (_imageFile != null) {
-                            List<int> imageBytes =
-                                await _imageFile!.readAsBytes();
-                            String base64Image = base64Encode(imageBytes);
-                            final name = nameController.text;
-                            final price = double.tryParse(priceController.text);
-                            final description = descriptionController.text;
-
-                            if (name.isEmpty ||
-                                price == null ||
-                                description.isEmpty ||
-                                selectedVrstaProizvoda == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please fill all fields'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            } else {
-                              int vrstaProizvodaID = findIdFromName(
-                                selectedVrstaProizvoda,
-                                vrstaProizvodaList,
-                                (VrstaProizvoda vrstaProizvoda) =>
-                                    vrstaProizvoda.naziv ?? '',
-                                (VrstaProizvoda vrstaProizvoda) =>
-                                    vrstaProizvoda.vrstaproizvodaID ?? -1,
-                              );
-
-                              widget.onUpdatePressed(
-                                _proizvodToEdit!.proizvodID!,
-                                {
-                                  "naziv": name,
-                                  "cijena": price,
-                                  "slika": base64Image,
-                                  "opis": description,
-                                  "vrstaProizvodaID": vrstaProizvodaID,
-                                },
-                              );
-                              Navigator.pop(context);
-                            }
-                          }
-                        } catch (e) {
-                          print("Error adding product: $e");
-                        }
-                      },
+                      onPressed: _editProduct,
                       child: const Text('Save'),
                     ),
                   ],

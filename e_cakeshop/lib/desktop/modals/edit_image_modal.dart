@@ -39,6 +39,40 @@ class _EditImageModalState extends State<EditImageModal> {
     }
   }
 
+  Future<void> _editImage() async {
+    if (_imageFile != null) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+      final opis = descriptionController.text;
+
+      if (opis.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        try {
+          widget.onUpdatePressed(_slikaToEdit!.slikaID!, {
+            "slikaByte": base64Image,
+            "opis": opis,
+          });
+          Navigator.pop(context);
+        } catch (e) {
+          print("Error adding image: $e");
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select an image'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -93,39 +127,7 @@ class _EditImageModalState extends State<EditImageModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
-                    onPressed: () async {
-                      if (_imageFile != null) {
-                        List<int> imageBytes = await _imageFile!.readAsBytes();
-                        String base64Image = base64Encode(imageBytes);
-                        final opis = descriptionController.text;
-
-                        if (opis.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill all fields'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } else {
-                          try {
-                            widget.onUpdatePressed(_slikaToEdit!.slikaID!, {
-                              "slikaByte": base64Image,
-                              "opis": opis,
-                            });
-                            Navigator.pop(context);
-                          } catch (e) {
-                            print("Error adding image: $e");
-                          }
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please select an image'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: _editImage,
                     child: const Text('OK'),
                   ),
                 ],
