@@ -1,4 +1,4 @@
-import 'package:e_cakeshop/desktop/ui/home_screen.dart';
+import 'package:e_cakeshop/screens/home_screen.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
 import 'package:e_cakeshop/providers/narudzba_provider.dart';
 import 'package:e_cakeshop/providers/novost_provider.dart';
@@ -79,16 +79,6 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
-    final double screenWidth = MediaQuery.of(context).size.width;
-    double fontSize = screenWidth > 600 ? 24 : 16;
-
-    if (fontSize > 24) {
-      fontSize = 24;
-    } else if (fontSize < 16) {
-      fontSize = 16;
-    }
-
-    final double textFieldWidth = screenWidth > 600 ? 400 : screenWidth - 40;
 
     return Scaffold(
       appBar: AppBar(
@@ -102,8 +92,8 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(
-                width: textFieldWidth,
+              FractionallySizedBox(
+                widthFactor: 0.2,
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -118,14 +108,13 @@ class LoginScreen extends StatelessWidget {
                     labelText: "Username",
                   ),
                   maxLines: 1,
-                  style: TextStyle(fontSize: fontSize),
                 ),
               ),
               const SizedBox(
                 height: 20,
               ),
-              SizedBox(
-                width: textFieldWidth,
+              FractionallySizedBox(
+                widthFactor: 0.2,
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -139,7 +128,6 @@ class LoginScreen extends StatelessWidget {
                   obscureText: true,
                   decoration: const InputDecoration(labelText: "Password"),
                   maxLines: 1,
-                  style: TextStyle(fontSize: fontSize),
                 ),
               ),
               const SizedBox(
@@ -151,9 +139,8 @@ class LoginScreen extends StatelessWidget {
                   minimumSize: const Size(200, 48),
                   backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                 ),
-                child: Text(
+                child: const Text(
                   "Login",
-                  style: TextStyle(fontSize: fontSize),
                 ),
               )
             ],

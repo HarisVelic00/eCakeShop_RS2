@@ -116,3 +116,4 @@ C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\refint\eCakeShop
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\eCakeShop.pdb
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\eCakeShop.genruntimeconfig.cache
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\ref\eCakeShop.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\eCakeShop.sourcelink.json

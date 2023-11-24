@@ -15,3 +15,4 @@ C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\ref\eCa
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\bin\Debug\net6.0\eCakeShop.Models.dll
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\bin\Debug\net6.0\eCakeShop.Models.pdb
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.csproj.CopyComplete
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Services\obj\Debug\net6.0\eCakeShop.Services.sourcelink.json

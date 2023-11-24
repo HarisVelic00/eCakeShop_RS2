@@ -9,3 +9,4 @@ C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\refint\eCakeShop.Models.dll
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.pdb
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\ref\eCakeShop.Models.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop.Models\obj\Debug\net6.0\eCakeShop.Models.sourcelink.json
