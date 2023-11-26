@@ -82,7 +82,10 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('eCakeShop'),
+        title: const Text(
+          'eCakeShop',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
       ),
       backgroundColor: const Color.fromRGBO(222, 235, 251, 1),
@@ -141,6 +144,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   "Login",
+                  style: TextStyle(color: Colors.white),
                 ),
               )
             ],

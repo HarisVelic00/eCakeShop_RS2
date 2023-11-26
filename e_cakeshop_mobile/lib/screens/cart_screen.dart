@@ -40,8 +40,10 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopping Cart'),
+        title:
+            const Text('Shopping Cart', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+        iconTheme: const IconThemeData(color: Colors.white),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -97,7 +99,8 @@ class _CartScreenState extends State<CartScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text('Proceed to Checkout'),
+                  child: const Text('Proceed to Checkout',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),

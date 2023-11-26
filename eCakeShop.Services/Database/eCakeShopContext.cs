@@ -96,14 +96,14 @@ namespace eCakeShop.Services.Database
              );
 
             modelBuilder.Entity<Novost>().HasData(
-             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Novost 1", Sadrzaj = "Ovo je sadrzaj prve novosti" },
-             new Novost { NovostID = 2, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Novost 2", Sadrzaj = "Ovo je sadrzaj druge novosti" },
-             new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Novost 3", Sadrzaj = "Ovo je sadrzaj trece novosti" },
-             new Novost { NovostID = 4, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Novost 4", Sadrzaj = "Ovo je sadrzaj cetvrte novosti" }
+             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Kolac od jagoda", Sadrzaj = "Kolac od jagoda", Thumbnail = Convert.FromBase64String(Images.Slike[5]) },
+             new Novost { NovostID = 2, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Kolac od limuna i masline", Sadrzaj = "Kolac od limuna i masline", Thumbnail = Convert.FromBase64String(Images.Slike[6]) },
+             new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Nova Torta", Sadrzaj = "Nova Torta", Thumbnail = Convert.FromBase64String(Images.Slike[7]) },
+             new Novost { NovostID = 4, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[8]) }
             );
 
             modelBuilder.Entity<Proizvod>().HasData(
-                new Proizvod { ProizvodID = 1, Cijena = 8, Naziv = "Pita od jabuka", VrstaProizvodaID = 7,  Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Pita od jabuka" },
+                new Proizvod { ProizvodID = 1, Cijena = 8, Naziv = "Pita od jabuka", VrstaProizvodaID = 7, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Pita od jabuka" },
                 new Proizvod { ProizvodID = 2, Cijena = 40, Naziv = "Cokoladna torta", VrstaProizvodaID = 1, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[1]), Opis = "Cokoladna torta" },
                 new Proizvod { ProizvodID = 3, Cijena = 4, Naziv = "Kroasan", VrstaProizvodaID = 3, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[2]), Opis = "Kroasan" },
                 new Proizvod { ProizvodID = 4, Cijena = 20, Naziv = "Cokoladne kocke", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[3]), Opis = "Cokoladne kocke" },
@@ -117,10 +117,10 @@ namespace eCakeShop.Services.Database
             );
 
             modelBuilder.Entity<Slika>().HasData(
-                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Slika 1" },
-                new Slika { SlikaID = 2, KorisnikID = 2, Opis = "Slika 2" },
-                new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Slika 3" },
-                new Slika { SlikaID = 4, KorisnikID = 4, Opis = "Slika 4" }
+                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Kolac od jagoda", SlikaByte = Convert.FromBase64String(Images.Slike[5]) },
+                new Slika { SlikaID = 2, KorisnikID = 2, Opis = "Kolac od limuna i masline", SlikaByte = Convert.FromBase64String(Images.Slike[6]) },
+                new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Nova Torta", SlikaByte = Convert.FromBase64String(Images.Slike[7]) },
+                new Slika { SlikaID = 4, KorisnikID = 4, Opis = "Topla cokolada", SlikaByte = Convert.FromBase64String(Images.Slike[8]) }
              );
 
             modelBuilder.Entity<Uloga>().HasData(
@@ -128,7 +128,7 @@ namespace eCakeShop.Services.Database
                 new Uloga { UlogaID = 2, Naziv = "Uposlenik", Opis = "Uposlenik" }
             );
 
-            //Promijenit ce se kasnije
+            //Promijenit ce se kasnije, dummy varijable
             modelBuilder.Entity<Uplata>().HasData(
             new Uplata { UplataID = 1, BrojTransakcije = "pi_3MSSv3ANnFXjgSPx2LOrScMr", DatumTransakcije = DateTime.Now, Iznos = 146 },
             new Uplata { UplataID = 2, BrojTransakcije = "pi_3MSSwtANnFXjgSPx1GLV7ZWR", DatumTransakcije = DateTime.Now, Iznos = 196 },

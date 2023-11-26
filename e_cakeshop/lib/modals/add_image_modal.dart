@@ -170,14 +170,16 @@ class _AddImageModalState extends State<AddImageModal> {
                       backgroundColor: Colors.grey,
                     ),
                     onPressed: widget.onCancelPressed,
-                    child: const Text('Cancel'),
+                    child: const Text('Cancel',
+                        style: TextStyle(color: Colors.white)),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                     ),
                     onPressed: _uploadImage,
-                    child: const Text('OK'),
+                    child:
+                        const Text('OK', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

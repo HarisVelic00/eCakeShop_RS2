@@ -60,8 +60,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Reviews'),
+        title:
+            const Text('User Reviews', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: Center(
         child: SizedBox(
@@ -109,7 +117,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
         onPressed: () {
           _showReviewDialog(context);
         },
-        child: const Icon(Icons.rate_review),
+        child: const Icon(Icons.rate_review, color: Colors.white),
       ),
     );
   }

@@ -50,39 +50,53 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     }
   }
 
-  Future<void> generatePdfReport(List<Narudzba> data) async {
+  Future<void> generatePdfReport(NarudzbaProvider arhivaProvider) async {
     try {
+      final List<Narudzba> reportData =
+          await arhivaProvider.Get({'includeNarudzbaProizvodi': true});
+
       final pdf = pw.Document();
+      final List<List<dynamic>> pdfData = [];
+
+      pdfData.add([
+        'Order Number',
+        'Date',
+        'User',
+        'Products',
+        'Price',
+        'Is Shipped',
+        'Is Canceled',
+      ]);
+
+      for (var narudzba in reportData) {
+        final products = narudzba.narudzbaProizvodi ?? 'Products N/A';
+        final user = narudzba.korisnik?.ime ?? 'User N/A';
+
+        pdfData.add([
+          narudzba.brojNarudzbe?.toString() ?? '',
+          narudzba.datumNarudzbe.toString(),
+          user,
+          products,
+          narudzba.ukupnaCijena.toString(),
+          narudzba.isShipped.toString(),
+          narudzba.isCanceled.toString(),
+        ]);
+      }
+
       pdf.addPage(
         pw.Page(
           build: (context) {
             return pw.TableHelper.fromTextArray(
               context: context,
-              data: <List<String>>[
-                [
-                  'Order Number',
-                  'Date',
-                  'User',
-                  'Price',
-                  'Is Shipped',
-                  'Is Canceled'
-                ],
-                for (var narudzba in data)
-                  [
-                    narudzba.brojNarudzbe.toString(),
-                    narudzba.datumNarudzbe.toString(),
-                    narudzba.korisnik.toString(),
-                    narudzba.ukupnaCijena.toString(),
-                    narudzba.isShipped.toString(),
-                    narudzba.isCanceled.toString()
-                  ],
-              ],
+              data: pdfData,
             );
           },
         ),
       );
+
       final file = File('report.pdf');
       await file.writeAsBytes(await pdf.save());
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('PDF report generated successfully'),
@@ -150,9 +164,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                                   const Color.fromRGBO(97, 142, 246, 1),
                             ),
                             onPressed: () async {
-                              List<Narudzba> reportData =
-                                  await arhivaProvider.Get();
-                              await generatePdfReport(reportData);
+                              await generatePdfReport(arhivaProvider);
                             },
                             child: const Text('Print Report'),
                           ),

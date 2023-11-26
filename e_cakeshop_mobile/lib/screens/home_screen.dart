@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Home', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
       ),
       body: Padding(
@@ -61,7 +61,8 @@ class HomeScreen extends StatelessWidget {
                     backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                   ),
                   onPressed: () {},
-                  child: const Text('Menu'),
+                  child:
+                      const Text('Menu', style: TextStyle(color: Colors.white)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -69,7 +70,8 @@ class HomeScreen extends StatelessWidget {
                     backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                   ),
                   onPressed: () {},
-                  child: const Text('News'),
+                  child:
+                      const Text('News', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),

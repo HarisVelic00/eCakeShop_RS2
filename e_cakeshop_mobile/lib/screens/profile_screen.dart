@@ -11,8 +11,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Profile', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+        iconTheme: const IconThemeData(color: Colors.white),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -29,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               const CircleAvatar(
                 radius: 100.0,
-                backgroundImage: AssetImage('assets/profile_image.png'),
+                //backgroundImage: AssetImage('assets/profile_image.png'),
               ),
               const SizedBox(height: 20.0),
               Text(
@@ -63,7 +64,8 @@ class ProfileScreen extends StatelessWidget {
                     onPressed: () {
                       print('Edit Profile Button Pressed');
                     },
-                    child: const Text('Edit Profile'),
+                    child: const Text('Edit Profile',
+                        style: TextStyle(color: Colors.white)),
                   ),
                   const SizedBox(width: 10.0),
                   ElevatedButton(
@@ -74,7 +76,8 @@ class ProfileScreen extends StatelessWidget {
                     onPressed: () {
                       print('Change Password Button Pressed');
                     },
-                    child: const Text('Change Password'),
+                    child: const Text('Change Password',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

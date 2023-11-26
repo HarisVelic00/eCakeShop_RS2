@@ -22,8 +22,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => KorisnikProvider()),
       ],
       child: MaterialApp(
-        initialRoute:
-            HomeScreen.routeName, // Set HomeScreen as the initial route
+        initialRoute: HomeScreen.routeName,
         routes: {
           HomeScreen.routeName: (context) => HomeScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),
@@ -75,7 +74,7 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('eCakeShop'),
+        title: const Text('eCakeShop', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
       ),
       backgroundColor: const Color.fromRGBO(222, 235, 251, 1),
@@ -132,9 +131,8 @@ class LoginScreen extends StatelessWidget {
                   minimumSize: const Size(200, 48),
                   backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                 ),
-                child: const Text(
-                  "Login",
-                ),
+                child:
+                    const Text("Login", style: TextStyle(color: Colors.white)),
               )
             ],
           ),
