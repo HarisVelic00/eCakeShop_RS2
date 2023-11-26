@@ -45,9 +45,20 @@ class LoginScreen extends StatelessWidget {
   void handleLogin(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       try {
+        print('Entered username: ${_username.text}');
+        print('Entered password: ${_password.text}');
+
         Authorization.Username = _username.text;
         Authorization.Password = _password.text;
+
+        _korisnikProvider =
+            Provider.of<KorisnikProvider>(context, listen: false);
+
+        print(
+            'Authenticating with username: ${Authorization.Username} and password: ${Authorization.Password}');
         Authorization.korisnik = await _korisnikProvider.Authenticate();
+
+        print('Korisnik returned from database: ${Authorization.korisnik}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
