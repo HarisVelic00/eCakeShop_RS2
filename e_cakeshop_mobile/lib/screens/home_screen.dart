@@ -1,11 +1,28 @@
 import 'package:e_cakeshop_mobile/main.dart';
+import 'package:e_cakeshop_mobile/models/novost.dart';
+import 'package:e_cakeshop_mobile/models/proizvod.dart';
+import 'package:e_cakeshop_mobile/providers/novost_provider.dart';
+import 'package:e_cakeshop_mobile/providers/proizvod_provider.dart';
 import 'package:e_cakeshop_mobile/screens/cart_screen.dart';
 import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
+import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const String routeName = "/home";
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Proizvod> products = [];
+  List<Proizvod> filteredProducts = [];
+  List<Novost> news = [];
+  List<Novost> filteredNews = [];
+  bool showProducts = false;
+  bool showNews = false;
 
   @override
   Widget build(BuildContext context) {
@@ -19,39 +36,51 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(
-              height: 10,
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: Colors.grey[200],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    border: InputBorder.none,
+                    icon: Icon(Icons.search),
+                  ),
+                  onChanged: (value) {
+                    if (showProducts) {
+                      _searchProducts(value);
+                    } else if (showNews) {
+                      _searchNews(value);
+                    }
+                  },
+                ),
+              ),
             ),
-            const Text(
-              'Hi, Username',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Text(
+                  'Hi, ',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  Authorization.korisnik?.ime ?? 'Guest',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             const Text(
               'What do you want to eat today?',
               style: TextStyle(fontSize: 18),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 16.0),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -60,7 +89,14 @@ class HomeScreen extends StatelessWidget {
                     minimumSize: const Size(160, 40),
                     backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await _loadProducts();
+                    _searchProducts('');
+                    setState(() {
+                      showProducts = true;
+                      showNews = false;
+                    });
+                  },
                   child:
                       const Text('Menu', style: TextStyle(color: Colors.white)),
                 ),
@@ -69,48 +105,273 @@ class HomeScreen extends StatelessWidget {
                     minimumSize: const Size(160, 40),
                     backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await _loadNews();
+                    _searchNews('');
+                    setState(() {
+                      showProducts = false;
+                      showNews = true;
+                    });
+                  },
                   child:
                       const Text('News', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
-            const Expanded(
-              child: SizedBox(),
+            const SizedBox(height: 20),
+            if (showProducts)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredProducts.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(filteredProducts[index].naziv ?? ''),
+                      onTap: () {
+                        _showProductDetailsDialog(
+                            context, filteredProducts[index]);
+                      },
+                      leading: _buildImage(filteredProducts[index].slika),
+                    );
+                  },
+                ),
+              ),
+            if (showNews)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredNews.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(filteredNews[index].naslov ?? ''),
+                      onTap: () {
+                        _showNewsDetailsDialog(context, filteredNews[index]);
+                      },
+                      leading: _buildImage(filteredNews[index].thumbnail),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 5,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, CartScreen.routeName);
-                  },
-                  icon: const Icon(Icons.shopping_cart),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, ReviewScreen.routeName);
-                  },
-                  icon: const Icon(Icons.star),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, ProfileScreen.routeName);
-                  },
-                  icon: const Icon(Icons.person),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(
-                        context, LoginScreen.routeName);
-                  },
-                  icon: const Icon(Icons.logout),
-                ),
-              ],
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, CartScreen.routeName);
+              },
+              icon: const Icon(Icons.shopping_cart),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, ReviewScreen.routeName);
+              },
+              icon: const Icon(Icons.star),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, ProfileScreen.routeName);
+              },
+              icon: const Icon(Icons.person),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(
+                  context,
+                  LoginScreen.routeName,
+                );
+              },
+              icon: const Icon(Icons.logout),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildImage(String? imageUrl) {
+    return Container(
+      width: 50,
+      height: 50,
+      child: imageUrl != null
+          ? Image.memory(
+              dataFromBase64String(imageUrl),
+              fit: BoxFit.cover,
+            )
+          : const Text('No Image'),
+    );
+  }
+
+  void _showProductDetailsDialog(BuildContext context, Proizvod product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              product.naziv ?? '',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: SizedBox(
+                  width: 150,
+                  height: 150,
+                  child: _buildImage(product.slika),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(product.opis ?? ''),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.grey,
+              ),
+              child: const Text('Close'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushNamed(context, CartScreen.routeName);
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+              ),
+              child: const Text('Add to Cart'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNewsDetailsDialog(BuildContext context, Novost novost) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              novost.naslov ?? '',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: SizedBox(
+                  width: 150,
+                  height: 150,
+                  child: _buildImage(novost.thumbnail),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(novost.opis ?? ''),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.grey,
+              ),
+              child: const Text('Close'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushNamed(context, CartScreen.routeName);
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+              ),
+              child: const Text('Add to Cart'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      ProizvodProvider proizvodProvider = ProizvodProvider();
+      List<Proizvod> fetchedProducts = await proizvodProvider.Get();
+      setState(() {
+        products = fetchedProducts;
+      });
+    } catch (e) {
+      print('Error fetching products: $e');
+    }
+  }
+
+  Future<void> _loadNews() async {
+    try {
+      NovostProvider novostProvider = NovostProvider();
+      List<Novost> fetchedNews = await novostProvider.Get();
+      setState(() {
+        news = fetchedNews;
+      });
+    } catch (e) {
+      print('Error fetching products: $e');
+    }
+  }
+
+  void _searchProducts(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredProducts = List.from(products);
+      } else {
+        filteredProducts = products
+            .where((product) =>
+                product.naziv?.toLowerCase().contains(query.toLowerCase()) ??
+                false)
+            .toList();
+      }
+    });
+  }
+
+  void _searchNews(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredNews = List.from(news);
+      } else {
+        filteredNews = news
+            .where((news) =>
+                news.naslov?.toLowerCase().contains(query.toLowerCase()) ??
+                false)
+            .toList();
+      }
+    });
   }
 }

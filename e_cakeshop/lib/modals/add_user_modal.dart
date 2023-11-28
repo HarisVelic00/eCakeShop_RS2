@@ -28,7 +28,7 @@ class _AddUserModalState extends State<AddUserModal> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController telephoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+  
   List<Grad> gradList = [];
   List<Drzava> drzavaList = [];
   List<Uloga> ulogaList = [];

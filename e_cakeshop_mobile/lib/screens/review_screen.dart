@@ -1,19 +1,8 @@
-import 'package:e_cakeshop_mobile/modals/review_dialog.dart';
+import 'package:e_cakeshop_mobile/modals/add_review_modal.dart';
 import 'package:flutter/material.dart';
-
-class Review {
-  final String username;
-  final String comment;
-  final int stars;
-  final String imageUrl;
-
-  Review({
-    required this.username,
-    required this.comment,
-    required this.stars,
-    required this.imageUrl,
-  });
-}
+import 'package:e_cakeshop_mobile/models/recenzija.dart';
+import 'package:e_cakeshop_mobile/providers/recenzija_provider.dart';
+import 'package:intl/intl.dart';
 
 class ReviewScreen extends StatefulWidget {
   static const String routeName = "/review";
@@ -23,99 +12,124 @@ class ReviewScreen extends StatefulWidget {
 }
 
 class _ReviewScreenState extends State<ReviewScreen> {
-  List<Review> reviews = [
-    Review(
-      username: 'User1',
-      comment: 'Great experience!',
-      stars: 5,
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-  ];
+  List<Recenzija> recenzijaList = [];
+  final recenzijaProvider = RecenzijaProvider();
 
-  void _addReview(String username, String comment, double rating) {
-    setState(() {
-      reviews.add(
-        Review(
-          username: username,
-          comment: comment,
-          stars: rating.toInt(),
-          imageUrl: 'https://via.placeholder.com/150',
-        ),
-      );
-    });
+  @override
+  void initState() {
+    super.initState();
+    loadRecenzije();
   }
 
-  void _showReviewDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AddReviewDialog(
-          onSubmit: _addReview,
-        );
-      },
-    );
+  Future<void> loadRecenzije() async {
+    try {
+      recenzijaList = await RecenzijaProvider().Get({'includeKorisnik': true});
+      setState(() {});
+    } catch (e) {
+      print('Error fetching products: $e');
+    }
+  }
+
+  void addNewReview(Map<String, dynamic> newReview) async {
+    try {
+      await recenzijaProvider.insert(newReview);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Review added successfully'),
+        ),
+      );
+      await loadRecenzije();
+      Navigator.pop(context);
+    } catch (e) {
+      print("Error adding review: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to add review'),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('User Reviews', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Reviews',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
         iconTheme: const IconThemeData(color: Colors.white),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context);
           },
         ),
       ),
-      body: Center(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: ListView.builder(
-            itemCount: reviews.length,
-            itemBuilder: (context, index) {
-              return Card(
-                elevation: 3,
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(reviews[index].imageUrl),
-                        ),
-                        title: Text(reviews[index].username),
+      body: Container(
+        color: const Color.fromRGBO(222, 235, 251, 1),
+        child: recenzijaList.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : ListView.builder(
+                itemCount: recenzijaList.length,
+                itemBuilder: (context, index) {
+                  Recenzija recenzija = recenzijaList[index];
+                  return Container(
+                    color: const Color.fromRGBO(247, 249, 253, 1),
+                    padding: const EdgeInsets.all(8.0),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      title: Text(
+                        recenzija.korisnik?.ime ?? '',
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: List.generate(
-                          reviews[index].stars,
-                          (i) => const Icon(Icons.star, color: Colors.amber),
-                        ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            recenzija.datumKreiranja != null
+                                ? DateFormat.yMMMd()
+                                    .format(recenzija.datumKreiranja!)
+                                : '',
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            recenzija.sadrzajRecenzije ?? '',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: List.generate(
+                              recenzija.ocjena ?? 0,
+                              (index) =>
+                                  const Icon(Icons.star, color: Colors.amber),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        reviews[index].comment,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
+                    ),
+                  );
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
         onPressed: () {
-          _showReviewDialog(context);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AddReviewModal(
+                onAddReviewPressed: (Map<String, dynamic> newReview) {
+                  addNewReview(newReview);
+                },
+              );
+            },
+          );
         },
         child: const Icon(Icons.rate_review, color: Colors.white),
       ),

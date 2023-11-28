@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => KorisnikProvider()),
       ],
       child: MaterialApp(
-        initialRoute: HomeScreen.routeName,
+        initialRoute: LoginScreen.routeName,
         routes: {
           HomeScreen.routeName: (context) => HomeScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),
