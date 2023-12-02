@@ -1,13 +1,16 @@
 import 'package:e_cakeshop_mobile/main.dart';
 import 'package:e_cakeshop_mobile/models/novost.dart';
 import 'package:e_cakeshop_mobile/models/proizvod.dart';
+import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
 import 'package:e_cakeshop_mobile/providers/novost_provider.dart';
 import 'package:e_cakeshop_mobile/providers/proizvod_provider.dart';
 import 'package:e_cakeshop_mobile/screens/cart_screen.dart';
+import 'package:e_cakeshop_mobile/screens/map_screen.dart';
 import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home";
@@ -272,6 +275,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
+                Navigator.pushNamed(context, MapScreen.routeName);
+              },
+              icon: const Icon(Icons.map),
+            ),
+            IconButton(
+              onPressed: () {
                 Navigator.pushNamed(context, ReviewScreen.routeName);
               },
               icon: const Icon(Icons.star),
@@ -281,15 +290,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushNamed(context, ProfileScreen.routeName);
               },
               icon: const Icon(Icons.person),
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(
-                  context,
-                  LoginScreen.routeName,
-                );
-              },
-              icon: const Icon(Icons.logout),
             ),
           ],
         ),
@@ -350,6 +350,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () {
+                Provider.of<CartProvider>(context, listen: false)
+                    .addToCart(product);
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, CartScreen.routeName);
               },
@@ -402,17 +404,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: Colors.grey,
               ),
               child: const Text('Close'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushNamed(context, CartScreen.routeName);
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-              ),
-              child: const Text('Add to Cart'),
             ),
           ],
         );

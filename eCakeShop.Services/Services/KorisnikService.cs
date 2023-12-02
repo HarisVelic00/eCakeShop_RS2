@@ -98,6 +98,25 @@ namespace eCakeShop.Services.Services
             _db.SaveChanges();
             return _mapper.Map<Models.Korisnik>(user);
         }
+        public Models.Korisnik UpdateMobile(int id, KorisnikMobileUpdateRequest request)
+        {
+            var user = _db.Korisniks.FirstOrDefault(x => x.KorisnikID == id);
+
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            user.Ime = request.Ime;
+            user.Prezime = request.Prezime;
+            user.Email = request.Email;
+            user.Telefon = request.Telefon;
+
+            _db.SaveChanges();
+
+            return _mapper.Map<Models.Korisnik>(user);
+        }
+
 
 
         public Models.Korisnik Login(string username, string password)

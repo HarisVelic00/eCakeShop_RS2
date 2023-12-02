@@ -47,5 +47,14 @@ namespace eCakeShop.Controllers
 
             return ((IKorisnikService)_service).Login(usernamePassword.Substring(0, seperatorIndex), usernamePassword[(seperatorIndex + 1)..]);
         }
+
+        [HttpPut("{id}/UpdateMobile")]
+        [Authorize(Roles = "Administrator")]
+        public Korisnik UpdateMobile(int id, [FromBody] KorisnikMobileUpdateRequest request)
+        {
+            return ((IKorisnikService)_service).UpdateMobile(id, request);
+        }
     }
+
 }
+

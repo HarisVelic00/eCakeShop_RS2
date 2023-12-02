@@ -1,43 +1,15 @@
+import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
+import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class CartScreen extends StatefulWidget {
-  @override
-  _CartScreenState createState() => _CartScreenState();
+class CartScreen extends StatelessWidget {
   static const String routeName = "/cart";
-}
-
-class _CartScreenState extends State<CartScreen> {
-  List<Map<String, dynamic>> cartItems = [
-    {
-      'id': 1,
-      'name': 'Product 1',
-      'image': 'https://via.placeholder.com/150',
-      'price': 25.0,
-    },
-    {
-      'id': 2,
-      'name': 'Product 2',
-      'image': 'https://via.placeholder.com/150',
-      'price': 35.0,
-    },
-  ];
-
-  double calculateTotalPrice() {
-    double total = 0.0;
-    for (var item in cartItems) {
-      total += item['price'];
-    }
-    return total;
-  }
-
-  void removeItem(int id) {
-    setState(() {
-      cartItems.removeWhere((item) => item['id'] == id);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    var cartProvider = Provider.of<CartProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title:
@@ -58,22 +30,24 @@ class _CartScreenState extends State<CartScreen> {
           children: <Widget>[
             Expanded(
               child: ListView.builder(
-                itemCount: cartItems.length,
+                itemCount: cartProvider.cart.items.length,
                 itemBuilder: (BuildContext context, int index) {
+                  var cartItem = cartProvider.cart.items[index];
                   return Card(
                     margin: const EdgeInsets.all(8.0),
                     child: ListTile(
-                      leading: Image.network(
-                        cartItems[index]['image'],
+                      leading: SizedBox(
                         width: 50,
                         height: 50,
+                        child: _buildImage(cartItem.product.slika),
                       ),
-                      title: Text(cartItems[index]['name']),
-                      subtitle: Text('\$${cartItems[index]['price']}'),
+                      title: Text(cartItem.product.naziv ?? ''),
+                      subtitle:
+                          Text('Price: ${cartItem.product.cijena.toString()}'),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
-                          removeItem(cartItems[index]['id']);
+                          cartProvider.removeFromCart(cartItem.product);
                         },
                       ),
                     ),
@@ -87,7 +61,7 @@ class _CartScreenState extends State<CartScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    'Total Price: \$${calculateTotalPrice()}',
+                    'Total Price: ${cartProvider.totalPrice.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -98,9 +72,7 @@ class _CartScreenState extends State<CartScreen> {
                       minimumSize: const Size(160, 40),
                       backgroundColor: Colors.green,
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () {},
                     child: const Text('Proceed to Checkout',
                         style: TextStyle(color: Colors.white)),
                   ),
@@ -111,5 +83,14 @@ class _CartScreenState extends State<CartScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildImage(String? imageUrl) {
+    return imageUrl != null
+        ? Image.memory(
+            dataFromBase64String(imageUrl),
+            fit: BoxFit.cover,
+          )
+        : const Text('No Image');
   }
 }

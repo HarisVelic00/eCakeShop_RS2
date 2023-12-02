@@ -14,5 +14,6 @@ namespace eCakeShop.Services.Services
         Models.Korisnik Login(string username, string password);
         Models.Korisnik AddUloga(int id, KorisnikUpdateRequest request);
         Models.Korisnik DeleteUloga(int id, KorisnikUpdateRequest request);
+        Models.Korisnik UpdateMobile (int id, KorisnikMobileUpdateRequest request);
     }
 }

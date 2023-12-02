@@ -1,6 +1,8 @@
+import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
 import 'package:e_cakeshop_mobile/providers/korisnik_provider.dart';
 import 'package:e_cakeshop_mobile/screens/cart_screen.dart';
 import 'package:e_cakeshop_mobile/screens/home_screen.dart';
+import 'package:e_cakeshop_mobile/screens/map_screen.dart';
 import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
@@ -20,6 +22,7 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => KorisnikProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
         initialRoute: LoginScreen.routeName,
@@ -29,6 +32,7 @@ class MainApp extends StatelessWidget {
           CartScreen.routeName: (context) => CartScreen(),
           ReviewScreen.routeName: (context) => ReviewScreen(),
           ProfileScreen.routeName: (context) => ProfileScreen(),
+          MapScreen.routeName: (context) => MapScreen(),
         },
       ),
     );
