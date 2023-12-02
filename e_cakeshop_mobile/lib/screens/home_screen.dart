@@ -25,132 +25,229 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showNews = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Colors.grey[200],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    border: InputBorder.none,
-                    icon: Icon(Icons.search),
-                  ),
-                  onChanged: (value) {
-                    if (showProducts) {
-                      _searchProducts(value);
-                    } else if (showNews) {
-                      _searchNews(value);
-                    }
-                  },
+      body: Container(
+        color: const Color.fromRGBO(222, 235, 251, 1),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: const Color.fromRGBO(247, 249, 253, 1),
                 ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Text(
-                  'Hi, ',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  Authorization.korisnik?.ime ?? 'Guest',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Color.fromRGBO(247, 249, 253, 1),
+                      hintText: 'Search...',
+                      border: InputBorder.none,
+                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                    ),
+                    onChanged: (value) {
+                      if (showProducts) {
+                        _searchProducts(value);
+                      } else if (showNews) {
+                        _searchNews(value);
+                      }
+                    },
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'What do you want to eat today?',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(160, 40),
-                    backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                  ),
-                  onPressed: () async {
-                    await _loadProducts();
-                    _searchProducts('');
-                    setState(() {
-                      showProducts = true;
-                      showNews = false;
-                    });
-                  },
-                  child:
-                      const Text('Menu', style: TextStyle(color: Colors.white)),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(160, 40),
-                    backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                  ),
-                  onPressed: () async {
-                    await _loadNews();
-                    _searchNews('');
-                    setState(() {
-                      showProducts = false;
-                      showNews = true;
-                    });
-                  },
-                  child:
-                      const Text('News', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            if (showProducts)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(filteredProducts[index].naziv ?? ''),
-                      onTap: () {
-                        _showProductDetailsDialog(
-                            context, filteredProducts[index]);
-                      },
-                      leading: _buildImage(filteredProducts[index].slika),
-                    );
-                  },
-                ),
               ),
-            if (showNews)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredNews.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(filteredNews[index].naslov ?? ''),
-                      onTap: () {
-                        _showNewsDetailsDialog(context, filteredNews[index]);
-                      },
-                      leading: _buildImage(filteredNews[index].thumbnail),
-                    );
-                  },
-                ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Text(
+                    'Hi, ',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    Authorization.korisnik?.ime ?? 'Guest',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-          ],
+              const SizedBox(height: 10),
+              const Text(
+                'What do you want to eat today?',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(160, 40),
+                      backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                    ),
+                    onPressed: () async {
+                      await _loadProducts();
+                      _searchProducts('');
+                      setState(() {
+                        showProducts = true;
+                        showNews = false;
+                      });
+                    },
+                    child: const Text('Menu',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(160, 40),
+                      backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                    ),
+                    onPressed: () async {
+                      await _loadNews();
+                      _searchNews('');
+                      setState(() {
+                        showProducts = false;
+                        showNews = true;
+                      });
+                    },
+                    child: const Text('News',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (showProducts)
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredProducts.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: const Color.fromRGBO(247, 249, 253, 1),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildImage(
+                              filteredProducts[index].slika,
+                              imageSize: 80,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    filteredProducts[index].naziv ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    filteredProducts[index].cijena.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      _showProductDetailsDialog(
+                                          context, filteredProducts[index]);
+                                    },
+                                    child: const Text(
+                                      'Tap for more details',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              if (showNews)
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredNews.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: const Color.fromRGBO(247, 249, 253, 1),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildImage(
+                              filteredNews[index].thumbnail,
+                              imageSize: 80,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    filteredNews[index].naslov ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      _showNewsDetailsDialog(
+                                          context, filteredNews[index]);
+                                    },
+                                    child: const Text(
+                                      'Tap for more details',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -200,10 +297,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildImage(String? imageUrl) {
+  Widget _buildImage(String? imageUrl, {double imageSize = 50}) {
     return Container(
-      width: 50,
-      height: 50,
+      width: imageSize,
+      height: imageSize,
       child: imageUrl != null
           ? Image.memory(
               dataFromBase64String(imageUrl),

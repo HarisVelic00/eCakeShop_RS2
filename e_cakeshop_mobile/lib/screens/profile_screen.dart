@@ -1,11 +1,8 @@
+import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const String routeName = "/profile";
-  final String name = 'John';
-  final String surname = 'Doe';
-  final String username = 'johndoe123';
-  final String email = 'johndoe@example.com';
 
   @override
   Widget build(BuildContext context) {
@@ -29,28 +26,28 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const CircleAvatar(
-                radius: 100.0,
-                //backgroundImage: AssetImage('assets/profile_image.png'),
+                radius: 80.0,
+                backgroundImage: AssetImage('assets/images/profile_image.png'),
+              ),
+              const SizedBox(height: 20.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    Authorization.korisnik?.ime ?? '',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                  const SizedBox(width: 10.0),
+                  Text(
+                    Authorization.korisnik?.prezime ?? '',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ],
               ),
               const SizedBox(height: 20.0),
               Text(
-                'Name: $name',
-                style: const TextStyle(fontSize: 18.0),
-              ),
-              const SizedBox(height: 10.0),
-              Text(
-                'Surname: $surname',
-                style: const TextStyle(fontSize: 18.0),
-              ),
-              const SizedBox(height: 10.0),
-              Text(
-                'Username: $username',
-                style: const TextStyle(fontSize: 18.0),
-              ),
-              const SizedBox(height: 10.0),
-              Text(
-                'Email: $email',
-                style: const TextStyle(fontSize: 18.0),
+                Authorization.korisnik?.email ?? '',
+                style: const TextStyle(fontSize: 16.0),
               ),
               const SizedBox(height: 20.0),
               Row(

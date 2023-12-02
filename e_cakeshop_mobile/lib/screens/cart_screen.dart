@@ -51,61 +51,64 @@ class _CartScreenState extends State<CartScreen> {
           },
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              itemCount: cartItems.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    leading: Image.network(
-                      cartItems[index]['image'],
-                      width: 50,
-                      height: 50,
+      body: Container(
+        color: const Color.fromRGBO(222, 235, 251, 1),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: ListView.builder(
+                itemCount: cartItems.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    margin: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      leading: Image.network(
+                        cartItems[index]['image'],
+                        width: 50,
+                        height: 50,
+                      ),
+                      title: Text(cartItems[index]['name']),
+                      subtitle: Text('\$${cartItems[index]['price']}'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          removeItem(cartItems[index]['id']);
+                        },
+                      ),
                     ),
-                    title: Text(cartItems[index]['name']),
-                    subtitle: Text('\$${cartItems[index]['price']}'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        removeItem(cartItems[index]['id']);
-                      },
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Total Price: \$${calculateTotalPrice()}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  'Total Price: \$${calculateTotalPrice()}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(160, 40),
+                      backgroundColor: Colors.green,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Proceed to Checkout',
+                        style: TextStyle(color: Colors.white)),
                   ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(160, 40),
-                    backgroundColor: Colors.green,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Proceed to Checkout',
-                      style: TextStyle(color: Colors.white)),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
