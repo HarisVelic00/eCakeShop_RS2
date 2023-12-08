@@ -1,3 +1,4 @@
+import 'package:e_cakeshop/providers/recenzija_provider.dart';
 import 'package:e_cakeshop/screens/home_screen.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
 import 'package:e_cakeshop/providers/narudzba_provider.dart';
@@ -24,7 +25,8 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NovostProvider()),
         ChangeNotifierProvider(create: (_) => ProizvodProvider()),
         ChangeNotifierProvider(create: (_) => SlikaProvider()),
-        ChangeNotifierProvider(create: (_) => NarudzbaProvider())
+        ChangeNotifierProvider(create: (_) => NarudzbaProvider()),
+        ChangeNotifierProvider(create: (_) => RecenzijaProvider()),
       ],
       child: MaterialApp(
         home: LoginScreen(),

@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    filteredProducts[index].cijena.toString(),
+                                    '${filteredProducts[index].cijena} KM',
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -417,6 +417,8 @@ class _HomeScreenState extends State<HomeScreen> {
       List<Proizvod> fetchedProducts = await proizvodProvider.Get();
       setState(() {
         products = fetchedProducts;
+        filteredProducts = List.from(products);
+        showProducts = true;
       });
     } catch (e) {
       print('Error fetching products: $e');
@@ -429,9 +431,11 @@ class _HomeScreenState extends State<HomeScreen> {
       List<Novost> fetchedNews = await novostProvider.Get();
       setState(() {
         news = fetchedNews;
+        filteredNews = List.from(news);
+        showNews = true;
       });
     } catch (e) {
-      print('Error fetching products: $e');
+      print('Error fetching news: $e');
     }
   }
 

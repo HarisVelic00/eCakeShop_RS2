@@ -1,4 +1,5 @@
 import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
+import 'package:e_cakeshop_mobile/screens/stripe_payment.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -72,7 +73,11 @@ class CartScreen extends StatelessWidget {
                       minimumSize: const Size(160, 40),
                       backgroundColor: Colors.green,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(
+                          context, StripePaymentScreen.routeName);
+                      // This will navigate to the StripePaymentScreen when the button is pressed
+                    },
                     child: const Text('Proceed to Checkout',
                         style: TextStyle(color: Colors.white)),
                   ),

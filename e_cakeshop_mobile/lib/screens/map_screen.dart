@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapScreen extends StatefulWidget {
   static const String routeName = "/map";
@@ -7,6 +8,10 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  late GoogleMapController mapController;
+
+  static const LatLng _defaultLocation = LatLng(44.7654, 16.6442);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,9 +26,22 @@ class _MapScreenState extends State<MapScreen> {
           },
         ),
       ),
-      body: Container(
-          // Add your map widget or other contents here
+      body: GoogleMap(
+        onMapCreated: (GoogleMapController controller) {
+          mapController = controller;
+        },
+        initialCameraPosition: const CameraPosition(
+          target: _defaultLocation,
+          zoom: 15.0,
+        ),
+        markers: {
+          const Marker(
+            markerId: MarkerId('Sanski Most'),
+            position: _defaultLocation,
+            infoWindow: InfoWindow(title: 'Sanski Most'),
           ),
+        },
+      ),
     );
   }
 }

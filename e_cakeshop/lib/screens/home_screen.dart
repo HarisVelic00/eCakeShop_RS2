@@ -3,6 +3,7 @@ import 'package:e_cakeshop/screens/news_screen.dart';
 import 'package:e_cakeshop/screens/orders_screen.dart';
 import 'package:e_cakeshop/screens/images_screen.dart';
 import 'package:e_cakeshop/screens/product_screen.dart';
+import 'package:e_cakeshop/screens/reviews_screen.dart';
 import 'package:e_cakeshop/screens/user_screen.dart';
 import 'package:e_cakeshop/main.dart';
 import 'package:e_cakeshop/utils/utils.dart';
@@ -121,6 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     NavItem(
+                      title: 'Reviews',
+                      onTap: () {},
+                      onSelect: (item) {
+                        setState(() {
+                          selectedNavItem = item;
+                        });
+                      },
+                    ),
+                    NavItem(
                         title: 'Logout',
                         onTap: () {
                           Authorization.Username = '';
@@ -197,6 +207,12 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(10),
           child: ArchiveScreen(),
         );
+      case 'Reviews':
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: ReviewScreen(),
+        );
+
       default:
         return const Center(
           child: Text('Select an item from the left navigation'),

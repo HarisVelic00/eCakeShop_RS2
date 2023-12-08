@@ -5,6 +5,7 @@ import 'package:e_cakeshop_mobile/screens/home_screen.dart';
 import 'package:e_cakeshop_mobile/screens/map_screen.dart';
 import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
+import 'package:e_cakeshop_mobile/screens/stripe_payment.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,7 @@ class MainApp extends StatelessWidget {
           ReviewScreen.routeName: (context) => ReviewScreen(),
           ProfileScreen.routeName: (context) => ProfileScreen(),
           MapScreen.routeName: (context) => MapScreen(),
+          StripePaymentScreen.routeName: (context) => StripePaymentScreen()
         },
       ),
     );
