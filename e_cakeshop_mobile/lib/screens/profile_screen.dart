@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field, unused_local_variable
+
 import 'package:e_cakeshop_mobile/main.dart';
 import 'package:e_cakeshop_mobile/modals/edit_profile_modal.dart';
 import 'package:e_cakeshop_mobile/providers/korisnik_provider.dart';

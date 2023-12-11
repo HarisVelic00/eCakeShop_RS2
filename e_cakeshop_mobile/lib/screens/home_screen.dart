@@ -6,7 +6,6 @@ import 'package:e_cakeshop_mobile/providers/novost_provider.dart';
 import 'package:e_cakeshop_mobile/providers/proizvod_provider.dart';
 import 'package:e_cakeshop_mobile/screens/cart_screen.dart';
 import 'package:e_cakeshop_mobile/screens/map_screen.dart';
-import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -287,10 +286,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
-                Navigator.pushNamed(context, ProfileScreen.routeName);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  (_) => false,
+                );
               },
-              icon: const Icon(Icons.person),
-            ),
+              icon: const Icon(Icons.logout),
+            )
           ],
         ),
       ),

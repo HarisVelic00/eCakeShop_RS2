@@ -1,16 +1,19 @@
 import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
 import 'package:e_cakeshop_mobile/providers/korisnik_provider.dart';
+import 'package:e_cakeshop_mobile/providers/narudzba_provider.dart';
+import 'package:e_cakeshop_mobile/providers/uplata_provider.dart';
 import 'package:e_cakeshop_mobile/screens/cart_screen.dart';
 import 'package:e_cakeshop_mobile/screens/home_screen.dart';
 import 'package:e_cakeshop_mobile/screens/map_screen.dart';
-import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
-import 'package:e_cakeshop_mobile/screens/stripe_payment.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  Stripe.publishableKey =
+      'pk_test_51OJIXNLfQTkXq96LfxTnxkTBRc0zPXjw0DIFT1HT1zCDRlGP35YY3SYI0M89Rcct7GPcqiHoIk8gM0X2l0aBYvfZ00q3YBLWX8';
   runApp(MainApp());
   WidgetsFlutterBinding.ensureInitialized();
 }
@@ -24,26 +27,27 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => KorisnikProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => NarudzbaProvider()),
+        ChangeNotifierProvider(create: (_) => UplataProvider()),
       ],
       child: MaterialApp(
         initialRoute: LoginScreen.routeName,
         routes: {
           HomeScreen.routeName: (context) => HomeScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),
-          CartScreen.routeName: (context) => CartScreen(),
+          CartScreen.routeName: (context) => const CartScreen(),
           ReviewScreen.routeName: (context) => ReviewScreen(),
-          ProfileScreen.routeName: (context) => ProfileScreen(),
           MapScreen.routeName: (context) => MapScreen(),
-          StripePaymentScreen.routeName: (context) => StripePaymentScreen()
         },
       ),
     );
   }
 }
 
+// ignore: must_be_immutable
 class LoginScreen extends StatelessWidget {
-  TextEditingController _username = TextEditingController();
-  TextEditingController _password = TextEditingController();
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
   late KorisnikProvider _korisnikProvider;
   final _formKey = GlobalKey<FormState>();
   static const String routeName = "/login";

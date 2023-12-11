@@ -20,4 +20,6 @@ class Uplata {
   factory Uplata.fromJson(Map<String, dynamic> json) => _$UplataFromJson(json);
 
   Map<String, dynamic> toJson() => _$UplataToJson(this);
+
+  
 }

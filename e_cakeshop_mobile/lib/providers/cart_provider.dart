@@ -5,9 +5,12 @@ import 'package:collection/collection.dart';
 
 class CartProvider with ChangeNotifier {
   Cart cart = Cart();
-  addToCart(Proizvod product) {
-    if (findInCart(product) != null) {
-      findInCart(product)?.count++;
+
+  void addToCart(Proizvod product) {
+    CartItem? existingItem = findInCart(product);
+
+    if (existingItem != null) {
+      existingItem.count++;
     } else {
       cart.items.add(CartItem(product, 1));
     }
@@ -15,21 +18,23 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  removeFromCart(Proizvod product) {
-    cart.items
-        .removeWhere((item) => item.product.proizvodID == product.proizvodID);
+  void removeFromCart(Proizvod product) {
+    cart.items.removeWhere((item) => item.product == product);
     notifyListeners();
   }
 
   CartItem? findInCart(Proizvod product) {
-    CartItem? item = cart.items.firstWhereOrNull(
-        (item) => item.product.proizvodID == product.proizvodID);
-    return item;
+    return cart.items.firstWhereOrNull((item) => item.product == product);
   }
 
   double get totalPrice {
     return cart.items.fold<double>(0.0, (previousValue, item) {
       return previousValue + (item.product.cijena! * item.count);
     });
+  }
+
+  void clearCart() {
+    cart.items.clear();
+    notifyListeners();
   }
 }

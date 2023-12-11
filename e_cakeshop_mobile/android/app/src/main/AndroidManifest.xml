@@ -3,7 +3,8 @@
     <application
         android:label="e_cakeshop"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCYzY_liNCJT4JJFgfBB47lWnuOBLD_dPg" />
