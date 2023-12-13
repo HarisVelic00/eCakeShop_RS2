@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, no_leading_underscores_for_local_identifiers, use_build_context_synchronously, avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:e_cakeshop/models/vrstaproizvoda.dart';
@@ -9,7 +11,7 @@ class AddProductModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
   final Function(Map<String, dynamic>) onAddProductPressed;
 
-  AddProductModal(
+  const AddProductModal(
       {required this.onCancelPressed, required this.onAddProductPressed});
 
   @override
@@ -124,86 +126,91 @@ class _AddProductModalState extends State<AddProductModal> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        color: const Color.fromRGBO(247, 249, 253, 1),
-        width: MediaQuery.of(context).size.width * 0.2,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text(
-                  'Add Product',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          color: const Color.fromRGBO(247, 249, 253, 1),
+          width: MediaQuery.of(context).size.width * 0.2,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text(
+                    'Add Product',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: priceController,
-                  decoration: const InputDecoration(labelText: 'Price'),
-                ),
-                const SizedBox(height: 20),
-                _imageFile != null
-                    ? Image.file(_imageFile!)
-                    : ElevatedButton(
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                  ),
+                  TextField(
+                    controller: priceController,
+                    decoration: const InputDecoration(labelText: 'Price'),
+                  ),
+                  const SizedBox(height: 20),
+                  _imageFile != null
+                      ? Image.file(_imageFile!)
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(97, 142, 246, 1),
+                          ),
+                          onPressed: _pickImage,
+                          child: const Text('Select Image'),
+                        ),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedVrstaProizvoda,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedVrstaProizvoda = value;
+                      });
+                    },
+                    items: vrstaProizvodaList
+                        .map((VrstaProizvoda _vrstaProizvoda) {
+                      return DropdownMenuItem<String>(
+                        value: _vrstaProizvoda.naziv,
+                        child: Text(_vrstaProizvoda.naziv ?? ''),
+                      );
+                    }).toList(),
+                    decoration:
+                        const InputDecoration(labelText: 'Product Type'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                        ),
+                        onPressed: widget.onCancelPressed,
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromRGBO(97, 142, 246, 1),
                         ),
-                        onPressed: _pickImage,
-                        child: const Text('Select Image'),
+                        onPressed: _uploadProizvod,
+                        child: const Text('OK',
+                            style: TextStyle(color: Colors.white)),
                       ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedVrstaProizvoda,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedVrstaProizvoda = value;
-                    });
-                  },
-                  items:
-                      vrstaProizvodaList.map((VrstaProizvoda _vrstaProizvoda) {
-                    return DropdownMenuItem<String>(
-                      value: _vrstaProizvoda.naziv,
-                      child: Text(_vrstaProizvoda.naziv ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'Product Type'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                const SizedBox(height: 20),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                      ),
-                      onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                      ),
-                      onPressed: _uploadProizvod,
-                      child: const Text('OK',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

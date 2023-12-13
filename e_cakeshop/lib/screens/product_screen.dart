@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously, avoid_print
+
 import 'package:e_cakeshop/modals/add_product_modal.dart';
 import 'package:e_cakeshop/modals/delete_modal.dart';
 import 'package:e_cakeshop/modals/edit_product_modal.dart';
@@ -189,11 +191,13 @@ class _ProductScreenState extends State<ProductScreen> {
                       ],
                     ),
                   ),
-                  ProductTable(
-                    openEditProductModal: openEditProductModal,
-                    openDeleteModal: openDeleteModal,
-                    proizvodProvider: proizvodProvider,
-                    searchQuery: _searchQuery,
+                  Expanded(
+                    child: ProductTable(
+                      openEditProductModal: openEditProductModal,
+                      openDeleteModal: openDeleteModal,
+                      proizvodProvider: proizvodProvider,
+                      searchQuery: _searchQuery,
+                    ),
                   )
                 ],
               ),
@@ -251,7 +255,7 @@ class ProductTable extends StatelessWidget {
   final ProizvodProvider proizvodProvider;
   final String searchQuery;
 
-  ProductTable({
+  const ProductTable({
     required this.openEditProductModal,
     required this.openDeleteModal,
     required this.proizvodProvider,
@@ -275,49 +279,58 @@ class ProductTable extends StatelessWidget {
                 .contains(searchQuery.toLowerCase());
           }).toList();
 
-          return DataTable(
-            columns: const [
-              DataColumn(label: Text('ID')),
-              DataColumn(label: Text('Name')),
-              DataColumn(label: Text('Code')),
-              DataColumn(label: Text('Price')),
-              DataColumn(label: Text('Image')),
-              DataColumn(label: Text('Type')),
-              DataColumn(label: Text('Description')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: filteredProizvod.map((proizvod) {
-              return DataRow(
-                cells: [
-                  DataCell(Text(proizvod.proizvodID?.toString() ?? '')),
-                  DataCell(Text(proizvod.naziv ?? '')),
-                  DataCell(Text(proizvod.sifra ?? '')),
-                  DataCell(Text(proizvod.cijena?.toString() ?? '')),
-                  DataCell(
-                    proizvod.slika != null
-                        ? Image.memory(dataFromBase64String(proizvod.slika!))
-                        : const Text('No Image'),
-                  ),
-                  DataCell(Text(proizvod.vrstaProizvoda?.naziv ?? '')),
-                  DataCell(Text(proizvod.opis ?? '')),
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => openEditProductModal(proizvod)),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            openDeleteModal(proizvod);
-                          },
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Flexible(
+              child: SingleChildScrollView(
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('ID')),
+                    DataColumn(label: Text('Name')),
+                    DataColumn(label: Text('Code')),
+                    DataColumn(label: Text('Price')),
+                    DataColumn(label: Text('Image')),
+                    DataColumn(label: Text('Type')),
+                    DataColumn(label: Text('Description')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: filteredProizvod.map((proizvod) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(proizvod.proizvodID?.toString() ?? '')),
+                        DataCell(Text(proizvod.naziv ?? '')),
+                        DataCell(Text(proizvod.sifra ?? '')),
+                        DataCell(Text(proizvod.cijena?.toString() ?? '')),
+                        DataCell(
+                          proizvod.slika != null
+                              ? Image.memory(
+                                  dataFromBase64String(proizvod.slika!))
+                              : const Text('No Image'),
+                        ),
+                        DataCell(Text(proizvod.vrstaProizvoda?.naziv ?? '')),
+                        DataCell(Text(proizvod.opis ?? '')),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () =>
+                                      openEditProductModal(proizvod)),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  openDeleteModal(proizvod);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           );
         } else {
           return const Text('No data available');

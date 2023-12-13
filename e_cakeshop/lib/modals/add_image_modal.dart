@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print, use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:e_cakeshop/models/korisnik.dart';
@@ -9,7 +11,7 @@ class AddImageModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
   final Function(Map<String, dynamic>) onAddSlikaPressed;
 
-  AddImageModal(
+  const AddImageModal(
       {required this.onCancelPressed, required this.onAddSlikaPressed});
 
   @override
@@ -115,75 +117,79 @@ class _AddImageModalState extends State<AddImageModal> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        color: const Color.fromRGBO(247, 249, 253, 1),
-        width: MediaQuery.of(context).size.width * 0.2,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Text(
-                'Add Image',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          color: const Color.fromRGBO(247, 249, 253, 1),
+          width: MediaQuery.of(context).size.width * 0.2,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text(
+                  'Add Image',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              _imageFile != null
-                  ? Image.file(_imageFile!)
-                  : ElevatedButton(
+                const SizedBox(height: 20),
+                _imageFile != null
+                    ? Image.file(_imageFile!)
+                    : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
+                        ),
+                        onPressed: _pickImage,
+                        child: const Text('Select Image'),
+                      ),
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
+                DropdownButtonFormField<String>(
+                  value: selectedKorisnik,
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedKorisnik = value!;
+                    });
+                  },
+                  items: korisnikList.map((Korisnik korisnik) {
+                    return DropdownMenuItem<String>(
+                      value: korisnik.ime ?? '',
+                      child: Text(korisnik.ime ?? ''),
+                    );
+                  }).toList(),
+                  decoration: const InputDecoration(labelText: 'User'),
+                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                ),
+                const SizedBox(height: 20),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                      ),
+                      onPressed: widget.onCancelPressed,
+                      child: const Text('Cancel',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                    ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
-                      onPressed: _pickImage,
-                      child: const Text('Select Image'),
+                      onPressed: _uploadImage,
+                      child: const Text('OK',
+                          style: TextStyle(color: Colors.white)),
                     ),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-              ),
-              DropdownButtonFormField<String>(
-                value: selectedKorisnik,
-                onChanged: (String? value) {
-                  setState(() {
-                    selectedKorisnik = value!;
-                  });
-                },
-                items: korisnikList.map((Korisnik korisnik) {
-                  return DropdownMenuItem<String>(
-                    value: korisnik.ime ?? '',
-                    child: Text(korisnik.ime ?? ''),
-                  );
-                }).toList(),
-                decoration: const InputDecoration(labelText: 'User'),
-                dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-              ),
-              const SizedBox(height: 20),
-              const Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                    ),
-                    onPressed: widget.onCancelPressed,
-                    child: const Text('Cancel',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                    ),
-                    onPressed: _uploadImage,
-                    child:
-                        const Text('OK', style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print, prefer_const_constructors_in_immutables
+
 import 'package:e_cakeshop/modals/add_order_modal.dart';
 import 'package:e_cakeshop/modals/delete_modal.dart';
 import 'package:e_cakeshop/modals/edit_order_modal.dart';
@@ -185,11 +187,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ],
                     ),
                   ),
-                  OrdersTable(
-                    openEditOrderModal: openEditOrderModal,
-                    openDeleteModal: openDeleteModal,
-                    narudzbaProvider: narudzbaProvider,
-                    searchQuery: _searchQuery,
+                  Expanded(
+                    child: OrdersTable(
+                      openEditOrderModal: openEditOrderModal,
+                      openDeleteModal: openDeleteModal,
+                      narudzbaProvider: narudzbaProvider,
+                      searchQuery: _searchQuery,
+                    ),
                   )
                 ],
               ),
@@ -243,7 +247,7 @@ class OrdersTable extends StatelessWidget {
   final NarudzbaProvider narudzbaProvider;
   final String searchQuery;
 
-  OrdersTable({
+  const OrdersTable({
     required this.openEditOrderModal,
     required this.openDeleteModal,
     required this.narudzbaProvider,
@@ -269,59 +273,62 @@ class OrdersTable extends StatelessWidget {
 
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: SingleChildScrollView(
-              child: DataTable(
-                dataRowHeight: 90.0,
-                columns: const [
-                  DataColumn(label: Text('ID')),
-                  DataColumn(label: Text('Order Number')),
-                  DataColumn(label: Text('User')),
-                  DataColumn(label: Text('Date')),
-                  DataColumn(label: Text('Products')),
-                  DataColumn(label: Text('Is Shipped')),
-                  DataColumn(label: Text('Is Canceled')),
-                  DataColumn(label: Text('Actions')),
-                ],
-                rows: filteredNarudzba.map((narudzba) {
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(narudzba.narudzbaID.toString())),
-                      DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
-                      DataCell(Text(narudzba.korisnik?.ime ?? '')),
-                      DataCell(Text(narudzba.datumNarudzbe.toString())),
-                      DataCell(
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: narudzba.narudzbaProizvodi!
-                                .split(',')
-                                .map((product) => Text(product.trim()))
-                                .toList(),
+            child: Flexible(
+              child: SingleChildScrollView(
+                child: DataTable(
+                  dataRowMinHeight: 50,
+                  dataRowMaxHeight: 150,
+                  columns: const [
+                    DataColumn(label: Text('ID')),
+                    DataColumn(label: Text('Order Number')),
+                    DataColumn(label: Text('User')),
+                    DataColumn(label: Text('Date')),
+                    DataColumn(label: Text('Products')),
+                    DataColumn(label: Text('Is Shipped')),
+                    DataColumn(label: Text('Is Canceled')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: filteredNarudzba.map((narudzba) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(narudzba.narudzbaID.toString())),
+                        DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
+                        DataCell(Text(narudzba.korisnik?.ime ?? '')),
+                        DataCell(Text(narudzba.datumNarudzbe.toString())),
+                        DataCell(
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: narudzba.narudzbaProizvodi!
+                                  .split(',')
+                                  .map((product) => Text(product.trim()))
+                                  .toList(),
+                            ),
                           ),
                         ),
-                      ),
-                      DataCell(Text(narudzba.isShipped.toString())),
-                      DataCell(Text(narudzba.isCanceled.toString())),
-                      DataCell(
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () => openEditOrderModal(narudzba),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                openDeleteModal(narudzba);
-                              },
-                            ),
-                          ],
+                        DataCell(Text(narudzba.isShipped.toString())),
+                        DataCell(Text(narudzba.isCanceled.toString())),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => openEditOrderModal(narudzba),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  openDeleteModal(narudzba);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                }).toList(),
+                      ],
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           );

@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, avoid_print
+
 import 'package:e_cakeshop/models/drzava.dart';
 import 'package:e_cakeshop/models/grad.dart';
 import 'package:e_cakeshop/models/korisnik.dart';
@@ -12,7 +14,7 @@ class EditUserModal extends StatefulWidget {
   final void Function(int, dynamic) onUpdatePressed;
   final Korisnik? korisnikToEdit;
 
-  EditUserModal({
+  const EditUserModal({
     required this.onCancelPressed,
     required this.onUpdatePressed,
     required this.korisnikToEdit,
@@ -134,100 +136,104 @@ class _EditUserModalState extends State<EditUserModal> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        color: const Color.fromRGBO(247, 249, 253, 1),
-        width: MediaQuery.of(context).size.width * 0.2,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text(
-                  'Edit User',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: surnameController,
-                  decoration: const InputDecoration(labelText: 'Surname'),
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                ),
-                TextField(
-                  controller: telephoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Telephone',
-                    hintText: 'Example 037-123-456',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedGrad,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedGrad = value!;
-                    });
-                  },
-                  items: gradList.map((Grad grad) {
-                    return DropdownMenuItem<String>(
-                      value: grad.naziv,
-                      child: Text(grad.naziv ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'City'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedDrzava,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedDrzava = value!;
-                    });
-                  },
-                  items: drzavaList.map((Drzava drzava) {
-                    return DropdownMenuItem<String>(
-                      value: drzava.naziv,
-                      child: Text(drzava.naziv ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'Country'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                TextField(
-                  controller: roleController,
-                  decoration: const InputDecoration(labelText: 'Uloga'),
-                ),
-                const SizedBox(height: 20),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                      ),
-                      onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel'),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          color: const Color.fromRGBO(247, 249, 253, 1),
+          width: MediaQuery.of(context).size.width * 0.2,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text(
+                    'Edit User',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                      ),
-                      onPressed: _editUser,
-                      child: const Text('Save'),
+                  ),
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                  ),
+                  TextField(
+                    controller: surnameController,
+                    decoration: const InputDecoration(labelText: 'Surname'),
+                  ),
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                  ),
+                  TextField(
+                    controller: telephoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'Telephone',
+                      hintText: 'Example 037-123-456',
+                      hintStyle: TextStyle(color: Colors.grey),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedGrad,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedGrad = value!;
+                      });
+                    },
+                    items: gradList.map((Grad grad) {
+                      return DropdownMenuItem<String>(
+                        value: grad.naziv,
+                        child: Text(grad.naziv ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'City'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedDrzava,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedDrzava = value!;
+                      });
+                    },
+                    items: drzavaList.map((Drzava drzava) {
+                      return DropdownMenuItem<String>(
+                        value: drzava.naziv,
+                        child: Text(drzava.naziv ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'Country'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  TextField(
+                    controller: roleController,
+                    decoration: const InputDecoration(labelText: 'Uloga'),
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                        ),
+                        onPressed: widget.onCancelPressed,
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
+                        ),
+                        onPressed: _editUser,
+                        child: const Text('Save'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

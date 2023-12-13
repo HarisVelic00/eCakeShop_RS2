@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, prefer_final_fields, use_build_context_synchronously
+
 import 'package:e_cakeshop/providers/recenzija_provider.dart';
 import 'package:e_cakeshop/screens/home_screen.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
@@ -10,12 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
   WidgetsFlutterBinding.ensureInitialized();
 }
 
 class MainApp extends StatelessWidget {
-  MainApp({Key? key}) : super(key: key);
+  const MainApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,7 @@ class MainApp extends StatelessWidget {
           } else if (settings.name == LoginScreen.routeName) {
             return MaterialPageRoute(builder: ((context) => LoginScreen()));
           }
+          return null;
         },
       ),
     );

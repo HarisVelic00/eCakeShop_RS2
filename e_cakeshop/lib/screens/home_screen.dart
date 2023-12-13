@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
+
 import 'package:e_cakeshop/screens/archive_screen.dart';
 import 'package:e_cakeshop/screens/news_screen.dart';
 import 'package:e_cakeshop/screens/orders_screen.dart';
@@ -20,10 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double leftContainerWidth = screenWidth * 0.2;
-    double rightContainerWidth = screenWidth - leftContainerWidth - 30.0;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -39,98 +37,100 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             flex: 2,
             child: Container(
-              width: leftContainerWidth,
               margin: const EdgeInsets.fromLTRB(10, 20, 0, 20),
               decoration: BoxDecoration(
                 color: const Color.fromRGBO(247, 249, 253, 1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    ClipOval(
-                      child: Image.asset(
-                        'lib/assets/images/logo.jpg',
-                        width: 160,
-                        height: 160,
-                        fit: BoxFit.cover,
+              child: ListView(
+                children: [
+                  const SizedBox(height: 10),
+                  ClipOval(
+                    child: Image.asset(
+                      'lib/assets/images/logo.jpg',
+                      width: 160,
+                      height: 160,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    textAlign: TextAlign.center,
+                    Authorization.korisnik?.ime ?? 'Guest',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  ListView(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [
+                      NavItem(
+                        title: 'Users',
+                        onTap: () {},
+                        onSelect: (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      Authorization.korisnik?.ime ?? 'Guest',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      NavItem(
+                        title: 'Products',
+                        onTap: () {},
+                        onSelect: (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 40),
-                    NavItem(
-                      title: 'Users',
-                      onTap: () {},
-                      onSelect: (item) {
-                        setState(() {
-                          selectedNavItem = item;
-                        });
-                      },
-                    ),
-                    NavItem(
-                      title: 'Products',
-                      onTap: () {},
-                      onSelect: (item) {
-                        setState(() {
-                          selectedNavItem = item;
-                        });
-                      },
-                    ),
-                    NavItem(
-                      title: 'Orders',
-                      onTap: () {},
-                      onSelect: (item) {
-                        setState(() {
-                          selectedNavItem = item;
-                        });
-                      },
-                    ),
-                    NavItem(
-                      title: 'Pictures',
-                      onTap: () {},
-                      onSelect: (item) {
-                        setState(() {
-                          selectedNavItem = item;
-                        });
-                      },
-                    ),
-                    NavItem(
-                      title: 'News',
-                      onTap: () {},
-                      onSelect: (item) {
-                        setState(() {
-                          selectedNavItem = item;
-                        });
-                      },
-                    ),
-                    NavItem(
-                      title: 'Archive',
-                      onTap: () {},
-                      onSelect: (item) {
-                        setState(() {
-                          selectedNavItem = item;
-                        });
-                      },
-                    ),
-                    NavItem(
-                      title: 'Reviews',
-                      onTap: () {},
-                      onSelect: (item) {
-                        setState(() {
-                          selectedNavItem = item;
-                        });
-                      },
-                    ),
-                    NavItem(
+                      NavItem(
+                        title: 'Orders',
+                        onTap: () {},
+                        onSelect: (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        },
+                      ),
+                      NavItem(
+                        title: 'Pictures',
+                        onTap: () {},
+                        onSelect: (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        },
+                      ),
+                      NavItem(
+                        title: 'News',
+                        onTap: () {},
+                        onSelect: (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        },
+                      ),
+                      NavItem(
+                        title: 'Archive',
+                        onTap: () {},
+                        onSelect: (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        },
+                      ),
+                      NavItem(
+                        title: 'Reviews',
+                        onTap: () {},
+                        onSelect: (item) {
+                          setState(() {
+                            selectedNavItem = item;
+                          });
+                        },
+                      ),
+                      NavItem(
                         title: 'Logout',
                         onTap: () {
                           Authorization.Username = '';
@@ -146,14 +146,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           setState(() {
                             selectedNavItem = item;
                           });
-                          (item) {
-                            setState(() {
-                              selectedNavItem = item;
-                            });
-                          };
-                        }),
-                  ],
-                ),
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -161,7 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             flex: 8,
             child: Container(
-              width: rightContainerWidth,
               margin: const EdgeInsets.fromLTRB(0, 20, 10, 20),
               decoration: BoxDecoration(
                 color: const Color.fromRGBO(247, 249, 253, 1),
@@ -225,9 +221,7 @@ class NavItem extends StatefulWidget {
   final String title;
   final VoidCallback onTap;
   final Function(String) onSelect;
-
   NavItem({required this.title, required this.onTap, required this.onSelect});
-
   @override
   _NavItemState createState() => _NavItemState();
 }

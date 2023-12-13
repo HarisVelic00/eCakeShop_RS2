@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print, unused_catch_clause
 import 'dart:convert';
 import 'package:e_cakeshop_mobile/models/cart.dart';
 import 'package:e_cakeshop_mobile/models/uplata.dart';
@@ -7,8 +8,8 @@ import 'package:e_cakeshop_mobile/providers/uplata_provider.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class CartScreen extends StatefulWidget {
   static const String routeName = "/cart";
@@ -65,6 +66,9 @@ class _CartScreenState extends State<CartScreen> {
                     ElevatedButton(
                       onPressed: () async {
                         await makePayment(_cartProvider.totalPrice);
+                        if (paymentIntentData == null) {
+                          // Perform action after payment or if payment fails
+                        }
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(

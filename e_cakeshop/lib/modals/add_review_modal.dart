@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, avoid_print
+
 import 'package:e_cakeshop/models/korisnik.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +9,7 @@ class AddReviewModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
   final Function(Map<String, dynamic>) onAddReviewPressed;
 
-  AddReviewModal(
+  const AddReviewModal(
       {required this.onCancelPressed, required this.onAddReviewPressed});
 
   @override

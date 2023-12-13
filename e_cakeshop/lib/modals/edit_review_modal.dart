@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print
+
 import 'package:e_cakeshop/models/korisnik.dart';
 import 'package:e_cakeshop/models/recenzija.dart';
 import 'package:e_cakeshop/providers/korisnik_provider.dart';
@@ -9,7 +11,7 @@ class EditReviewModal extends StatefulWidget {
   final void Function(int, dynamic) onUpdatePressed;
   final Recenzija? recenzijaToEdit;
 
-  EditReviewModal({
+  const EditReviewModal({
     required this.onCancelPressed,
     required this.onUpdatePressed,
     required this.recenzijaToEdit,

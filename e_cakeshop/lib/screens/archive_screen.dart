@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print, prefer_const_constructors_in_immutables
+
 import 'dart:io';
 import 'package:e_cakeshop/modals/delete_modal.dart';
 import 'package:e_cakeshop/models/narudzba.dart';
@@ -172,10 +174,12 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                       ],
                     ),
                   ),
-                  ArchiveTable(
-                    openDeleteModal: openDeleteModal,
-                    arhivaProvider: arhivaProvider,
-                    searchQuery: _searchQuery,
+                  Expanded(
+                    child: ArchiveTable(
+                      openDeleteModal: openDeleteModal,
+                      arhivaProvider: arhivaProvider,
+                      searchQuery: _searchQuery,
+                    ),
                   )
                 ],
               ),
@@ -204,7 +208,7 @@ class ArchiveTable extends StatelessWidget {
   final NarudzbaProvider arhivaProvider;
   final String searchQuery;
 
-  ArchiveTable({
+  const ArchiveTable({
     required this.openDeleteModal,
     required this.arhivaProvider,
     required this.searchQuery,
@@ -227,54 +231,59 @@ class ArchiveTable extends StatelessWidget {
                 .toLowerCase()
                 .contains(searchQuery.toLowerCase());
           }).toList();
+
           return SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: SingleChildScrollView(
-                child: DataTable(
-                  dataRowHeight: 90.0,
-                  columns: const [
-                    DataColumn(label: Text('Order Number')),
-                    DataColumn(label: Text('Date')),
-                    DataColumn(label: Text('User')),
-                    DataColumn(label: Text('Products')),
-                    DataColumn(label: Text('Price')),
-                    DataColumn(label: Text('Is Shipped')),
-                    DataColumn(label: Text('Is Canceled')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  rows: archivedOrder.map((narudzba) {
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
-                        DataCell(Text(narudzba.datumNarudzbe.toString())),
-                        DataCell(Text(narudzba.korisnik?.ime ?? '')),
-                        DataCell(
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: narudzba.narudzbaProizvodi!
-                                .split(',')
-                                .map((product) => Text(product.trim()))
-                                .toList(),
+              child: Flexible(
+                child: SingleChildScrollView(
+                  child: DataTable(
+                    dataRowMinHeight: 50,
+                    dataRowMaxHeight: 150,
+                    columns: const [
+                      DataColumn(label: Text('Order Number')),
+                      DataColumn(label: Text('Date')),
+                      DataColumn(label: Text('User')),
+                      DataColumn(label: Text('Products')),
+                      DataColumn(label: Text('Price')),
+                      DataColumn(label: Text('Is Shipped')),
+                      DataColumn(label: Text('Is Canceled')),
+                      DataColumn(label: Text('Actions')),
+                    ],
+                    rows: archivedOrder.map((narudzba) {
+                      return DataRow(
+                        cells: [
+                          DataCell(
+                              Text(narudzba.brojNarudzbe?.toString() ?? '')),
+                          DataCell(Text(narudzba.datumNarudzbe.toString())),
+                          DataCell(Text(narudzba.korisnik?.ime ?? '')),
+                          DataCell(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: narudzba.narudzbaProizvodi!
+                                  .split(',')
+                                  .map((product) => Text(product.trim()))
+                                  .toList(),
+                            ),
                           ),
-                        ),
-                        DataCell(Text(narudzba.ukupnaCijena.toString())),
-                        DataCell(Text(narudzba.isShipped.toString())),
-                        DataCell(Text(narudzba.isCanceled.toString())),
-                        DataCell(
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {
-                                  openDeleteModal(narudzba);
-                                },
-                              ),
-                            ],
+                          DataCell(Text(narudzba.ukupnaCijena.toString())),
+                          DataCell(Text(narudzba.isShipped.toString())),
+                          DataCell(Text(narudzba.isCanceled.toString())),
+                          DataCell(
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () {
+                                    openDeleteModal(narudzba);
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
+                        ],
+                      );
+                    }).toList(),
+                  ),
                 ),
               ));
         } else {

@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously, avoid_print
+
 import 'package:e_cakeshop/modals/add_user_modal.dart';
 import 'package:e_cakeshop/modals/delete_modal.dart';
 import 'package:e_cakeshop/modals/edit_user_modal.dart';
@@ -182,11 +184,13 @@ class _UserScreenState extends State<UserScreen> {
                       ],
                     ),
                   ),
-                  UsersTable(
-                    openDeleteModal: openDeleteModal,
-                    openEditUserModal: openEditUserModal,
-                    korisnikProvider: korisnikProvider,
-                    searchQuery: _searchQuery,
+                  Expanded(
+                    child: UsersTable(
+                      openDeleteModal: openDeleteModal,
+                      openEditUserModal: openEditUserModal,
+                      korisnikProvider: korisnikProvider,
+                      searchQuery: _searchQuery,
+                    ),
                   ),
                 ],
               ),
@@ -201,16 +205,13 @@ class _UserScreenState extends State<UserScreen> {
                   ),
                 ),
               if (isAddUserModalOpen)
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: AddUserModal(
-                      onCancelPressed: () {
-                        Navigator.pop(context);
-                      },
-                      onAddUserPressed: addNewUser,
-                    ),
-                  ),
+                AddUserModal(
+                  onCancelPressed: () {
+                    setState(() {
+                      isAddUserModalOpen = false;
+                    });
+                  },
+                  onAddUserPressed: addNewUser,
                 ),
               if (_isEditUserModalOpen)
                 Center(
@@ -240,7 +241,7 @@ class UsersTable extends StatelessWidget {
   final KorisnikProvider korisnikProvider;
   final String searchQuery;
 
-  UsersTable({
+  const UsersTable({
     required this.openDeleteModal,
     required this.openEditUserModal,
     required this.korisnikProvider,
@@ -264,53 +265,60 @@ class UsersTable extends StatelessWidget {
             return fullName.toLowerCase().contains(searchQuery.toLowerCase());
           }).toList();
 
-          return DataTable(
-            columns: const [
-              DataColumn(label: Text('ID')),
-              DataColumn(label: Text('Name')),
-              DataColumn(label: Text('Surname')),
-              DataColumn(label: Text('Username')),
-              DataColumn(label: Text('Date of Birth')),
-              DataColumn(label: Text('Email')),
-              DataColumn(label: Text('City')),
-              DataColumn(label: Text('Country')),
-              DataColumn(label: Text('Telephone')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: filteredKorisnik.map((korisnik) {
-              return DataRow(
-                cells: [
-                  DataCell(Text(korisnik.korisnikID.toString())),
-                  DataCell(Text(korisnik.ime ?? '')),
-                  DataCell(Text(korisnik.prezime ?? '')),
-                  DataCell(Text(korisnik.korisnickoIme ?? '')),
-                  DataCell(korisnik.datumRodjenja != null
-                      ? Text(korisnik.datumRodjenja.toString())
-                      : const Text('')),
-                  DataCell(Text(korisnik.email ?? '')),
-                  DataCell(Text(korisnik.grad?.naziv ?? '')),
-                  DataCell(Text(korisnik.drzava?.naziv ?? '')),
-                  DataCell(Text(korisnik.telefon ?? '')),
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              openEditUserModal(korisnik);
-                            }),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            openDeleteModal(korisnik);
-                          },
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Flexible(
+              child: SingleChildScrollView(
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('ID')),
+                    DataColumn(label: Text('Name')),
+                    DataColumn(label: Text('Surname')),
+                    DataColumn(label: Text('Username')),
+                    DataColumn(label: Text('Date of Birth')),
+                    DataColumn(label: Text('Email')),
+                    DataColumn(label: Text('City')),
+                    DataColumn(label: Text('Country')),
+                    DataColumn(label: Text('Telephone')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: filteredKorisnik.map((korisnik) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(korisnik.korisnikID.toString())),
+                        DataCell(Text(korisnik.ime ?? '')),
+                        DataCell(Text(korisnik.prezime ?? '')),
+                        DataCell(Text(korisnik.korisnickoIme ?? '')),
+                        DataCell(korisnik.datumRodjenja != null
+                            ? Text(korisnik.datumRodjenja.toString())
+                            : const Text('')),
+                        DataCell(Text(korisnik.email ?? '')),
+                        DataCell(Text(korisnik.grad?.naziv ?? '')),
+                        DataCell(Text(korisnik.drzava?.naziv ?? '')),
+                        DataCell(Text(korisnik.telefon ?? '')),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () {
+                                    openEditUserModal(korisnik);
+                                  }),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  openDeleteModal(korisnik);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           );
         } else {
           return const Text('No data available');

@@ -1,19 +1,27 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MapScreen extends StatefulWidget {
+class MapScreen extends StatelessWidget {
   static const String routeName = "/map";
-  @override
-  _MapScreenState createState() => _MapScreenState();
-}
-
-class _MapScreenState extends State<MapScreen> {
-  late GoogleMapController mapController;
-
-  static const LatLng _defaultLocation = LatLng(44.7654, 16.6442);
 
   @override
   Widget build(BuildContext context) {
+    LatLng restaurantLatLng =
+        const LatLng(44.76676282625026, 16.660145798572916);
+
+    Set<Marker> markers = {};
+
+    markers.add(
+      Marker(
+        markerId: const MarkerId('CakeShop Location'),
+        position: restaurantLatLng,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        infoWindow: const InfoWindow(title: 'CakeShop  Location'),
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map Screen', style: TextStyle(color: Colors.white)),
@@ -27,20 +35,11 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ),
       body: GoogleMap(
-        onMapCreated: (GoogleMapController controller) {
-          mapController = controller;
-        },
-        initialCameraPosition: const CameraPosition(
-          target: _defaultLocation,
-          zoom: 15.0,
+        initialCameraPosition: CameraPosition(
+          target: restaurantLatLng,
+          zoom: 16.0,
         ),
-        markers: {
-          const Marker(
-            markerId: MarkerId('Sanski Most'),
-            position: _defaultLocation,
-            infoWindow: InfoWindow(title: 'Sanski Most'),
-          ),
-        },
+        markers: markers,
       ),
     );
   }

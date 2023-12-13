@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, use_key_in_widget_constructors, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:e_cakeshop/models/drzava.dart';
@@ -11,7 +13,7 @@ class AddUserModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
   final Function(Map<String, dynamic>) onAddUserPressed;
 
-  AddUserModal({
+  const AddUserModal({
     required this.onCancelPressed,
     required this.onAddUserPressed,
   });
@@ -28,7 +30,7 @@ class _AddUserModalState extends State<AddUserModal> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController telephoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  
+
   List<Grad> gradList = [];
   List<Drzava> drzavaList = [];
   List<Uloga> ulogaList = [];
@@ -148,133 +150,137 @@ class _AddUserModalState extends State<AddUserModal> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        color: const Color.fromRGBO(247, 249, 253, 1),
-        width: MediaQuery.of(context).size.width * 0.2,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text(
-                  'Add User',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: surnameController,
-                  decoration: const InputDecoration(labelText: 'Surname'),
-                ),
-                TextField(
-                  controller: dobController,
-                  decoration: const InputDecoration(
-                    labelText: 'Date of Birth',
-                    hintText: 'YYYY-MM-DD',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                ),
-                TextField(
-                  controller: telephoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Telephone',
-                    hintText: 'Example 037-123-456',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedGrad,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedGrad = value!;
-                    });
-                  },
-                  items: gradList.map((Grad grad) {
-                    return DropdownMenuItem<String>(
-                      value: grad.naziv,
-                      child: Text(grad.naziv ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'City'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedDrzava,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedDrzava = value!;
-                    });
-                  },
-                  items: drzavaList.map((Drzava drzava) {
-                    return DropdownMenuItem<String>(
-                      value: drzava.naziv,
-                      child: Text(drzava.naziv ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'Country'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                TextField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(labelText: 'Username'),
-                ),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                  ),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedUloga,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedUloga = value!;
-                    });
-                  },
-                  items: ulogaList.map((Uloga uloga) {
-                    return DropdownMenuItem<String>(
-                      value: uloga.naziv,
-                      child: Text(uloga.naziv ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'Uloga'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                const SizedBox(height: 20),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                      ),
-                      onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel',
-                          style: TextStyle(color: Colors.white)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          color: const Color.fromRGBO(247, 249, 253, 1),
+          width: MediaQuery.of(context).size.width * 0.2,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text(
+                    'Add User',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                      ),
-                      onPressed: _uploadUser,
-                      child: const Text('OK',
-                          style: TextStyle(color: Colors.white)),
+                  ),
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                  ),
+                  TextField(
+                    controller: surnameController,
+                    decoration: const InputDecoration(labelText: 'Surname'),
+                  ),
+                  TextField(
+                    controller: dobController,
+                    decoration: const InputDecoration(
+                      labelText: 'Date of Birth',
+                      hintText: 'YYYY-MM-DD',
+                      hintStyle: TextStyle(color: Colors.grey),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                  ),
+                  TextField(
+                    controller: telephoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'Telephone',
+                      hintText: 'Example 037-123-456',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedGrad,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedGrad = value!;
+                      });
+                    },
+                    items: gradList.map((Grad grad) {
+                      return DropdownMenuItem<String>(
+                        value: grad.naziv,
+                        child: Text(grad.naziv ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'City'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedDrzava,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedDrzava = value!;
+                      });
+                    },
+                    items: drzavaList.map((Drzava drzava) {
+                      return DropdownMenuItem<String>(
+                        value: drzava.naziv,
+                        child: Text(drzava.naziv ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'Country'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  TextField(
+                    controller: usernameController,
+                    decoration: const InputDecoration(labelText: 'Username'),
+                  ),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                    ),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedUloga,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedUloga = value!;
+                      });
+                    },
+                    items: ulogaList.map((Uloga uloga) {
+                      return DropdownMenuItem<String>(
+                        value: uloga.naziv,
+                        child: Text(uloga.naziv ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'Uloga'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                        ),
+                        onPressed: widget.onCancelPressed,
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
+                        ),
+                        onPressed: _uploadUser,
+                        child: const Text('OK',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

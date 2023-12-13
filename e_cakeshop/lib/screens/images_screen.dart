@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously, avoid_print, prefer_const_constructors_in_immutables
+
 import 'package:e_cakeshop/modals/add_image_modal.dart';
 import 'package:e_cakeshop/modals/delete_modal.dart';
 import 'package:e_cakeshop/modals/edit_image_modal.dart';
@@ -187,11 +189,13 @@ class _PicturesScreenState extends State<PicturesScreen> {
                       ],
                     ),
                   ),
-                  ImagesTable(
-                    openEditSlikaModal: openEditImageModal,
-                    openDeleteModal: openDeleteModal,
-                    slikaProvider: slikaProvider,
-                    searchQuery: _searchQuery,
+                  Expanded(
+                    child: ImagesTable(
+                      openEditSlikaModal: openEditImageModal,
+                      openDeleteModal: openDeleteModal,
+                      slikaProvider: slikaProvider,
+                      searchQuery: _searchQuery,
+                    ),
                   )
                 ],
               ),
@@ -245,7 +249,7 @@ class ImagesTable extends StatelessWidget {
   final SlikaProvider slikaProvider;
   final String searchQuery;
 
-  ImagesTable({
+  const ImagesTable({
     required this.openEditSlikaModal,
     required this.openDeleteModal,
     required this.slikaProvider,
@@ -267,40 +271,48 @@ class ImagesTable extends StatelessWidget {
             return imageName.toLowerCase().contains(searchQuery.toLowerCase());
           }).toList();
 
-          return DataTable(
-            columns: const [
-              DataColumn(label: Text('Image')),
-              DataColumn(label: Text('Description')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: filteredSlika.map((slika) {
-              return DataRow(
-                cells: [
-                  DataCell(
-                    slika.slikaByte != null
-                        ? Image.memory(dataFromBase64String(slika.slikaByte!))
-                        : const Text('No Image'),
-                  ),
-                  DataCell(Text(slika.opis ?? '')),
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => openEditSlikaModal(slika),
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Flexible(
+              child: SingleChildScrollView(
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('Image')),
+                    DataColumn(label: Text('Description')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: filteredSlika.map((slika) {
+                    return DataRow(
+                      cells: [
+                        DataCell(
+                          slika.slikaByte != null
+                              ? Image.memory(
+                                  dataFromBase64String(slika.slikaByte!))
+                              : const Text('No Image'),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            openDeleteModal(slika);
-                          },
+                        DataCell(Text(slika.opis ?? '')),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => openEditSlikaModal(slika),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  openDeleteModal(slika);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           );
         } else {
           return const Text('No data available');

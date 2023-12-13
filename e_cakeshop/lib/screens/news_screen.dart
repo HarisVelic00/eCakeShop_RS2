@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously, avoid_print, prefer_const_constructors_in_immutables
+
 import 'package:e_cakeshop/modals/add_news_modal.dart';
 import 'package:e_cakeshop/modals/delete_modal.dart';
 import 'package:e_cakeshop/modals/edit_news_modal.dart';
@@ -186,11 +188,13 @@ class _NewsScreenState extends State<NewsScreen> {
                       ],
                     ),
                   ),
-                  NewsTable(
-                    openEditNewsModal: openEditNewsModal,
-                    openDeleteModal: openDeleteModal,
-                    novostProvider: novostProvider,
-                    searchQuery: _searchQuery,
+                  Expanded(
+                    child: NewsTable(
+                      openEditNewsModal: openEditNewsModal,
+                      openDeleteModal: openDeleteModal,
+                      novostProvider: novostProvider,
+                      searchQuery: _searchQuery,
+                    ),
                   )
                 ],
               ),
@@ -243,7 +247,7 @@ class NewsTable extends StatelessWidget {
   final NovostProvider novostProvider;
   final String searchQuery;
 
-  NewsTable({
+  const NewsTable({
     required this.openEditNewsModal,
     required this.openDeleteModal,
     required this.novostProvider,
@@ -265,46 +269,54 @@ class NewsTable extends StatelessWidget {
             return title.toLowerCase().contains(searchQuery.toLowerCase());
           }).toList();
 
-          return DataTable(
-            columns: const [
-              DataColumn(label: Text('ID')),
-              DataColumn(label: Text('Title')),
-              DataColumn(label: Text('Content')),
-              DataColumn(label: Text('Thumbnail')),
-              DataColumn(label: Text('Creation Date')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: filteredNovost.map((novost) {
-              return DataRow(
-                cells: [
-                  DataCell(Text(novost.novostID.toString())),
-                  DataCell(Text(novost.naslov ?? '')),
-                  DataCell(Text(novost.sadrzaj ?? '')),
-                  DataCell(
-                    novost.thumbnail != null
-                        ? Image.memory(dataFromBase64String(novost.thumbnail!))
-                        : const Text('No Image'),
-                  ),
-                  DataCell(Text(novost.datumKreiranja.toString())),
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () => openEditNewsModal(novost),
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Flexible(
+              child: SingleChildScrollView(
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('ID')),
+                    DataColumn(label: Text('Title')),
+                    DataColumn(label: Text('Content')),
+                    DataColumn(label: Text('Thumbnail')),
+                    DataColumn(label: Text('Creation Date')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: filteredNovost.map((novost) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(novost.novostID.toString())),
+                        DataCell(Text(novost.naslov ?? '')),
+                        DataCell(Text(novost.sadrzaj ?? '')),
+                        DataCell(
+                          novost.thumbnail != null
+                              ? Image.memory(
+                                  dataFromBase64String(novost.thumbnail!))
+                              : const Text('No Image'),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            openDeleteModal(novost);
-                          },
+                        DataCell(Text(novost.datumKreiranja.toString())),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => openEditNewsModal(novost),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  openDeleteModal(novost);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           );
         } else {
           return const Text('No data available');

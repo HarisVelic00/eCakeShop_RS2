@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print
+
 import 'package:e_cakeshop/modals/add_review_modal.dart';
 import 'package:e_cakeshop/modals/delete_modal.dart';
 import 'package:e_cakeshop/modals/edit_review_modal.dart';
@@ -187,11 +189,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       ],
                     ),
                   ),
-                  ReviewTable(
-                    openEditReviewModal: openEditReviewModal,
-                    openDeleteModal: openDeleteModal,
-                    recenzijaProvider: recenzijaProvider,
-                    searchQuery: _searchQuery,
+                  Expanded(
+                    child: ReviewTable(
+                      openEditReviewModal: openEditReviewModal,
+                      openDeleteModal: openDeleteModal,
+                      recenzijaProvider: recenzijaProvider,
+                      searchQuery: _searchQuery,
+                    ),
                   )
                 ],
               ),
@@ -249,7 +253,7 @@ class ReviewTable extends StatelessWidget {
   final RecenzijaProvider recenzijaProvider;
   final String searchQuery;
 
-  ReviewTable({
+  const ReviewTable({
     required this.openEditReviewModal,
     required this.openDeleteModal,
     required this.recenzijaProvider,
@@ -273,41 +277,49 @@ class ReviewTable extends StatelessWidget {
                 .contains(searchQuery.toLowerCase());
           }).toList();
 
-          return DataTable(
-            columns: const [
-              DataColumn(label: Text('ID')),
-              DataColumn(label: Text('Content')),
-              DataColumn(label: Text('Rating')),
-              DataColumn(label: Text('Date of creation')),
-              DataColumn(label: Text('User')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: filteredRecenzija.map((recenzija) {
-              return DataRow(
-                cells: [
-                  DataCell(Text(recenzija.recenzijaID?.toString() ?? '')),
-                  DataCell(Text(recenzija.sadrzajRecenzije ?? '')),
-                  DataCell(Text(recenzija.ocjena.toString() ?? '')),
-                  DataCell(Text(recenzija.datumKreiranja.toString() ?? '')),
-                  DataCell(Text(recenzija.korisnik!.ime ?? '')),
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => openEditReviewModal(recenzija)),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            openDeleteModal(recenzija);
-                          },
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Flexible(
+              child: SingleChildScrollView(
+                child: DataTable(
+                  columns: const [
+                    DataColumn(label: Text('ID')),
+                    DataColumn(label: Text('Content')),
+                    DataColumn(label: Text('Rating')),
+                    DataColumn(label: Text('Date of creation')),
+                    DataColumn(label: Text('User')),
+                    DataColumn(label: Text('Actions')),
+                  ],
+                  rows: filteredRecenzija.map((recenzija) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(recenzija.recenzijaID?.toString() ?? '')),
+                        DataCell(Text(recenzija.sadrzajRecenzije ?? '')),
+                        DataCell(Text(recenzija.ocjena.toString())),
+                        DataCell(Text(recenzija.datumKreiranja.toString())),
+                        DataCell(Text(recenzija.korisnik!.ime ?? '')),
+                        DataCell(
+                          Row(
+                            children: [
+                              IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () =>
+                                      openEditReviewModal(recenzija)),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  openDeleteModal(recenzija);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           );
         } else {
           return const Text('No data available');
