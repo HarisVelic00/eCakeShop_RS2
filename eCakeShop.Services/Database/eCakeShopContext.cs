@@ -3,6 +3,7 @@ using eCakeShop.Services.Helpers;
 using eCakeShop.Services.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,8 @@ namespace eCakeShop.Services.Database
         public virtual DbSet<Uloga> Ulogas { get; set; } = null!;
         public virtual DbSet<VrstaProizvoda> VrstaProizvodas { get; set; } = null!;
         public virtual DbSet<Uplata> Uplatas { get; set; } = null!;
+        public virtual DbSet<Lokacija> Lokacijas { get; set; } = null!;
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -127,6 +130,10 @@ namespace eCakeShop.Services.Database
                 new Uloga { UlogaID = 1, Naziv = "Administrator", Opis = "Administrator" },
                 new Uloga { UlogaID = 2, Naziv = "Uposlenik", Opis = "Uposlenik" }
             );
+
+            modelBuilder.Entity<Lokacija>().HasData(
+              new Lokacija {LokacijaID = 1, Naziv = "Sanski Most", Latitude = 44.76676282625026, Longitude = 16.660145798572916 }
+          );
 
             //Promijenit ce se kasnije, dummy varijable
             modelBuilder.Entity<Uplata>().HasData(

@@ -117,3 +117,5 @@ C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\eCakeShop.pdb
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\eCakeShop.genruntimeconfig.cache
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\ref\eCakeShop.dll
 C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\obj\Debug\net6.0\eCakeShop.sourcelink.json
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\bin\Debug\net6.0\RabbitMQ.Client.dll
+C:\Users\Haris\Desktop\eCakeShop_RS2\eCakeShop\bin\Debug\net6.0\System.Threading.Channels.dll

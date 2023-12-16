@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreen extends StatefulWidget {
   static const String routeName = "/cart";
@@ -26,6 +27,38 @@ class _CartScreenState extends State<CartScreen> {
   Map<String, dynamic>? paymentIntentData;
   Uplata? uplata;
   double iznos = 0;
+  late TextEditingController _addressController;
+
+  String? enteredAddress;
+  late SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _addressController = TextEditingController();
+    _loadSharedPreferences();
+  }
+
+  Future<void> _loadSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+    // Load previously saved address, if any
+    final savedAddress = _prefs.getString('delivery_address');
+    if (savedAddress != null) {
+      setState(() {
+        _addressController.text = savedAddress;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveAddress(String address) async {
+    await _prefs.setString('delivery_address', address);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,32 +86,59 @@ class _CartScreenState extends State<CartScreen> {
             if (_cartProvider.cart.items.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    Text(
-                      'Ukupno: ${_cartProvider.totalPrice.toStringAsFixed(2)} KM',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await makePayment(_cartProvider.totalPrice);
-                        if (paymentIntentData == null) {
-                          // Perform action after payment or if payment fails
-                        }
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.green,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
                         ),
                       ),
-                      child: const Text(
-                        "Kupi",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      child: TextField(
+                        controller: _addressController,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter Delivery Address',
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: InputBorder.none,
+                        ),
                       ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Ukupno: ${_cartProvider.totalPrice.toStringAsFixed(2)} KM',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final enteredAddress = _addressController.text;
+                            await _saveAddress(enteredAddress);
+                            await makePayment(_cartProvider.totalPrice);
+                            if (paymentIntentData == null) {
+                              // Perform action after payment or if payment fails
+                            }
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.green,
+                            ),
+                          ),
+                          child: const Text(
+                            "Kupi",
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -96,7 +156,7 @@ class _CartScreenState extends State<CartScreen> {
       );
     }
 
-    return Container(
+    return SizedBox(
       child: ListView.builder(
         itemCount: cartProvider.cart.items.length,
         itemBuilder: (context, index) {
@@ -158,7 +218,9 @@ class _CartScreenState extends State<CartScreen> {
             ),
           )
           .then((value) {});
-
+      setState(() {
+        enteredAddress = _addressController.text;
+      });
       displayPaymentSheet();
     } catch (e, s) {
       print('exception: $e $s');
@@ -208,12 +270,12 @@ class _CartScreenState extends State<CartScreen> {
       await insertUplata(iznos, paymentIntentData!['id']);
 
       List<Map<String, dynamic>> narudzbaProizvodi = [];
-      _cartProvider.cart.items.forEach((element) {
+      for (var element in _cartProvider.cart.items) {
         narudzbaProizvodi.add({
           "proizvodID": element.product.proizvodID,
           "kolicina": element.count,
         });
-      });
+      }
       Map<String, dynamic> narudzba = {
         "korisnikID": Authorization.korisnik!.korisnikID,
         "uplataID": uplata!.uplataID,

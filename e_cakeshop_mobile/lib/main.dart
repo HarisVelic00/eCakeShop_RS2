@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, must_be_immutable, use_build_context_synchronously, avoid_print
+
 import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
 import 'package:e_cakeshop_mobile/providers/korisnik_provider.dart';
 import 'package:e_cakeshop_mobile/providers/narudzba_provider.dart';
@@ -5,6 +7,7 @@ import 'package:e_cakeshop_mobile/providers/uplata_provider.dart';
 import 'package:e_cakeshop_mobile/screens/cart_screen.dart';
 import 'package:e_cakeshop_mobile/screens/home_screen.dart';
 import 'package:e_cakeshop_mobile/screens/map_screen.dart';
+import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +17,12 @@ import 'package:provider/provider.dart';
 void main() {
   Stripe.publishableKey =
       'pk_test_51OJIXNLfQTkXq96LfxTnxkTBRc0zPXjw0DIFT1HT1zCDRlGP35YY3SYI0M89Rcct7GPcqiHoIk8gM0X2l0aBYvfZ00q3YBLWX8';
-  runApp(MainApp());
+  runApp(const MainApp());
   WidgetsFlutterBinding.ensureInitialized();
 }
 
 class MainApp extends StatelessWidget {
-  MainApp({Key? key}) : super(key: key);
+  const MainApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +40,14 @@ class MainApp extends StatelessWidget {
           LoginScreen.routeName: (context) => LoginScreen(),
           CartScreen.routeName: (context) => const CartScreen(),
           ReviewScreen.routeName: (context) => ReviewScreen(),
-          MapScreen.routeName: (context) => MapScreen(),
+          MapScreen.routeName: (context) => const MapScreen(),
+          ProfileScreen.routeName: (context) => ProfileScreen(),
         },
       ),
     );
   }
 }
 
-// ignore: must_be_immutable
 class LoginScreen extends StatelessWidget {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();

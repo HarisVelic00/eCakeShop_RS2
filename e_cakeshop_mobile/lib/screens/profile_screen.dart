@@ -1,6 +1,5 @@
-// ignore_for_file: unused_field, unused_local_variable
+// ignore_for_file: unused_field, unused_local_variable, avoid_print, use_key_in_widget_constructors
 
-import 'package:e_cakeshop_mobile/main.dart';
 import 'package:e_cakeshop_mobile/modals/edit_profile_modal.dart';
 import 'package:e_cakeshop_mobile/providers/korisnik_provider.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
@@ -8,13 +7,13 @@ import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const String routeName = "/profile";
-  final KorisnikProvider korisnikProvider = KorisnikProvider();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final KorisnikProvider korisnikProvider = KorisnikProvider();
 
   Future<void> updateUser(
       BuildContext context, int id, Map<String, dynamic> request) async {
     try {
-      var updatedUser = await korisnikProvider.update(id, request);
+      var updatedUser = await korisnikProvider.updateMobile(id, request);
     } catch (e) {
       print("Error updating user: $e");
     }
@@ -119,25 +118,6 @@ class ProfileScreen extends StatelessWidget {
             ),
             Expanded(child: Container()),
           ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-              (Route<dynamic> route) => false,
-            );
-          },
-          label: const Text(
-            'Logout',
-            style: TextStyle(color: Colors.white, fontSize: 20.0),
-          ),
-          icon: const Icon(Icons.logout, color: Colors.white),
-          backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
         ),
       ),
     );

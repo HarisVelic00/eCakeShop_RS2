@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print
+
 import 'package:e_cakeshop_mobile/main.dart';
 import 'package:e_cakeshop_mobile/models/novost.dart';
 import 'package:e_cakeshop_mobile/models/proizvod.dart';
@@ -6,6 +8,7 @@ import 'package:e_cakeshop_mobile/providers/novost_provider.dart';
 import 'package:e_cakeshop_mobile/providers/proizvod_provider.dart';
 import 'package:e_cakeshop_mobile/screens/cart_screen.dart';
 import 'package:e_cakeshop_mobile/screens/map_screen.dart';
+import 'package:e_cakeshop_mobile/screens/profile_screen.dart';
 import 'package:e_cakeshop_mobile/screens/review_screen.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -286,6 +289,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
+                Navigator.pushNamed(context, ProfileScreen.routeName);
+              },
+              icon: const Icon(Icons.account_circle),
+            ),
+            IconButton(
+              onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -293,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               icon: const Icon(Icons.logout),
-            )
+            ),
           ],
         ),
       ),
@@ -301,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildImage(String? imageUrl, {double imageSize = 50}) {
-    return Container(
+    return SizedBox(
       width: imageSize,
       height: imageSize,
       child: imageUrl != null

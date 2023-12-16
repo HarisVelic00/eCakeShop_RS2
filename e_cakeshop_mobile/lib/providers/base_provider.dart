@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_cast, curly_braces_in_flow_control_structures, unnecessary_brace_in_string_interps, prefer_interpolation_to_compose_strings, non_constant_identifier_names
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
