@@ -3,17 +3,21 @@ using eCakeShop.Models.Requests;
 using eCakeShop.Models.SearchObjects;
 using eCakeShop.Services.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace eCakeShop.Services.Services
 {
     public class NarudzbaService : CRUDService<Models.Narudzba, Narudzba, NarudzbaSearchObject, NarudzbaInsertRequest, NarudzbaUpdateRequest>, INarudzbaService
     {
-        public NarudzbaService(eCakeShopContext db, IMapper mapper) : base(db, mapper) { }
+        private readonly ConnectionFactory _factory;
+        private readonly string _queueName = "Queue";
+        public NarudzbaService(eCakeShopContext db, IMapper mapper, ConnectionFactory factory) : base(db, mapper)
+        {
+            _factory = factory;
+        }
 
         public override Models.Narudzba Insert(NarudzbaInsertRequest request)
         {
@@ -28,6 +32,8 @@ namespace eCakeShop.Services.Services
                 _db.Add(Proizvod);
             }
             _db.SaveChanges();
+            SendMessageToQueue(entity);
+
             return entity;
         }
 
@@ -94,5 +100,23 @@ namespace eCakeShop.Services.Services
 
             return entity;
         }
+
+        private void SendMessageToQueue(object data)
+        {
+            using (var connection = _factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+                var jsonData = JsonConvert.SerializeObject(data);
+                var body = Encoding.UTF8.GetBytes(jsonData);
+
+                channel.BasicPublish(exchange: "", routingKey: _queueName, basicProperties: null, body: body);
+
+                Console.WriteLine("Sent message to RabbitMQ: {0}", jsonData);
+            }
+        }
+
+
     }
 }

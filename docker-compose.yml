@@ -1,32 +1,54 @@
 version: "3"
 services:
-    ecakeshop-sql:
-        image: "mcr.microsoft.com/mssql/server:2017-latest"
-        restart: unless-stopped
-        environment:
-            SA_PASSWORD: "QWElkj132!"
-            ACCEPT_EULA: "Y"
-            MSSQL_PID: "Developer"
-        ports:
-            - 1401:1433
-        networks:
-            - ecakeshopnet
+  ecakeshop-sql:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    restart: unless-stopped
+    environment:
+      SA_PASSWORD: "haris***321"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1434:1433"
+    networks:
+      - ecakeshopnet
 
-    ecakeshop-api:
-        restart: unless-stopped
-        build: .
-        environment:
-            - ConnectionStrings:eCakeShop=Server=ecakeshop-sql,1433;Database=eCakeShop;User=sa;Password=QWElkj132!;
-            - ASPNETCORE_ENVIRONMENT=Development
-        ports:
-            - 7166:7166
-        networks:
-            - ecakeshopnet
-        depends_on:
-            - ecakeshop-sql
-        links:
-            - ecakeshop-sql 
+  rabbitmq:
+    image: "rabbitmq:latest"
+    hostname: "rabbitmq"
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - ecakeshopnet
+
+  ecakeshop-api:
+    restart: unless-stopped
+    build: .
+    environment:
+      - "ConnectionStrings__eCakeShop=Server=ecakeshop-sql,1433;Database=eCakeShop;Encrypt=true;MultipleActiveResultSets=true;TrustServerCertificate=True;User=sa;Password=haris***321;"
+      - "ASPNETCORE_ENVIRONMENT=Development"
+    ports:
+      - "7166:7166"
+    networks:
+      - ecakeshopnet
+    depends_on:
+      - ecakeshop-sql
+      - rabbitmq
+
+  helper-api:
+    restart: unless-stopped
+    build:
+      context: ./HelperAPI
+    environment:
+      - "ASPNETCORE_ENVIRONMENT=Development"
+    ports:
+      - "7028:7028"
+    networks:
+      - ecakeshopnet
+    depends_on:
+      - rabbitmq
 
 networks:
-  ecakeshopnet: 
+  ecakeshopnet:
     driver: bridge

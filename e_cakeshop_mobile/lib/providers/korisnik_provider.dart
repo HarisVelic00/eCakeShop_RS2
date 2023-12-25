@@ -10,7 +10,6 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
 
   @override
   Korisnik fromJson(x) {
-    // TODO: implement fromJson
     return Korisnik.fromJson(x);
   }
 
@@ -31,10 +30,9 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
 
   Future<Korisnik> updateMobile(int id, Map<String, dynamic> request) async {
     var baseUrl = Uri.parse(_baseUrl);
-    var endpoint =
-        "Korisnik/$id/UpdateMobile"; // Endpoint without leading slash
+    var endpoint = "Korisnik/$id/UpdateMobile";
 
-    var uri = baseUrl.replace(path: baseUrl.path + '/' + endpoint);
+    var uri = baseUrl.replace(path: baseUrl.path + endpoint);
 
     var headers = getHeaders();
     var jsonRequest = jsonEncode(request);

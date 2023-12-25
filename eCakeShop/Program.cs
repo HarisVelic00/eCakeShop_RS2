@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using eCakeShop.Auth;
+using eCakeShop;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,10 @@ builder.Services.AddTransient<ILokacijaService, LokacijaService>();
 
 builder.Services.AddTransient<IUplataService, UplataService>();
 builder.Services.AddAutoMapper(typeof(IDrzavaService));
+
+var factory = new ConnectionFactory() { HostName = "rabbitmq", Port = 5672 };
+builder.Services.AddSingleton(factory);
+
 
 var app = builder.Build();
 

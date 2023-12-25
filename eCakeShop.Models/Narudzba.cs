@@ -24,7 +24,7 @@ namespace eCakeShop.Models
         [DisplayName("Kupljeni proizvodi")]
         public string NarudzbaProizvodi => string.Join(", ", NarudzbaProizvodis?.Select(x => $"{x.Proizvod?.Naziv} x{x.Kolicina}")?.ToList());
         [DisplayName("Ukupna cijena")]
-        public decimal UkupnaCijena => NarudzbaProizvodis.Sum(x => x.Proizvod.Cijena * x.Kolicina);
+        public double UkupnaCijena => NarudzbaProizvodis.Sum(x => x.Proizvod.Cijena * x.Kolicina);
         [DisplayName("Otkazano")]
         public bool IsCanceled { get; set; } = false;
         [DisplayName("Isporuceno")]

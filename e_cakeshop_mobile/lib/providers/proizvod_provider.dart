@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 import 'package:e_cakeshop_mobile/models/proizvod.dart';
 import 'package:e_cakeshop_mobile/providers/base_provider.dart';

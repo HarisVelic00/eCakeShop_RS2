@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:e_cakeshop_mobile/models/cart.dart';
 import 'package:e_cakeshop_mobile/models/proizvod.dart';
 import 'package:flutter/widgets.dart';

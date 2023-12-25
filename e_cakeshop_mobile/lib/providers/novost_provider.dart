@@ -6,7 +6,6 @@ class NovostProvider extends BaseProvider<Novost> {
 
   @override
   fromJson(x) {
-    // TODO: implement fromJson
     return Novost.fromJson(x);
   }
 }

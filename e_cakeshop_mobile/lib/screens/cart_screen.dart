@@ -41,7 +41,6 @@ class _CartScreenState extends State<CartScreen> {
 
   Future<void> _loadSharedPreferences() async {
     _prefs = await SharedPreferences.getInstance();
-    // Load previously saved address, if any
     final savedAddress = _prefs.getString('delivery_address');
     if (savedAddress != null) {
       setState(() {
@@ -112,7 +111,7 @@ class _CartScreenState extends State<CartScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Ukupno: ${_cartProvider.totalPrice.toStringAsFixed(2)} KM',
+                          'Total: ${_cartProvider.totalPrice.toStringAsFixed(2)} KM',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -124,9 +123,7 @@ class _CartScreenState extends State<CartScreen> {
                             final enteredAddress = _addressController.text;
                             await _saveAddress(enteredAddress);
                             await makePayment(_cartProvider.totalPrice);
-                            if (paymentIntentData == null) {
-                              // Perform action after payment or if payment fails
-                            }
+                            if (paymentIntentData == null) {}
                           },
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
@@ -134,7 +131,7 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           child: const Text(
-                            "Kupi",
+                            "Buy",
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),
@@ -152,7 +149,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildProductCardList(CartProvider cartProvider) {
     if (cartProvider.cart.items.isEmpty) {
       return const Center(
-        child: Text("Korpa je trenutno prazna"),
+        child: Text("Cart is empty"),
       );
     }
 
@@ -179,9 +176,9 @@ class _CartScreenState extends State<CartScreen> {
           child: _buildImage(item.product.slika),
         ),
         title:
-            Text("${item.product.naziv} | Kolicina: ${item.count.toString()}"),
+            Text("${item.product.naziv} | Quantity: ${item.count.toString()}"),
         subtitle: Text(
-            "Cijena ${item.product.cijena.toString()} | Ukupno: ${(item.product.cijena! * item.count).toString()}"),
+            "Price ${item.product.cijena.toString()} | Total: ${(item.product.cijena! * item.count).toString()}"),
         trailing: IconButton(
           onPressed: () {
             cartProvider.removeFromCart(item.product);
@@ -289,12 +286,12 @@ class _CartScreenState extends State<CartScreen> {
       });
 
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Uplata uspjesna")));
+          .showSnackBar(const SnackBar(content: Text("Payment successful")));
     } on StripeException catch (e) {
       showDialog(
         context: context,
         builder: (_) => const AlertDialog(
-          content: Text("Ponistena transakcija"),
+          content: Text("Transaction failed"),
         ),
       );
     } catch (e) {

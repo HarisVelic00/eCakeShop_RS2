@@ -144,6 +144,10 @@
             "Microsoft.ML.Recommender": {
               "target": "Package",
               "version": "[0.20.1, )"
+            },
+            "RabbitMQ.Client": {
+              "target": "Package",
+              "version": "[6.8.1, )"
             }
           },
           "imports": [

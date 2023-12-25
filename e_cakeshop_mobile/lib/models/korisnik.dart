@@ -36,7 +36,7 @@ class Korisnik {
     this.drzava,
     this.lozinka,
     this.uloga,
-  }) {}
+  });
 
   factory Korisnik.fromJson(Map<String, dynamic> json) =>
       _$KorisnikFromJson(json);

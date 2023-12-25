@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +18,11 @@ namespace eCakeShop.Services.Services
 {
     public class ProizvodService : CRUDService<Models.Proizvod, Proizvod, ProizvodSearchObject, ProizvodInsertRequest, ProizvodUpdateRequest>, IProizvodService
     {
-        public ProizvodService(eCakeShopContext db, IMapper mapper) : base(db, mapper)
+        private readonly ConnectionFactory _factory;
+        private readonly string _queueName = "myQueue";
+        public ProizvodService(eCakeShopContext db, IMapper mapper, ConnectionFactory factory) : base(db, mapper)
         {
-
+            _factory = factory;
         }
 
         public override IQueryable<Proizvod> AddInclude(IQueryable<Proizvod> entity, ProizvodSearchObject obj)
@@ -54,10 +58,12 @@ namespace eCakeShop.Services.Services
         static object isLocked = new object();
         static MLContext mlContext = null;
         static ITransformer model = null;
+
         public List<Models.Proizvod> Recommend(int korisnikID)
         {
             var all = _db.Narudzbas.Include(x => x.NarudzbaProizvodis).ThenInclude(x => x.Proizvod).ToList();
             List<int> allproducts = new List<int>();
+
             foreach (var item in all)
             {
                 foreach (var item2 in item.NarudzbaProizvodis)
@@ -65,15 +71,17 @@ namespace eCakeShop.Services.Services
                     allproducts.Add(item2.ProizvodID);
                 }
             }
+
             if (allproducts.Distinct().Count() < 2)
                 return new List<Models.Proizvod>();
 
-
             var narudzbeProizvodi = _db.Narudzbas.Include(x => x.NarudzbaProizvodis).ThenInclude(x => x.Proizvod).Where(x => x.KorisnikID == korisnikID).ToList();
+
             if (narudzbeProizvodi.Count == 0)
                 return new List<Models.Proizvod>();
-            int id;
+
             List<int> products = new List<int>();
+
             foreach (var item in narudzbeProizvodi)
             {
                 foreach (var item2 in item.NarudzbaProizvodis)
@@ -82,16 +90,22 @@ namespace eCakeShop.Services.Services
                 }
             }
 
+            int id = 0;
             if (products.Distinct().Count() >= 2)
             {
-                var list = products.Distinct();
+                var distinctProducts = products.Distinct().ToList();
                 Random rand = new Random();
-                int r = rand.Next(list.Count() - 1);
-                id = products.ElementAt(r);
+                int r = rand.Next(distinctProducts.Count);
+                id = distinctProducts[r];
             }
-            else
+            else if (products.Any())
             {
-                id = products.ElementAt(0);
+                id = products.First();
+            }
+
+            if (id == 0)
+            {
+                return new List<Models.Proizvod>();
             }
 
             lock (isLocked)
@@ -126,9 +140,7 @@ namespace eCakeShop.Services.Services
                         }
                     }
 
-
                     var traindata = mlContext.Data.LoadFromEnumerable(data);
-
 
                     MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
                     options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
@@ -140,14 +152,11 @@ namespace eCakeShop.Services.Services
                     options.NumberOfIterations = 100;
                     options.C = 0.00001;
 
-
                     var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
 
                     model = est.Fit(traindata);
                 }
-
             }
-
 
             List<Database.Proizvod> allItems = _db.Proizvods.ToList();
 
@@ -166,10 +175,13 @@ namespace eCakeShop.Services.Services
             }
 
             var finalResult = predictionResult.OrderByDescending(x => x.Item2)
-                .Select(x => x.Item1).ToList();
+                                              .Select(x => x.Item1)
+                                              .ToList();
 
             return _mapper.Map<List<Models.Proizvod>>(finalResult);
         }
+
+
 
         public class Copurchase_prediction
         {
@@ -186,5 +198,22 @@ namespace eCakeShop.Services.Services
 
             public float Label { get; set; }
         }
+
+        private void SendMessageToQueue(object data)
+        {
+            using (var connection = _factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+                var jsonData = JsonConvert.SerializeObject(data);
+                var body = Encoding.UTF8.GetBytes(jsonData);
+
+                channel.BasicPublish(exchange: "", routingKey: _queueName, basicProperties: null, body: body);
+
+                Console.WriteLine("Sent message to RabbitMQ: {0}", jsonData);
+            }
+        }
+
     }
 }

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperAPI", "HelperAPI.csproj", "{CE322D43-7A5E-4E32-A35B-E5FCE6662244}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE322D43-7A5E-4E32-A35B-E5FCE6662244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE322D43-7A5E-4E32-A35B-E5FCE6662244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE322D43-7A5E-4E32-A35B-E5FCE6662244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE322D43-7A5E-4E32-A35B-E5FCE6662244}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {32A009FE-ED70-4508-AD61-EB70EC8D2C01}
+	EndGlobalSection
+EndGlobal

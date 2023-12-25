@@ -14,7 +14,6 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace eCakeShop.Services.Database
 {
-
     public class eCakeShopContext : DbContext
     {
         public eCakeShopContext(DbContextOptions<eCakeShopContext> options) : base(options) { }
@@ -33,15 +32,13 @@ namespace eCakeShop.Services.Database
         public virtual DbSet<Uplata> Uplatas { get; set; } = null!;
         public virtual DbSet<Lokacija> Lokacijas { get; set; } = null!;
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-VLNCSDD;Initial Catalog=eCakeShop;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+               optionsBuilder.UseSqlServer("Data Source=DESKTOP-VLNCSDD;Initial Catalog=eCakeShop;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=True;");
             }
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -85,24 +82,45 @@ namespace eCakeShop.Services.Database
              new Narudzba { NarudzbaID = 4, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = false, KorisnikID = 5, UplataID = 4 },
              new Narudzba { NarudzbaID = 5, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = true, KorisnikID = 5, UplataID = 5 },
              new Narudzba { NarudzbaID = 6, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = true, KorisnikID = 5, UplataID = 6 },
-             new Narudzba { NarudzbaID = 7, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = false, KorisnikID = 3, UplataID = 7 }
+             new Narudzba { NarudzbaID = 7, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = false, KorisnikID = 3, UplataID = 7 },
+             new Narudzba { NarudzbaID = 8, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = false, KorisnikID = 1, UplataID = 8 },
+             new Narudzba { NarudzbaID = 9, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = true, KorisnikID = 1, UplataID = 9 },
+             new Narudzba { NarudzbaID = 10, BrojNarudzbe = Guid.NewGuid().ToString(), DatumNarudzbe = DateTime.Now, IsCanceled = false, IsShipped = false, KorisnikID = 1, UplataID = 10 }
              );
 
             modelBuilder.Entity<NarudzbaProizvodi>().HasData(
-              new NarudzbaProizvodi { NarudzbaProizvodiID = 1, NarudzbaID = 1, ProizvodID = 1, Kolicina = 1 },
-              new NarudzbaProizvodi { NarudzbaProizvodiID = 2, NarudzbaID = 1, ProizvodID = 3, Kolicina = 2 },
-              new NarudzbaProizvodi { NarudzbaProizvodiID = 3, NarudzbaID = 1, ProizvodID = 4, Kolicina = 1 },
-              new NarudzbaProizvodi { NarudzbaProizvodiID = 4, NarudzbaID = 2, ProizvodID = 2, Kolicina = 1 },
-              new NarudzbaProizvodi { NarudzbaProizvodiID = 5, NarudzbaID = 2, ProizvodID = 3, Kolicina = 2 },
-              new NarudzbaProizvodi { NarudzbaProizvodiID = 6, NarudzbaID = 2, ProizvodID = 5, Kolicina = 2 },
-              new NarudzbaProizvodi { NarudzbaProizvodiID = 7, NarudzbaID = 2, ProizvodID = 1, Kolicina = 1 }
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 1, NarudzbaID = 1, ProizvodID = 1, Kolicina = 2 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 2, NarudzbaID = 1, ProizvodID = 4, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 4, NarudzbaID = 2, ProizvodID = 1, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 5, NarudzbaID = 2, ProizvodID = 2, Kolicina = 2 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 6, NarudzbaID = 2, ProizvodID = 7, Kolicina = 2 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 8, NarudzbaID = 3, ProizvodID = 2, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 9, NarudzbaID = 3, ProizvodID = 1, Kolicina = 3 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 10, NarudzbaID = 3, ProizvodID = 6, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 11, NarudzbaID = 3, ProizvodID = 3, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 12, NarudzbaID = 4, ProizvodID = 1, Kolicina = 3 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 13, NarudzbaID = 4, ProizvodID = 2, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 14, NarudzbaID = 4, ProizvodID = 3, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 15, NarudzbaID = 4, ProizvodID = 7, Kolicina = 2 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 19, NarudzbaID = 5, ProizvodID = 3, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 20, NarudzbaID = 5, ProizvodID = 6, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 21, NarudzbaID = 6, ProizvodID = 5, Kolicina = 3 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 22, NarudzbaID = 6, ProizvodID = 2, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 23, NarudzbaID = 6, ProizvodID = 1, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 24, NarudzbaID = 6, ProizvodID = 4, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 25, NarudzbaID = 7, ProizvodID = 1, Kolicina = 2 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 26, NarudzbaID = 7, ProizvodID = 2, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 27, NarudzbaID = 8, ProizvodID = 2, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 30, NarudzbaID = 8, ProizvodID = 6, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 31, NarudzbaID = 9, ProizvodID = 2, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 32, NarudzbaID = 9, ProizvodID = 3, Kolicina = 2 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 33, NarudzbaID = 9, ProizvodID = 4, Kolicina = 1 },
+                new NarudzbaProizvodi { NarudzbaProizvodiID = 34, NarudzbaID = 10, ProizvodID = 6, Kolicina = 1 }
              );
 
             modelBuilder.Entity<Novost>().HasData(
-             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Kolac od jagoda", Sadrzaj = "Kolac od jagoda", Thumbnail = Convert.FromBase64String(Images.Slike[5]) },
-             new Novost { NovostID = 2, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Kolac od limuna i masline", Sadrzaj = "Kolac od limuna i masline", Thumbnail = Convert.FromBase64String(Images.Slike[6]) },
-             new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Nova Torta", Sadrzaj = "Nova Torta", Thumbnail = Convert.FromBase64String(Images.Slike[7]) },
-             new Novost { NovostID = 4, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[8]) }
+             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Kolac od jagoda", Sadrzaj = "Kolac od jagoda", Thumbnail = Convert.FromBase64String(Images.Slike[7]) },
+             new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[7]) }
             );
 
             modelBuilder.Entity<Proizvod>().HasData(
@@ -110,20 +128,19 @@ namespace eCakeShop.Services.Database
                 new Proizvod { ProizvodID = 2, Cijena = 40, Naziv = "Cokoladna torta", VrstaProizvodaID = 1, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[1]), Opis = "Cokoladna torta" },
                 new Proizvod { ProizvodID = 3, Cijena = 4, Naziv = "Kroasan", VrstaProizvodaID = 3, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[2]), Opis = "Kroasan" },
                 new Proizvod { ProizvodID = 4, Cijena = 20, Naziv = "Cokoladne kocke", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[3]), Opis = "Cokoladne kocke" },
-                new Proizvod { ProizvodID = 5, Cijena = 3, Naziv = "Sladoled", VrstaProizvodaID = 4, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[4]), Opis = "Pita od jabuka" }
-            );
+                new Proizvod { ProizvodID = 5, Cijena = 3, Naziv = "Sladoled", VrstaProizvodaID = 4, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[4]), Opis = "Pita od jabuka" },
+                new Proizvod { ProizvodID = 6, Cijena = 30, Naziv = "Crno-bijeli kokos kolac", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[5]), Opis = "Crno-bijeli kokos kolac" },
+                new Proizvod { ProizvodID = 7, Cijena = 40, Naziv = "Cudo od cokolade", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[6]), Opis = "Cudo od cokolade" }
+                );
 
             modelBuilder.Entity<Recenzija>().HasData(
                 new Recenzija { RecenzijaID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 3, Ocjena = 4, SadrzajRecenzije = "Torta je odlicna" },
-                new Recenzija { RecenzijaID = 2, DatumKreiranja = DateTime.Now, KorisnikID = 3, Ocjena = 5, SadrzajRecenzije = "Vrhunski sladoled" },
-                new Recenzija { RecenzijaID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 3, Ocjena = 3, SadrzajRecenzije = "Kolac je mogao biti bolji" }
+                new Recenzija { RecenzijaID = 2, DatumKreiranja = DateTime.Now, KorisnikID = 3, Ocjena = 5, SadrzajRecenzije = "Vrhunski sladoled" }
             );
 
             modelBuilder.Entity<Slika>().HasData(
-                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Kolac od jagoda", SlikaByte = Convert.FromBase64String(Images.Slike[5]) },
-                new Slika { SlikaID = 2, KorisnikID = 2, Opis = "Kolac od limuna i masline", SlikaByte = Convert.FromBase64String(Images.Slike[6]) },
-                new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Nova Torta", SlikaByte = Convert.FromBase64String(Images.Slike[7]) },
-                new Slika { SlikaID = 4, KorisnikID = 4, Opis = "Topla cokolada", SlikaByte = Convert.FromBase64String(Images.Slike[8]) }
+                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Kolac od jagoda", SlikaByte = Convert.FromBase64String(Images.Slike[7]) },
+                new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Topla cokolada", SlikaByte = Convert.FromBase64String(Images.Slike[7]) }
              );
 
             modelBuilder.Entity<Uloga>().HasData(
@@ -132,18 +149,20 @@ namespace eCakeShop.Services.Database
             );
 
             modelBuilder.Entity<Lokacija>().HasData(
-              new Lokacija {LokacijaID = 1, Naziv = "Sanski Most", Latitude = 44.76676282625026, Longitude = 16.660145798572916 }
+              new Lokacija { LokacijaID = 1, Naziv = "Sanski Most", Latitude = 44.76676282625026, Longitude = 16.660145798572916 }
           );
 
-            //Promijenit ce se kasnije, dummy varijable
             modelBuilder.Entity<Uplata>().HasData(
-            new Uplata { UplataID = 1, BrojTransakcije = "pi_3MSSv3ANnFXjgSPx2LOrScMr", DatumTransakcije = DateTime.Now, Iznos = 146 },
-            new Uplata { UplataID = 2, BrojTransakcije = "pi_3MSSwtANnFXjgSPx1GLV7ZWR", DatumTransakcije = DateTime.Now, Iznos = 196 },
-            new Uplata { UplataID = 3, BrojTransakcije = "pi_3MSSxZANnFXjgSPx1h6sZONh", DatumTransakcije = DateTime.Now, Iznos = 122 },
-            new Uplata { UplataID = 4, BrojTransakcije = "pi_3MSSykANnFXjgSPx0j7dwFvL", DatumTransakcije = DateTime.Now, Iznos = 132 },
-            new Uplata { UplataID = 5, BrojTransakcije = "pi_3MSSzFANnFXjgSPx1K5yB3MP", DatumTransakcije = DateTime.Now, Iznos = 148 },
-            new Uplata { UplataID = 6, BrojTransakcije = "pi_3MSSzgANnFXjgSPx30vUfLBv", DatumTransakcije = DateTime.Now, Iznos = 136 },
-            new Uplata { UplataID = 7, BrojTransakcije = "pi_3MST02ANnFXjgSPx28dm4Ke1", DatumTransakcije = DateTime.Now, Iznos = 66 }
+            new Uplata { UplataID = 1, BrojTransakcije = "pi_3OPortLfQTkXq96L2EFmVZB0", DatumTransakcije = DateTime.Now, Iznos = 40 },
+            new Uplata { UplataID = 2, BrojTransakcije = "pi_3OPU4CLfQTkXq96L2o5yxbGK", DatumTransakcije = DateTime.Now, Iznos = 40 },
+            new Uplata { UplataID = 3, BrojTransakcije = "pi_3OPU3KLfQTkXq96L07lQjpkK", DatumTransakcije = DateTime.Now, Iznos = 120 },
+            new Uplata { UplataID = 4, BrojTransakcije = "pi_3OPTmmLfQTkXq96L0kaBF0KX", DatumTransakcije = DateTime.Now, Iznos = 100 },
+            new Uplata { UplataID = 5, BrojTransakcije = "pi_3OPTkkLfQTkXq96L3VZHEysK", DatumTransakcije = DateTime.Now, Iznos = 140 },
+            new Uplata { UplataID = 6, BrojTransakcije = "pi_3OPTaULfQTkXq96L3nARxQbe", DatumTransakcije = DateTime.Now, Iznos = 130 },
+            new Uplata { UplataID = 7, BrojTransakcije = "pi_3OPTV5LfQTkXq96L2MKk0DbD", DatumTransakcije = DateTime.Now, Iznos = 60 },
+            new Uplata { UplataID = 8, BrojTransakcije = "pi_3OP90ZLfQTkXq96L1NKEclIO", DatumTransakcije = DateTime.Now, Iznos = 80 },
+            new Uplata { UplataID = 9, BrojTransakcije = "pi_3OPSMGLfQTkXq96L0y1fGr7D", DatumTransakcije = DateTime.Now, Iznos = 100 },
+            new Uplata { UplataID = 10, BrojTransakcije = "pi_3OPSeGLfQTkXq96L2fKVqBjy", DatumTransakcije = DateTime.Now, Iznos = 100 }
             );
 
             modelBuilder.Entity<VrstaProizvoda>().HasData(

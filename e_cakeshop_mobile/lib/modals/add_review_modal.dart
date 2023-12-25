@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors
+
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,7 +7,7 @@ import 'package:intl/intl.dart';
 class AddReviewModal extends StatefulWidget {
   final Function(Map<String, dynamic>) onAddReviewPressed;
 
-  AddReviewModal({required this.onAddReviewPressed});
+  const AddReviewModal({required this.onAddReviewPressed});
 
   @override
   _AddReviewDialogState createState() => _AddReviewDialogState();

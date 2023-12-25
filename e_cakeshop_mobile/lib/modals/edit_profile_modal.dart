@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print
 
 import 'package:flutter/material.dart';
 
@@ -18,19 +18,29 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   final TextEditingController telephoneController = TextEditingController();
 
   Future<void> uploadEdit() async {
-    final ime = nameController.text;
-    final prezime = surnameController.text;
-    final email = emailController.text;
-    final telefon = telephoneController.text;
+    try {
+      final ime = nameController.text;
+      final prezime = surnameController.text;
+      final email = emailController.text;
+      final telefon = telephoneController.text;
 
-    Map<String, dynamic> newEdit = {
-      "ime": ime,
-      "prezime": prezime,
-      "email": email,
-      "telefon": telefon
-    };
-    widget.onEditPressed(newEdit);
-    setState(() {});
+      Map<String, dynamic> newEdit = {
+        "ime": ime,
+        "prezime": prezime,
+        "email": email,
+        "telefon": telefon
+      };
+      widget.onEditPressed(newEdit);
+      Navigator.pop(context);
+    } catch (e) {
+      print('Error editing user: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error editing user'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

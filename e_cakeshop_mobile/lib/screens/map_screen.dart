@@ -1,11 +1,10 @@
-// ignore_for_file: unused_element, avoid_print, library_private_types_in_public_api, avoid_init_to_null
+// ignore_for_file: avoid_init_to_null, library_private_types_in_public_api, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
@@ -28,14 +27,22 @@ class _MapScreenState extends State<MapScreen> {
   late Timer? _timer = null;
   late LatLng vanPosition;
   late List<LatLng> vanRoute = [];
+  bool _isMounted = false;
+  late int _counter = 0;
+  bool isDeliveryCompleted = false;
 
   @override
   void initState() {
     super.initState();
+    if (!isDeliveryCompleted) {
+      moveVan();
+    }
+    _isMounted = true;
     restaurantLatLng = const LatLng(44.76676282625026, 16.660145798572916);
     markers = {};
     addressPassed = widget.deliveryAddress ?? "No address passed";
     _loadSharedPreferences();
+    _loadVanLocation();
 
     markers.add(
       Marker(
@@ -69,6 +76,9 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 );
                 generateRoute();
+                vanRoute.clear();
+                _counter = 0;
+                moveVan();
               });
             } else {
               print('Address conversion failed or returned null');
@@ -107,6 +117,7 @@ class _MapScreenState extends State<MapScreen> {
           points: polylineCoordinates,
         )
       };
+      vanRoute = polylineCoordinates;
     });
 
     moveVan();
@@ -116,11 +127,23 @@ class _MapScreenState extends State<MapScreen> {
     final prefs = await SharedPreferences.getInstance();
     final double? vanLatitude = prefs.getDouble('van_latitude');
     final double? vanLongitude = prefs.getDouble('van_longitude');
+    final int? savedCounter = prefs.getInt('van_counter');
 
-    if (vanLatitude != null && vanLongitude != null) {
+    if (vanLatitude != null && vanLongitude != null && savedCounter != null) {
       setState(() {
         vanPosition = LatLng(vanLatitude, vanLongitude);
+        markers.add(
+          Marker(
+            markerId: const MarkerId('Van'),
+            position: vanPosition,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen,
+            ),
+            infoWindow: const InfoWindow(title: 'Moving Van'),
+          ),
+        );
       });
+      _counter = savedCounter;
       moveVan();
     }
   }
@@ -132,13 +155,16 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void moveVan() {
-    int counter = 0;
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (counter < polylines.first.points.length) {
-        setState(() {
-          vanPosition = polylines.first.points[counter];
-          vanRoute.add(vanPosition);
+      if (_isMounted && _counter < vanRoute.length - 1) {
+        _controller.future.then((controller) {
+          controller.animateCamera(
+            CameraUpdate.newLatLng(vanRoute[_counter]),
+          );
+        });
 
+        setState(() {
+          vanPosition = vanRoute[_counter];
           markers.removeWhere((marker) => marker.markerId.value == 'Van');
           markers.add(
             Marker(
@@ -150,13 +176,47 @@ class _MapScreenState extends State<MapScreen> {
               infoWindow: const InfoWindow(title: 'Moving Van'),
             ),
           );
-
-          counter++;
         });
+
+        _saveVanLocation(
+          vanPosition.latitude,
+          vanPosition.longitude,
+        );
+
+        _counter++;
+        _saveCounter(_counter);
+
+        if (_counter == vanRoute.length - 1) {
+          _timer?.cancel();
+          _timer = null;
+          showOrderDeliveredSnackBar();
+          clearDeliveryData();
+          isDeliveryCompleted = true;
+        }
       } else {
         _timer?.cancel();
       }
     });
+  }
+
+  void clearDeliveryData() {
+    setState(() {
+      markers.removeWhere(
+          (marker) => marker.markerId.value == 'Delivery Location');
+    });
+  }
+
+  void showOrderDeliveredSnackBar() {
+    const snackBar = SnackBar(
+      content: Text('Delivery successful'),
+      duration: Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Future<void> _saveCounter(int counter) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('van_counter', counter);
   }
 
   Future<LatLng?> getAddressCoordinates(String address) async {
@@ -176,6 +236,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void dispose() {
+    _isMounted = false;
     _timer?.cancel();
     super.dispose();
   }
@@ -210,15 +271,15 @@ class _MapScreenState extends State<MapScreen> {
             ),
           Expanded(
             child: GoogleMap(
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
               initialCameraPosition: CameraPosition(
                 target: restaurantLatLng,
                 zoom: 10.0,
               ),
               markers: markers,
               polylines: polylines,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
             ),
           ),
         ],

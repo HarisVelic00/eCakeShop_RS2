@@ -4,6 +4,8 @@ using eCakeShop.Models.Requests;
 using eCakeShop.Models.SearchObjects;
 using eCakeShop.Services.Database;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,12 @@ namespace eCakeShop.Services.Services
 {
     public class KorisnikService : CRUDService<Models.Korisnik, Database.Korisnik, KorisnikSearchObject, KorisnikInsertRequest, KorisnikUpdateRequest>, IKorisnikService
     {
-        public KorisnikService(eCakeShopContext db, IMapper mapper) : base(db, mapper) { }
+        private readonly ConnectionFactory _factory;
+        private readonly string _queueName = "myQueue";
+        public KorisnikService(eCakeShopContext db, IMapper mapper, ConnectionFactory factory) : base(db, mapper)
+        {
+            _factory = factory;
+        }
 
         public override Models.Korisnik Insert(KorisnikInsertRequest request)
         {
@@ -29,6 +36,7 @@ namespace eCakeShop.Services.Services
                 _db.KorisnikUlogas.Add(Uloga);
             }
             _db.SaveChanges();
+            SendMessageToQueue(entity);
             return entity;
         }
 
@@ -151,6 +159,19 @@ namespace eCakeShop.Services.Services
             HashAlgorithm algorithm = HashAlgorithm.Create("SHA1");
             byte[] inArray = algorithm.ComputeHash(dst);
             return Convert.ToBase64String(inArray);
+        }
+
+        private void SendMessageToQueue(object data)
+        {
+            using (var connection = _factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                var jsonData = JsonConvert.SerializeObject(data);
+                var body = Encoding.UTF8.GetBytes(jsonData);
+                channel.BasicPublish(exchange: "", routingKey: _queueName, basicProperties: null, body: body);
+                Console.WriteLine("Sent message to RabbitMQ: {0}", jsonData);
+            }
         }
     }
 }

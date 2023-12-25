@@ -13,7 +13,7 @@ namespace eCakeShop.Models
         public int ProizvodID { get; set; }
         public string Naziv { get; set; }
         public string Sifra { get; set; }
-        public decimal Cijena { get; set; }
+        public double Cijena { get; set; }
         public string Opis { get; set; }
         public byte[] Slika { get; set; }
         [Browsable(false)]

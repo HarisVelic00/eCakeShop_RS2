@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 
 import 'package:e_cakeshop_mobile/main.dart';
 import 'package:e_cakeshop_mobile/models/novost.dart';
@@ -13,6 +13,7 @@ import 'package:e_cakeshop_mobile/screens/review_screen.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/home";
@@ -294,7 +295,8 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.account_circle),
             ),
             IconButton(
-              onPressed: () {
+              onPressed: () async {
+                await clearSharedPreferences();
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -394,16 +396,23 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Center(
-                child: SizedBox(
-                  width: 150,
-                  height: 150,
-                  child: _buildImage(novost.thumbnail),
+              SizedBox(
+                width: 150,
+                height: 150,
+                child: _buildImage(novost.thumbnail),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "USKORO",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
               ),
               const SizedBox(height: 20),
-              Text(novost.opis ?? ''),
+              Text(novost.sadrzaj ?? ''),
             ],
           ),
           actions: <Widget>[
@@ -426,7 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadProducts() async {
     try {
       ProizvodProvider proizvodProvider = ProizvodProvider();
-      List<Proizvod> fetchedProducts = await proizvodProvider.Get();
+      List<Proizvod> fetchedProducts = await proizvodProvider.Recommend();
       setState(() {
         products = fetchedProducts;
         filteredProducts = List.from(products);
@@ -477,5 +486,10 @@ class _HomeScreenState extends State<HomeScreen> {
             .toList();
       }
     });
+  }
+
+  Future<void> clearSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 }

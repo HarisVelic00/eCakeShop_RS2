@@ -947,6 +947,7 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.12",
           "Microsoft.ML": "2.0.1",
           "Microsoft.ML.Recommender": "0.20.1",
+          "RabbitMQ.Client": "6.8.1",
           "eCakeShop.Models": "1.0.0"
         },
         "runtime": {
