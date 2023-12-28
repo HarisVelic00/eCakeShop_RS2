@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using eCakeShop.Auth;
 using eCakeShop;
 using RabbitMQ.Client;
+using eCakeShop.Services.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +51,7 @@ builder.Services.AddTransient<IRecenzijaService, RecenzijaService>();
 builder.Services.AddTransient<INovostService, NovostService>();
 builder.Services.AddTransient<IProizvodService, ProizvodService>();
 builder.Services.AddTransient<INarudzbaService, NarudzbaService>();
-builder.Services.AddTransient<ILokacijaService, LokacijaService>();
+builder.Services.AddTransient<IMailProducer, MailProducer>();
 
 
 builder.Services.AddTransient<IUplataService, UplataService>();

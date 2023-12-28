@@ -27,9 +27,7 @@ namespace eCakeShop.Services.Mapper
             CreateMap<Database.Narudzba, Narudzba>();
             CreateMap<Database.NarudzbaProizvodi, NarudzbaProizvodi>();
             CreateMap<Database.Uplata, Uplata>();
-            CreateMap<Database.Lokacija, Lokacija>();
-
-
+       
 
             CreateMap<DrzavaUpsertRequest, Database.Drzava>();
             CreateMap<GradUpsertRequest, Database.Grad>();
@@ -48,7 +46,6 @@ namespace eCakeShop.Services.Mapper
             CreateMap<NarudzbaInsertRequest, Database.Narudzba>();
             CreateMap<NarudzbaUpdateRequest, Database.Narudzba>();
             CreateMap<UplataUpsertRequest, Database.Uplata>();
-            CreateMap<LokacijaUpsertRequest, Database.Lokacija>();
         }
     }
 }

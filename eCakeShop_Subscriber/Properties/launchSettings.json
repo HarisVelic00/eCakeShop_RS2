@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "eSpaCenter.Subscriber": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

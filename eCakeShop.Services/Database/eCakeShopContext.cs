@@ -30,7 +30,6 @@ namespace eCakeShop.Services.Database
         public virtual DbSet<Uloga> Ulogas { get; set; } = null!;
         public virtual DbSet<VrstaProizvoda> VrstaProizvodas { get; set; } = null!;
         public virtual DbSet<Uplata> Uplatas { get; set; } = null!;
-        public virtual DbSet<Lokacija> Lokacijas { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -119,7 +118,7 @@ namespace eCakeShop.Services.Database
              );
 
             modelBuilder.Entity<Novost>().HasData(
-             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Kolac od jagoda", Sadrzaj = "Kolac od jagoda", Thumbnail = Convert.FromBase64String(Images.Slike[7]) },
+             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Crno-bijeli kokos kolac", Sadrzaj = "Crno-bijeli kokos kolac", Thumbnail = Convert.FromBase64String(Images.Slike[7]) },
              new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[7]) }
             );
 
@@ -129,7 +128,7 @@ namespace eCakeShop.Services.Database
                 new Proizvod { ProizvodID = 3, Cijena = 4, Naziv = "Kroasan", VrstaProizvodaID = 3, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[2]), Opis = "Kroasan" },
                 new Proizvod { ProizvodID = 4, Cijena = 20, Naziv = "Cokoladne kocke", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[3]), Opis = "Cokoladne kocke" },
                 new Proizvod { ProizvodID = 5, Cijena = 3, Naziv = "Sladoled", VrstaProizvodaID = 4, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[4]), Opis = "Pita od jabuka" },
-                new Proizvod { ProizvodID = 6, Cijena = 30, Naziv = "Crno-bijeli kokos kolac", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[5]), Opis = "Crno-bijeli kokos kolac" },
+                new Proizvod { ProizvodID = 6, Cijena = 30, Naziv = "Kolac od jagoda", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[5]), Opis = "Crno-bijeli kokos kolac" },
                 new Proizvod { ProizvodID = 7, Cijena = 40, Naziv = "Cudo od cokolade", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[6]), Opis = "Cudo od cokolade" }
                 );
 
@@ -139,7 +138,7 @@ namespace eCakeShop.Services.Database
             );
 
             modelBuilder.Entity<Slika>().HasData(
-                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Kolac od jagoda", SlikaByte = Convert.FromBase64String(Images.Slike[7]) },
+                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Crno-bijeli kokos kolac", SlikaByte = Convert.FromBase64String(Images.Slike[7]) },
                 new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Topla cokolada", SlikaByte = Convert.FromBase64String(Images.Slike[7]) }
              );
 
@@ -147,10 +146,6 @@ namespace eCakeShop.Services.Database
                 new Uloga { UlogaID = 1, Naziv = "Administrator", Opis = "Administrator" },
                 new Uloga { UlogaID = 2, Naziv = "Uposlenik", Opis = "Uposlenik" }
             );
-
-            modelBuilder.Entity<Lokacija>().HasData(
-              new Lokacija { LokacijaID = 1, Naziv = "Sanski Most", Latitude = 44.76676282625026, Longitude = 16.660145798572916 }
-          );
 
             modelBuilder.Entity<Uplata>().HasData(
             new Uplata { UplataID = 1, BrojTransakcije = "pi_3OPortLfQTkXq96L2EFmVZB0", DatumTransakcije = DateTime.Now, Iznos = 40 },

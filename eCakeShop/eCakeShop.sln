@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eCakeShop", "eCakeShop.csproj", "{24199059-7060-4304-AE65-437C1471387E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eCakeShop", "eCakeShop.csproj", "{24199059-7060-4304-AE65-437C1471387E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eCakeShop.Models", "..\eCakeShop.Models\eCakeShop.Models.csproj", "{FEE01700-54DD-4EF6-A59B-5F986085A5D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eCakeShop.Models", "..\eCakeShop.Models\eCakeShop.Models.csproj", "{FEE01700-54DD-4EF6-A59B-5F986085A5D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eCakeShop.Services", "..\eCakeShop.Services\eCakeShop.Services.csproj", "{A61549E2-05EB-47E3-918D-02E2532E96E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eCakeShop.Services", "..\eCakeShop.Services\eCakeShop.Services.csproj", "{A61549E2-05EB-47E3-918D-02E2532E96E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
