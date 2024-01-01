@@ -139,7 +139,7 @@ class _MapScreenState extends State<MapScreen> {
             icon: BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueGreen,
             ),
-            infoWindow: const InfoWindow(title: 'Moving Van'),
+            infoWindow: const InfoWindow(title: 'Delivery Van'),
           ),
         );
       });
@@ -173,7 +173,7 @@ class _MapScreenState extends State<MapScreen> {
               icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueGreen,
               ),
-              infoWindow: const InfoWindow(title: 'Moving Van'),
+              infoWindow: const InfoWindow(title: 'Delivery Van'),
             ),
           );
         });
