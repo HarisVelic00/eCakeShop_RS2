@@ -21,7 +21,7 @@ class _AddReviewDialogState extends State<AddReviewModal> {
   Future<void> uploadReview() async {
     final content = contentController.text;
     final date = dateController.text;
-    DateTime tempDate = DateFormat("dd-MM-yyyy").parse(date);
+    DateTime tempDate = DateFormat("yyyy-MM-dd").parse(date);
     int convertedRating = _rating.toInt();
 
     Map<String, dynamic> newReview = {

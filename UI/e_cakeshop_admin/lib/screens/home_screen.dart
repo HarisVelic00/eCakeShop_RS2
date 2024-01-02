@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: ListView(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: AlwaysScrollableScrollPhysics(),
                       children: [
                         NavItem(
                           title: 'Users',
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                         NavItem(
-                          title: 'Pictures',
+                          title: 'Images',
                           onTap: () {},
                           onSelect: (item) {
                             setState(() {
@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(10),
           child: ProductScreen(),
         );
-      case 'Pictures':
+      case 'Images':
         return ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: PicturesScreen(),

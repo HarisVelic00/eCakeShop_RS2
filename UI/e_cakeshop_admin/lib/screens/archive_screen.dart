@@ -73,13 +73,16 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
       for (var narudzba in reportData) {
         final products = narudzba.narudzbaProizvodi ?? 'Products N/A';
         final user = narudzba.korisnik?.ime ?? 'User N/A';
+        final date =
+            '${narudzba.datumNarudzbe?.year}-${narudzba.datumNarudzbe?.month}-${narudzba.datumNarudzbe?.day}';
+        final price = '${narudzba.ukupnaCijena.toString()} KM';
 
         pdfData.add([
           narudzba.brojNarudzbe?.toString() ?? '',
-          narudzba.datumNarudzbe.toString(),
+          date,
           user,
           products,
-          narudzba.ukupnaCijena.toString(),
+          price,
           narudzba.isShipped.toString(),
           narudzba.isCanceled.toString(),
         ]);
@@ -260,7 +263,7 @@ class ArchiveTable extends StatelessWidget {
                           DataCell(
                             narudzba.datumNarudzbe != null
                                 ? Text(
-                                    DateFormat('d.M.y H:m:s')
+                                    DateFormat('d.M.y ')
                                         .format(narudzba.datumNarudzbe!),
                                   )
                                 : const Text(''),

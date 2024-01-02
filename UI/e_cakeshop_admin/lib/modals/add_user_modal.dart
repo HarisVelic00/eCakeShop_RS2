@@ -100,7 +100,7 @@ class _AddUserModalState extends State<AddUserModal> {
           ),
         );
       } else {
-        DateTime tempDate = DateFormat("dd-MM-yyyy").parse(dob);
+        DateTime tempDate = DateFormat("yyyy-MM-dd").parse(dob);
 
         int gradID = findIdFromName(
           selectedGrad,

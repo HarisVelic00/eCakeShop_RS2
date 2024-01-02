@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     build: .
     environment:
-      - "ConnectionStrings__eCakeShop=Server=ecakeshop-sql,1433;Database=eCakeShop;Encrypt=true;MultipleActiveResultSets=true;TrustServerCertificate=True;User=sa;Password=haris***321;"
+      - "ConnectionStrings__eCakeShop=Server=ecakeshop-sql,1433;Database=eCakeShop;TrustServerCertificate=True;User=sa;Password=haris***321;"
       - "ASPNETCORE_ENVIRONMENT=Development"
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672

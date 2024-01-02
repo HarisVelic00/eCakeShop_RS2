@@ -295,7 +295,7 @@ class UsersTable extends StatelessWidget {
                         DataCell(
                           korisnik.datumRodjenja != null
                               ? Text(
-                                  DateFormat('d.M.y H:m:s')
+                                  DateFormat('d.M.y')
                                       .format(korisnik.datumRodjenja!),
                                 )
                               : const Text(''),

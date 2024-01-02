@@ -30,7 +30,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RecenzijaProvider()),
       ],
       child: MaterialApp(
-        home: HomeScreen(),
+        home: LoginScreen(),
         onGenerateRoute: (settings) {
           if (settings.name == HomeScreen.routeName) {
             return MaterialPageRoute(builder: ((context) => HomeScreen()));
@@ -104,9 +104,9 @@ class LoginScreen extends StatelessWidget {
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "Username ne može biti prazno polje";
+                      return "Username cannot be an empty field";
                     } else if (value.length < 3) {
-                      return "Username ne može sadržati manje od 3 karaktera";
+                      return "Username cannot contain fewer than 3 characters";
                     }
                     return null;
                   },
@@ -125,9 +125,9 @@ class LoginScreen extends StatelessWidget {
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "Password ne može biti prazno polje";
+                      return "Password cannot be an empty field";
                     } else if (value.length < 4) {
-                      return "Password ne može sadržati manje od 4 karaktera";
+                      return "Password cannot contain fewer than 3 characters";
                     }
                     return null;
                   },

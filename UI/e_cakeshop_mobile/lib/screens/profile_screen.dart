@@ -53,14 +53,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ClipOval(
-                child: Image.asset(
-                  'lib/assets/images/logo.jpg',
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.cover,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: ClipOval(
+                  child: Image.asset(
+                    'lib/assets/images/logo.jpg',
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

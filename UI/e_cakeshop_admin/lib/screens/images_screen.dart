@@ -135,8 +135,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
     slikaProvider = Provider.of<SlikaProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('Picture List', style: TextStyle(color: Colors.black)),
+        title: const Text('Image List', style: TextStyle(color: Colors.black)),
         backgroundColor: const Color.fromRGBO(227, 232, 247, 1),
       ),
       body: Container(
@@ -160,7 +159,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
                             ),
                             child: TextField(
                               decoration: const InputDecoration(
-                                hintText: 'Search for pictures...',
+                                hintText: 'Search for images...',
                                 prefixIcon: Icon(Icons.search),
                                 border: InputBorder.none,
                               ),
