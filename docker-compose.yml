@@ -1,5 +1,6 @@
 version: "3"
 services:
+  # RabbitMQ Docker
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
@@ -14,6 +15,7 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  # SQL Server Docker
   ecakeshop-sql:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
     restart: unless-stopped
@@ -26,6 +28,7 @@ services:
     networks:
       - ecakeshopnet
 
+  # API Docker
   ecakeshop-api:
     restart: unless-stopped
     build: .
@@ -47,6 +50,7 @@ services:
     depends_on:
       - ecakeshop-sql
 
+  # RabbitMQ Service Docker
   rabbitmq-service:
     restart: unless-stopped
     build:

@@ -268,15 +268,13 @@ class OrdersTable extends StatelessWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           List<Narudzba> filteredNarudzba = snapshot.data!.where((narudzba) {
-            String orderNumber = '${narudzba.brojNarudzbe}';
-            return orderNumber
-                .toLowerCase()
-                .contains(searchQuery.toLowerCase());
+            String order = '${narudzba.korisnik?.ime}';
+            return order.toLowerCase().contains(searchQuery.toLowerCase());
           }).toList();
 
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Flexible(
+            child: Expanded(
               child: SingleChildScrollView(
                 child: DataTable(
                   dataRowMinHeight: 50,

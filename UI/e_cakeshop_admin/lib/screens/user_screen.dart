@@ -270,7 +270,7 @@ class UsersTable extends StatelessWidget {
 
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Flexible(
+            child: Expanded(
               child: SingleChildScrollView(
                 child: DataTable(
                   columns: const [

@@ -1,10 +1,12 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 
 class DeleteModal extends StatelessWidget {
   final VoidCallback onDeletePressed;
   final VoidCallback onCancelPressed;
 
-  DeleteModal({required this.onDeletePressed, required this.onCancelPressed});
+  const DeleteModal({required this.onDeletePressed, required this.onCancelPressed});
 
   @override
   Widget build(BuildContext context) {

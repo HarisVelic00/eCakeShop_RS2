@@ -232,10 +232,8 @@ class ArchiveTable extends StatelessWidget {
         } else if (snapshot.hasData) {
           List<Narudzba> archivedOrder =
               snapshot.data!.where((arhiviranaNarudzba) {
-            String brojNarudzbe = '${arhiviranaNarudzba.brojNarudzbe}';
-            return brojNarudzbe
-                .toLowerCase()
-                .contains(searchQuery.toLowerCase());
+            String narudzba = '${arhiviranaNarudzba.korisnik?.ime}';
+            return narudzba.toLowerCase().contains(searchQuery.toLowerCase());
           }).toList();
 
           return SingleChildScrollView(

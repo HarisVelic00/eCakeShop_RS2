@@ -43,12 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 10),
-                  ClipOval(
-                    child: Image.asset(
-                      'lib/assets/images/logo.jpg',
-                      fit: BoxFit.cover,
-                      height: 180,
-                      width: 180,
+                  Flexible(
+                    child: ClipOval(
+                      child: Image.asset(
+                        'lib/assets/images/logo.jpg',
+                        fit: BoxFit.cover,
+                        height: 180,
+                        width: 180,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),

@@ -49,7 +49,6 @@ namespace eCakeShop.Controllers
         }
 
         [HttpPut("{id}/UpdateMobile")]
-        [Authorize(Roles = "Administrator")]
         public Korisnik UpdateMobile(int id, [FromBody] KorisnikMobileUpdateRequest request)
         {
             return ((IKorisnikService)_service).UpdateMobile(id, request);

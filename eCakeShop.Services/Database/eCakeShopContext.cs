@@ -1,16 +1,6 @@
-﻿using eCakeShop.Models;
-using eCakeShop.Services.Helpers;
+﻿using eCakeShop.Services.Helpers;
 using eCakeShop.Services.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace eCakeShop.Services.Database
 {
@@ -35,7 +25,7 @@ namespace eCakeShop.Services.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-               optionsBuilder.UseSqlServer("Data Source=DESKTOP-VLNCSDD;Initial Catalog=eCakeShop;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+               optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=eCakeShop;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=True;");
             }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -118,18 +108,18 @@ namespace eCakeShop.Services.Database
              );
 
             modelBuilder.Entity<Novost>().HasData(
-             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Crno-bijeli kokos kolac", Sadrzaj = "Crno-bijeli kokos kolac", Thumbnail = Convert.FromBase64String(Images.Slike[7]) },
-             new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[7]) }
+             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Crno-bijeli kokos kolac", Sadrzaj = "Crno-bijeli kokos kolac", Thumbnail = Convert.FromBase64String(Images.Slike[1]) },
+             new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[1]) }
             );
 
             modelBuilder.Entity<Proizvod>().HasData(
                 new Proizvod { ProizvodID = 1, Cijena = 8, Naziv = "Pita od jabuka", VrstaProizvodaID = 7, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Pita od jabuka" },
-                new Proizvod { ProizvodID = 2, Cijena = 40, Naziv = "Cokoladna torta", VrstaProizvodaID = 1, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[1]), Opis = "Cokoladna torta" },
-                new Proizvod { ProizvodID = 3, Cijena = 4, Naziv = "Kroasan", VrstaProizvodaID = 3, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[2]), Opis = "Kroasan" },
-                new Proizvod { ProizvodID = 4, Cijena = 20, Naziv = "Cokoladne kocke", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[3]), Opis = "Cokoladne kocke" },
-                new Proizvod { ProizvodID = 5, Cijena = 3, Naziv = "Sladoled", VrstaProizvodaID = 4, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[4]), Opis = "Pita od jabuka" },
-                new Proizvod { ProizvodID = 6, Cijena = 30, Naziv = "Kolac od jagoda", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[5]), Opis = "Crno-bijeli kokos kolac" },
-                new Proizvod { ProizvodID = 7, Cijena = 40, Naziv = "Cudo od cokolade", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[6]), Opis = "Cudo od cokolade" }
+                new Proizvod { ProizvodID = 2, Cijena = 40, Naziv = "Cokoladna torta", VrstaProizvodaID = 1, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Cokoladna torta" },
+                new Proizvod { ProizvodID = 3, Cijena = 4, Naziv = "Kroasan", VrstaProizvodaID = 3, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Kroasan" },
+                new Proizvod { ProizvodID = 4, Cijena = 20, Naziv = "Cokoladne kocke", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Cokoladne kocke" },
+                new Proizvod { ProizvodID = 5, Cijena = 3, Naziv = "Sladoled", VrstaProizvodaID = 4, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Pita od jabuka" },
+                new Proizvod { ProizvodID = 6, Cijena = 30, Naziv = "Kolac od jagoda", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Crno-bijeli kokos kolac" },
+                new Proizvod { ProizvodID = 7, Cijena = 40, Naziv = "Cudo od cokolade", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Cudo od cokolade" }
                 );
 
             modelBuilder.Entity<Recenzija>().HasData(
@@ -138,8 +128,8 @@ namespace eCakeShop.Services.Database
             );
 
             modelBuilder.Entity<Slika>().HasData(
-                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Crno-bijeli kokos kolac", SlikaByte = Convert.FromBase64String(Images.Slike[7]) },
-                new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Topla cokolada", SlikaByte = Convert.FromBase64String(Images.Slike[7]) }
+                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Crno-bijeli kokos kolac", SlikaByte = Convert.FromBase64String(Images.Slike[1]) },
+                new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Topla cokolada", SlikaByte = Convert.FromBase64String(Images.Slike[1]) }
              );
 
             modelBuilder.Entity<Uloga>().HasData(
