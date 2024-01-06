@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print, unused_catch_clause
 import 'dart:convert';
+import 'package:e_cakeshop_mobile/.env';
 import 'package:e_cakeshop_mobile/models/cart.dart';
 import 'package:e_cakeshop_mobile/models/uplata.dart';
 import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
@@ -237,8 +238,7 @@ class _CartScreenState extends State<CartScreen> {
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         body: body,
         headers: {
-          'Authorization':
-              'Bearer sk_test_51OJIXNLfQTkXq96LiFrGOfZf07BIKmRb0A2dWDqxfd7IEQ2AuN97esPWexCDz9dkm7cZ3czSGVDZpVn88cEt1P0w00Hwb1ITVq',
+          'Authorization': 'Bearer $stripeSecretKey',
           'Content-Type': 'application/x-www-form-urlencoded'
         },
       );

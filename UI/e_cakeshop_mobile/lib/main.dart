@@ -1,5 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, must_be_immutable, use_build_context_synchronously, avoid_print
 
+import 'package:e_cakeshop_mobile/.env';
 import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
 import 'package:e_cakeshop_mobile/providers/korisnik_provider.dart';
 import 'package:e_cakeshop_mobile/providers/narudzba_provider.dart';
@@ -15,8 +16,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  Stripe.publishableKey =
-      'pk_test_51OJIXNLfQTkXq96LfxTnxkTBRc0zPXjw0DIFT1HT1zCDRlGP35YY3SYI0M89Rcct7GPcqiHoIk8gM0X2l0aBYvfZ00q3YBLWX8';
+  Stripe.publishableKey = stripePublishableKey;
   runApp(const MainApp());
   WidgetsFlutterBinding.ensureInitialized();
 }
