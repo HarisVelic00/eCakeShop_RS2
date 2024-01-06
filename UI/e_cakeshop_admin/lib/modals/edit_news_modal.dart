@@ -129,7 +129,8 @@ class _EditNewsModalState extends State<EditNewsModal> {
                               const Color.fromRGBO(97, 142, 246, 1),
                         ),
                         onPressed: _pickImage,
-                        child: const Text('Select Thumbnail'),
+                        child: const Text('Select Thumbnail',
+                            style: TextStyle(color: Colors.white)),
                       ),
                 TextField(
                   controller: dateController,
@@ -149,14 +150,16 @@ class _EditNewsModalState extends State<EditNewsModal> {
                         backgroundColor: Colors.grey,
                       ),
                       onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel'),
+                      child: const Text('Cancel',
+                          style: TextStyle(color: Colors.white)),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
                       onPressed: _editNews,
-                      child: const Text('OK'),
+                      child: const Text('OK',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),

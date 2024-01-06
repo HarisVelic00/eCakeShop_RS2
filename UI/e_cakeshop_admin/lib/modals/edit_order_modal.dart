@@ -85,11 +85,13 @@ class _EditOrderModalState extends State<EditOrderModal> {
                             valueListenable: isShippedController,
                             builder: (context, value, child) {
                               return Checkbox(
-                                value: value,
-                                onChanged: (bool? newValue) {
-                                  isShippedController.value = newValue ?? false;
-                                },
-                              );
+                                  value: value,
+                                  onChanged: (bool? newValue) {
+                                    isShippedController.value =
+                                        newValue ?? false;
+                                  },
+                                  activeColor:
+                                      const Color.fromRGBO(97, 142, 246, 1));
                             },
                           ),
                         ],
@@ -103,12 +105,13 @@ class _EditOrderModalState extends State<EditOrderModal> {
                             valueListenable: isCanceledController,
                             builder: (context, value, child) {
                               return Checkbox(
-                                value: value,
-                                onChanged: (bool? newValue) {
-                                  isCanceledController.value =
-                                      newValue ?? false;
-                                },
-                              );
+                                  value: value,
+                                  onChanged: (bool? newValue) {
+                                    isCanceledController.value =
+                                        newValue ?? false;
+                                  },
+                                  activeColor:
+                                      const Color.fromRGBO(97, 142, 246, 1));
                             },
                           ),
                         ],
@@ -125,7 +128,8 @@ class _EditOrderModalState extends State<EditOrderModal> {
                           backgroundColor: Colors.grey,
                         ),
                         onPressed: widget.onCancelPressed,
-                        child: const Text('Cancel'),
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -133,7 +137,8 @@ class _EditOrderModalState extends State<EditOrderModal> {
                               const Color.fromRGBO(97, 142, 246, 1),
                         ),
                         onPressed: _editOrder,
-                        child: const Text('Save'),
+                        child: const Text('Save',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),

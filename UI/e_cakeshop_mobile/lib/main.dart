@@ -122,7 +122,12 @@ class LoginScreen extends StatelessWidget {
                   controller: _username,
                   decoration: const InputDecoration(
                     labelText: "Username",
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+                    ),
                   ),
+                  cursorColor: const Color.fromRGBO(97, 142, 246, 1),
                   maxLines: 1,
                 ),
               ),
@@ -142,7 +147,14 @@ class LoginScreen extends StatelessWidget {
                   },
                   controller: _password,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: "Password"),
+                  decoration: const InputDecoration(
+                    labelText: "Password",
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+                    ),
+                  ),
+                  cursorColor: const Color.fromRGBO(97, 142, 246, 1),
                   maxLines: 1,
                 ),
               ),

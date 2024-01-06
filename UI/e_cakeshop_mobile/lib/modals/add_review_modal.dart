@@ -55,6 +55,7 @@ class _AddReviewDialogState extends State<AddReviewModal> {
                 activeTrackColor: const Color.fromRGBO(97, 142, 246, 1),
                 inactiveTrackColor: const Color.fromRGBO(97, 142, 246, 0.3),
                 thumbColor: Colors.blueAccent,
+                valueIndicatorColor: const Color.fromRGBO(97, 142, 246, 1),
               ),
               child: Slider(
                 value: _rating,

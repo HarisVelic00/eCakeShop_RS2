@@ -100,11 +100,11 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               FractionallySizedBox(
-                widthFactor: 0.2,
+                widthFactor: 0.6,
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "Username cannot be an empty field";
+                      return "The username field cannot be empty";
                     } else if (value.length < 3) {
                       return "Username cannot contain fewer than 3 characters";
                     }
@@ -113,7 +113,12 @@ class LoginScreen extends StatelessWidget {
                   controller: _username,
                   decoration: const InputDecoration(
                     labelText: "Username",
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+                    ),
                   ),
+                  cursorColor: const Color.fromRGBO(97, 142, 246, 1),
                   maxLines: 1,
                 ),
               ),
@@ -121,11 +126,11 @@ class LoginScreen extends StatelessWidget {
                 height: 20,
               ),
               FractionallySizedBox(
-                widthFactor: 0.2,
+                widthFactor: 0.6,
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return "Password cannot be an empty field";
+                      return "The password field cannot be empty";
                     } else if (value.length < 4) {
                       return "Password cannot contain fewer than 3 characters";
                     }
@@ -133,7 +138,14 @@ class LoginScreen extends StatelessWidget {
                   },
                   controller: _password,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: "Password"),
+                  decoration: const InputDecoration(
+                    labelText: "Password",
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+                    ),
+                  ),
+                  cursorColor: const Color.fromRGBO(97, 142, 246, 1),
                   maxLines: 1,
                 ),
               ),

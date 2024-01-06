@@ -219,7 +219,8 @@ class _EditUserModalState extends State<EditUserModal> {
                           backgroundColor: Colors.grey,
                         ),
                         onPressed: widget.onCancelPressed,
-                        child: const Text('Cancel'),
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -227,7 +228,8 @@ class _EditUserModalState extends State<EditUserModal> {
                               const Color.fromRGBO(97, 142, 246, 1),
                         ),
                         onPressed: _editUser,
-                        child: const Text('Save'),
+                        child: const Text('Save',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),

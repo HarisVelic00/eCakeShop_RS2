@@ -6,7 +6,8 @@ class DeleteModal extends StatelessWidget {
   final VoidCallback onDeletePressed;
   final VoidCallback onCancelPressed;
 
-  const DeleteModal({required this.onDeletePressed, required this.onCancelPressed});
+  const DeleteModal(
+      {required this.onDeletePressed, required this.onCancelPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,8 @@ class DeleteModal extends StatelessWidget {
                     backgroundColor: Colors.grey,
                     minimumSize: const Size(120, 48),
                   ),
-                  child: const Text('Cancel'),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.white)),
                 ),
                 ElevatedButton(
                   onPressed: onDeletePressed,
@@ -56,7 +58,8 @@ class DeleteModal extends StatelessWidget {
                     backgroundColor: Colors.red,
                     minimumSize: const Size(120, 48),
                   ),
-                  child: const Text('Delete'),
+                  child: const Text('Delete',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),

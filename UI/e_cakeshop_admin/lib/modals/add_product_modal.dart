@@ -160,7 +160,8 @@ class _AddProductModalState extends State<AddProductModal> {
                                 const Color.fromRGBO(97, 142, 246, 1),
                           ),
                           onPressed: _pickImage,
-                          child: const Text('Select Image'),
+                          child: const Text('Select Image',
+                              style: TextStyle(color: Colors.white)),
                         ),
                   TextField(
                     controller: descriptionController,

@@ -108,7 +108,8 @@ class _EditImageModalState extends State<EditImageModal> {
                               const Color.fromRGBO(97, 142, 246, 1),
                         ),
                         onPressed: _pickImage,
-                        child: const Text('Select Image'),
+                        child: const Text('Select Image',
+                            style: TextStyle(color: Colors.white)),
                       ),
                 TextField(
                   controller: descriptionController,
@@ -124,14 +125,16 @@ class _EditImageModalState extends State<EditImageModal> {
                         backgroundColor: Colors.grey,
                       ),
                       onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel'),
+                      child: const Text('Cancel',
+                          style: TextStyle(color: Colors.white)),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
                       onPressed: _editImage,
-                      child: const Text('OK'),
+                      child: const Text('OK',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),

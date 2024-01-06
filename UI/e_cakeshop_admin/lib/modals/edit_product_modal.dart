@@ -164,7 +164,8 @@ class _EditProductModalState extends State<EditProductModal> {
                                 const Color.fromRGBO(97, 142, 246, 1),
                           ),
                           onPressed: _pickImage,
-                          child: const Text('Select Image'),
+                          child: const Text('Select Image',
+                              style: TextStyle(color: Colors.white)),
                         ),
                   TextField(
                     controller: descriptionController,
@@ -197,7 +198,8 @@ class _EditProductModalState extends State<EditProductModal> {
                           backgroundColor: Colors.grey,
                         ),
                         onPressed: widget.onCancelPressed,
-                        child: const Text('Cancel'),
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -205,7 +207,8 @@ class _EditProductModalState extends State<EditProductModal> {
                               const Color.fromRGBO(97, 142, 246, 1),
                         ),
                         onPressed: _editProduct,
-                        child: const Text('Save'),
+                        child: const Text('Save',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
