@@ -123,7 +123,8 @@ class _CartScreenState extends State<CartScreen> {
                           onPressed: () async {
                             final enteredAddress = _addressController.text;
                             await _saveAddress(enteredAddress);
-                            await makePayment(_cartProvider.totalPrice);
+                            double totalPrice = _cartProvider.totalPrice;
+                            await makePayment(totalPrice);
                             if (paymentIntentData == null) {}
                           },
                           style: ButtonStyle(
@@ -201,8 +202,9 @@ class _CartScreenState extends State<CartScreen> {
         : const Text('No Image');
   }
 
-  Future<void> makePayment(double iznos) async {
+  Future<void> makePayment(double totalPrice) async {
     try {
+      iznos = totalPrice;
       paymentIntentData =
           await createPaymentIntent((iznos * 100).round().toString(), 'bam');
       await Stripe.instance
