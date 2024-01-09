@@ -1,6 +1,7 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously, avoid_print
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously, avoid_print, unused_local_variable
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:e_cakeshop_admin/models/novost.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,6 +29,7 @@ class _EditNewsModalState extends State<EditNewsModal> {
   late Novost? _novostToEdit;
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  MemoryImage? _decodedImage;
 
   Future<void> _pickImage() async {
     try {
@@ -35,11 +37,47 @@ class _EditNewsModalState extends State<EditNewsModal> {
       setState(() {
         if (pickedFile != null) {
           _imageFile = File(pickedFile.path);
+          _updateImagePreview();
         }
       });
     } catch (e) {
       print("Error picking image: $e");
     }
+  }
+
+  void _updateImagePreview() {
+    if (_imageFile != null) {
+      setState(() {
+        _decodeImageAndUpdatePreview();
+      });
+    }
+  }
+
+  void _decodeImageAndUpdatePreview() async {
+    try {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+      setState(() {
+        _decodedImage = MemoryImage(Uint8List.fromList(imageBytes));
+      });
+    } catch (e) {
+      print('Error decoding image: $e');
+    }
+  }
+
+  Widget _buildImagePreview() {
+    return SizedBox(
+      width: 256,
+      height: 256,
+      child: _decodedImage != null
+          ? Image.memory(
+              _decodedImage!.bytes,
+              width: 256,
+              height: 256,
+              fit: BoxFit.cover,
+            )
+          : Container(),
+    );
   }
 
   Future<void> _editNews() async {
@@ -60,7 +98,7 @@ class _EditNewsModalState extends State<EditNewsModal> {
             ),
           );
         } else {
-          DateTime tempDate = DateFormat("yyyy-MM-dd").parse(date);
+          DateTime tempDate = DateFormat("MM.dd.yyyy").parse(date);
 
           widget.onUpdatePressed(
             _novostToEdit!.novostID!,
@@ -90,6 +128,26 @@ class _EditNewsModalState extends State<EditNewsModal> {
   void initState() {
     super.initState();
     _novostToEdit = widget.novostToEdit;
+
+    if (_novostToEdit != null) {
+      titleController.text = _novostToEdit!.naslov ?? '';
+      contentController.text = _novostToEdit!.sadrzaj ?? '';
+      DateTime datumKreiranja = _novostToEdit!.datumKreiranja!;
+      String formattedDate = DateFormat('MM.dd.yyyy').format(datumKreiranja);
+      dateController.text = formattedDate;
+
+      if (_novostToEdit!.thumbnail != null &&
+          _novostToEdit!.thumbnail!.isNotEmpty) {
+        try {
+          List<int> imageBytes = base64Decode(_novostToEdit!.thumbnail!);
+          setState(() {
+            _decodedImage = MemoryImage(Uint8List.fromList(imageBytes));
+          });
+        } catch (e) {
+          print('Error decoding image: $e');
+        }
+      }
+    }
   }
 
   @override
@@ -100,71 +158,76 @@ class _EditNewsModalState extends State<EditNewsModal> {
         child: Container(
           color: const Color.fromRGBO(247, 249, 253, 1),
           width: MediaQuery.of(context).size.width * 0.2,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text(
-                  'Edit News',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
-                ),
-                TextField(
-                  controller: contentController,
-                  decoration: const InputDecoration(labelText: 'Content'),
-                ),
-                const SizedBox(height: 20),
-                _imageFile != null
-                    ? Image.file(_imageFile!)
-                    : ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromRGBO(97, 142, 246, 1),
-                        ),
-                        onPressed: _pickImage,
-                        child: const Text('Select Thumbnail',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                TextField(
-                  controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Creation date',
-                    hintText: 'YYYY-MM-DD',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
+                    const Text(
+                      'Edit News',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel',
-                          style: TextStyle(color: Colors.white)),
                     ),
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(labelText: 'Title'),
+                    ),
+                    TextField(
+                      controller: contentController,
+                      decoration: const InputDecoration(labelText: 'Content'),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildImagePreview(),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
-                      onPressed: _editNews,
-                      child: const Text('OK',
+                      onPressed: _pickImage,
+                      child: const Text('Select Thumbnail',
                           style: TextStyle(color: Colors.white)),
+                    ),
+                    TextField(
+                      controller: dateController,
+                      decoration: const InputDecoration(
+                        labelText: 'Creation date',
+                        hintText: 'MM.dd.yyyy',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                          ),
+                          onPressed: widget.onCancelPressed,
+                          child: const Text('Cancel',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(97, 142, 246, 1),
+                          ),
+                          onPressed: _editNews,
+                          child: const Text('OK',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

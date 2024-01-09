@@ -26,12 +26,6 @@ class _AddProductModalState extends State<AddProductModal> {
   String? selectedVrstaProizvoda;
   List<VrstaProizvoda> vrstaProizvodaList = [];
 
-  @override
-  void initState() {
-    super.initState();
-    loadData();
-  }
-
   Future<void> _pickImage() async {
     try {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -120,6 +114,12 @@ class _AddProductModalState extends State<AddProductModal> {
     } catch (e) {
       print("Error adding product: $e");
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
   }
 
   @override

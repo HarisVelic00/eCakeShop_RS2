@@ -100,7 +100,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               FractionallySizedBox(
-                widthFactor: 0.6,
+                widthFactor: 0.2,
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -126,7 +126,7 @@ class LoginScreen extends StatelessWidget {
                 height: 20,
               ),
               FractionallySizedBox(
-                widthFactor: 0.6,
+                widthFactor: 0.2,
                 child: TextFormField(
                   validator: (value) {
                     if (value!.isEmpty) {

@@ -43,12 +43,6 @@ class _AddImageModalState extends State<AddImageModal> {
     return -1;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadData();
-  }
-
   Future<void> loadData() async {
     try {
       korisnikList = await KorisnikProvider().Get();
@@ -113,6 +107,12 @@ class _AddImageModalState extends State<AddImageModal> {
     } else {
       print('No image selected');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
   }
 
   @override

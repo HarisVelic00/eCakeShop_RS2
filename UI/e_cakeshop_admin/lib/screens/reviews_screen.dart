@@ -302,7 +302,7 @@ class ReviewTable extends StatelessWidget {
                         DataCell(
                           recenzija.datumKreiranja != null
                               ? Text(
-                                  DateFormat('d.M.y ')
+                                  DateFormat('MM.dd.yyyy')
                                       .format(recenzija.datumKreiranja!),
                                 )
                               : const Text(''),

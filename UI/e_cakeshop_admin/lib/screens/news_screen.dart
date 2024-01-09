@@ -307,7 +307,7 @@ class NewsTable extends StatelessWidget {
                         DataCell(
                           novost.datumKreiranja != null
                               ? Text(
-                                  DateFormat('d.M.y ')
+                                  DateFormat('dd.MM.yyyy')
                                       .format(novost.datumKreiranja!),
                                 )
                               : const Text(''),

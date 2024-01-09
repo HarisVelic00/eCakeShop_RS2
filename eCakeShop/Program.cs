@@ -52,6 +52,7 @@ builder.Services.AddTransient<INovostService, NovostService>();
 builder.Services.AddTransient<IProizvodService, ProizvodService>();
 builder.Services.AddTransient<INarudzbaService, NarudzbaService>();
 builder.Services.AddTransient<IMailProducer, MailProducer>();
+builder.Services.AddTransient<ILokacijaService,  LokacijaService>();
 
 
 builder.Services.AddTransient<IUplataService, UplataService>();

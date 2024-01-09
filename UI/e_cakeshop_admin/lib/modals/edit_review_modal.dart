@@ -28,13 +28,6 @@ class _EditReviewModalState extends State<EditReviewModal> {
   List<Korisnik> korisnikList = [];
   double _rating = 3.0;
 
-  @override
-  void initState() {
-    super.initState();
-    _recenzijaToEdit = widget.recenzijaToEdit;
-    loadData();
-  }
-
   Future<void> loadData() async {
     try {
       korisnikList = await KorisnikProvider().Get();
@@ -49,7 +42,6 @@ class _EditReviewModalState extends State<EditReviewModal> {
   void editReview() async {
     final content = contentController.text;
     final date = dateController.text;
-    DateTime tempDate = DateFormat("dd-MM-yyyy").parse(date);
     int convertedRating = _rating.toInt();
 
     int korisnikID = korisnikList
@@ -57,6 +49,7 @@ class _EditReviewModalState extends State<EditReviewModal> {
             .korisnikID ??
         -1;
 
+    DateTime tempDate = DateFormat("MM.dd.yyyy").parse(date);
     widget.onUpdatePressed(
       _recenzijaToEdit!.recenzijaID!,
       {
@@ -69,6 +62,24 @@ class _EditReviewModalState extends State<EditReviewModal> {
     Navigator.pop(context);
 
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _recenzijaToEdit = widget.recenzijaToEdit;
+
+    if (_recenzijaToEdit != null) {
+      contentController.text = _recenzijaToEdit!.sadrzajRecenzije ?? '';
+      DateTime datumKreiranja = _recenzijaToEdit!.datumKreiranja!;
+      String formattedDate = DateFormat('MM.dd.yyyy').format(datumKreiranja);
+      dateController.text = formattedDate;
+
+      selectedKorisnik = _recenzijaToEdit!.korisnik?.ime ?? '';
+      _rating = _recenzijaToEdit!.ocjena?.toDouble() ?? 3.0;
+    }
+
+    loadData();
   }
 
   @override
@@ -111,7 +122,7 @@ class _EditReviewModalState extends State<EditReviewModal> {
               controller: dateController,
               decoration: const InputDecoration(
                 labelText: 'Date of Creation',
-                hintText: 'YYYY-MM-DD',
+                hintText: 'MM.dd.yyyy',
                 hintStyle: TextStyle(color: Colors.grey),
               ),
             ),

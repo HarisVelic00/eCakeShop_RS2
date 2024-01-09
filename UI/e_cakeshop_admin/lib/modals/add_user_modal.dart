@@ -54,12 +54,6 @@ class _AddUserModalState extends State<AddUserModal> {
     return -1;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadData();
-  }
-
   Future<void> loadData() async {
     try {
       gradList = await GradProvider().Get();
@@ -100,7 +94,7 @@ class _AddUserModalState extends State<AddUserModal> {
           ),
         );
       } else {
-        DateTime tempDate = DateFormat("yyyy-MM-dd").parse(dob);
+        DateTime tempDate = DateFormat("MM.dd.yyyy").parse(dob);
 
         int gradID = findIdFromName(
           selectedGrad,
@@ -147,6 +141,12 @@ class _AddUserModalState extends State<AddUserModal> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       child: ClipRRect(
@@ -179,7 +179,7 @@ class _AddUserModalState extends State<AddUserModal> {
                     controller: dobController,
                     decoration: const InputDecoration(
                       labelText: 'Date of Birth',
-                      hintText: 'YYYY-MM-DD',
+                      hintText: 'MM.dd.yyyy',
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
                   ),

@@ -2,7 +2,6 @@
 import 'package:e_cakeshop_admin/models/korisnik.dart';
 import 'package:e_cakeshop_admin/providers/korisnik_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AddReviewModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
@@ -17,16 +16,9 @@ class AddReviewModal extends StatefulWidget {
 
 class _AddReviewModalState extends State<AddReviewModal> {
   final TextEditingController contentController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
   String? selectedKorisnik;
   List<Korisnik> korisnikList = [];
   double _rating = 3.0;
-
-  @override
-  void initState() {
-    super.initState();
-    loadData();
-  }
 
   Future<void> loadData() async {
     try {
@@ -41,8 +33,6 @@ class _AddReviewModalState extends State<AddReviewModal> {
 
   Future<void> uploadReview() async {
     final content = contentController.text;
-    final date = dateController.text;
-    DateTime tempDate = DateFormat("yyyy-MM-dd").parse(date);
     int convertedRating = _rating.toInt();
 
     int korisnikID = korisnikList
@@ -53,12 +43,18 @@ class _AddReviewModalState extends State<AddReviewModal> {
     Map<String, dynamic> newReview = {
       "sadrzajRecenzije": content,
       "ocjena": convertedRating,
-      "datumKreiranja": tempDate.toIso8601String(),
+      "datumKreiranja": DateTime.now().toIso8601String(),
       "korisnikID": korisnikID,
     };
     widget.onAddReviewPressed(newReview);
     Navigator.pop(context);
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
   }
 
   @override
@@ -73,7 +69,7 @@ class _AddReviewModalState extends State<AddReviewModal> {
           children: [
             TextField(
               controller: contentController,
-              decoration: const InputDecoration(labelText: 'Review Content'),
+              decoration: const InputDecoration(labelText: 'Content'),
             ),
             const SizedBox(height: 20),
             const Text('Rating'),
@@ -95,14 +91,6 @@ class _AddReviewModalState extends State<AddReviewModal> {
                     _rating = value;
                   });
                 },
-              ),
-            ),
-            TextField(
-              controller: dateController,
-              decoration: const InputDecoration(
-                labelText: 'Date of Creation',
-                hintText: 'YYYY-MM-DD',
-                hintStyle: TextStyle(color: Colors.grey),
               ),
             ),
             DropdownButtonFormField<String>(

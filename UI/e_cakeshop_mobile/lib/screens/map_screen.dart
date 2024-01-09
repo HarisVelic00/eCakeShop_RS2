@@ -43,7 +43,6 @@ class _MapScreenState extends State<MapScreen> {
     addressPassed = widget.deliveryAddress ?? "No address passed";
     _loadSharedPreferences();
     _loadVanLocation();
-
     markers.add(
       Marker(
         markerId: const MarkerId('CakeShop Location'),

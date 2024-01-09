@@ -129,6 +129,17 @@ class _EditUserModalState extends State<EditUserModal> {
   void initState() {
     super.initState();
     _korisnikToEdit = widget.korisnikToEdit;
+
+    if (_korisnikToEdit != null) {
+      nameController.text = _korisnikToEdit!.ime ?? '';
+      surnameController.text = _korisnikToEdit!.prezime ?? '';
+      emailController.text = _korisnikToEdit!.email ?? '';
+      telephoneController.text = _korisnikToEdit!.telefon ?? '';
+      roleController.text = _korisnikToEdit!.uloga?.opis ?? '';
+      selectedGrad = _korisnikToEdit!.grad?.naziv;
+      selectedDrzava = _korisnikToEdit!.drzava?.naziv;
+    }
+
     loadData();
   }
 

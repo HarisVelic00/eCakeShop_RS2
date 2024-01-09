@@ -4,6 +4,7 @@ import 'package:e_cakeshop_mobile/.env';
 import 'package:e_cakeshop_mobile/models/cart.dart';
 import 'package:e_cakeshop_mobile/models/uplata.dart';
 import 'package:e_cakeshop_mobile/providers/cart_provider.dart';
+import 'package:e_cakeshop_mobile/providers/lokacija_provider.dart';
 import 'package:e_cakeshop_mobile/providers/narudzba_provider.dart';
 import 'package:e_cakeshop_mobile/providers/uplata_provider.dart';
 import 'package:e_cakeshop_mobile/utils/utils.dart';
@@ -23,6 +24,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   late CartProvider _cartProvider;
+  final LokacijaProvider _lokacijaProvider = LokacijaProvider();
   NarudzbaProvider? _narudzbaProvider;
   UplataProvider? _uplataProvider;
   Map<String, dynamic>? paymentIntentData;
@@ -58,6 +60,13 @@ class _CartScreenState extends State<CartScreen> {
 
   Future<void> _saveAddress(String address) async {
     await _prefs.setString('delivery_address', address);
+    final insertedLocation = await _lokacijaProvider.insertLokacija(address);
+    if (insertedLocation != null) {
+      print(
+          'Location inserted: ${insertedLocation.naziv}, Latitude: ${insertedLocation.Latitude}, Longitude: ${insertedLocation.Longitude}');
+    } else {
+      print('Failed to insert location');
+    }
   }
 
   @override
@@ -278,6 +287,7 @@ class _CartScreenState extends State<CartScreen> {
       Map<String, dynamic> narudzba = {
         "korisnikID": Authorization.korisnik!.korisnikID,
         "uplataID": uplata!.uplataID,
+        "datumNarudzbe": DateTime.now().toIso8601String(),
         "listaProizvoda": narudzbaProizvodi
       };
 

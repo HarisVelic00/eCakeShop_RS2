@@ -109,12 +109,6 @@ class _AddOrderModalState extends State<AddOrderModal> {
   String? selectedUplata;
   List<Map<String, dynamic>> selectedProducts = [];
 
-  @override
-  void initState() {
-    super.initState();
-    loadData();
-  }
-
   Future<void> loadData() async {
     try {
       korisnikList = await KorisnikProvider().Get();
@@ -143,6 +137,7 @@ class _AddOrderModalState extends State<AddOrderModal> {
         Map<String, dynamic> newOrder = {
           "korisnikID": korisnikID,
           "uplataID": uplataID,
+          "datumNarudzbe": DateTime.now().toIso8601String(),
           "listaProizvoda": selectedProducts,
         };
 
@@ -155,6 +150,12 @@ class _AddOrderModalState extends State<AddOrderModal> {
     } catch (e) {
       print("Error adding user: $e");
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
   }
 
   @override

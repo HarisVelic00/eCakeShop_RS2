@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:e_cakeshop_admin/models/slika.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +26,7 @@ class _EditImageModalState extends State<EditImageModal> {
   late Slika? _slikaToEdit;
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  MemoryImage? _decodedImage;
 
   Future<void> _pickImage() async {
     try {
@@ -32,11 +34,46 @@ class _EditImageModalState extends State<EditImageModal> {
       setState(() {
         if (pickedFile != null) {
           _imageFile = File(pickedFile.path);
+          _updateImagePreview();
         }
       });
     } catch (e) {
       print("Error picking image: $e");
     }
+  }
+
+  void _updateImagePreview() {
+    if (_imageFile != null) {
+      setState(() {
+        _decodeImageAndUpdatePreview();
+      });
+    }
+  }
+
+  void _decodeImageAndUpdatePreview() async {
+    try {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      setState(() {
+        _decodedImage = MemoryImage(Uint8List.fromList(imageBytes));
+      });
+    } catch (e) {
+      print('Error decoding image: $e');
+    }
+  }
+
+  Widget _buildImagePreview() {
+    return SizedBox(
+      width: 256,
+      height: 256,
+      child: _decodedImage != null
+          ? Image.memory(
+              _decodedImage!.bytes,
+              width: 256,
+              height: 256,
+              fit: BoxFit.cover,
+            )
+          : Container(),
+    );
   }
 
   Future<void> _editImage() async {
@@ -77,6 +114,22 @@ class _EditImageModalState extends State<EditImageModal> {
   void initState() {
     super.initState();
     _slikaToEdit = widget.slikaToEdit;
+
+    if (_slikaToEdit != null) {
+      descriptionController.text = _slikaToEdit!.opis ?? '';
+
+      if (_slikaToEdit!.slikaByte != null &&
+          _slikaToEdit!.slikaByte!.isNotEmpty) {
+        try {
+          List<int> imageBytes = base64Decode(_slikaToEdit!.slikaByte!);
+          setState(() {
+            _decodedImage = MemoryImage(Uint8List.fromList(imageBytes));
+          });
+        } catch (e) {
+          print('Error decoding image: $e');
+        }
+      }
+    }
   }
 
   @override
@@ -87,59 +140,65 @@ class _EditImageModalState extends State<EditImageModal> {
         child: Container(
           color: const Color.fromRGBO(247, 249, 253, 1),
           width: MediaQuery.of(context).size.width * 0.2,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text(
-                  'Edit Image',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _imageFile != null
-                    ? Image.file(_imageFile!)
-                    : ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromRGBO(97, 142, 246, 1),
-                        ),
-                        onPressed: _pickImage,
-                        child: const Text('Select Image',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-                const SizedBox(height: 20),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
+                    const Text(
+                      'Edit Image',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel',
-                          style: TextStyle(color: Colors.white)),
                     ),
+                    TextField(
+                      controller: descriptionController,
+                      decoration:
+                          const InputDecoration(labelText: 'Description'),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildImagePreview(),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
                       ),
-                      onPressed: _editImage,
-                      child: const Text('OK',
+                      onPressed: _pickImage,
+                      child: const Text('Select Image',
                           style: TextStyle(color: Colors.white)),
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                          ),
+                          onPressed: widget.onCancelPressed,
+                          child: const Text('Cancel',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(97, 142, 246, 1),
+                          ),
+                          onPressed: _editImage,
+                          child: const Text('OK',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

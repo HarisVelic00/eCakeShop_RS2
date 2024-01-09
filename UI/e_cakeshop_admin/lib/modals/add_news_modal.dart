@@ -5,7 +5,6 @@ import 'package:e_cakeshop_admin/models/korisnik.dart';
 import 'package:e_cakeshop_admin/providers/korisnik_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 class AddNewsModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
@@ -22,7 +21,6 @@ class _AddNewsModalState extends State<AddNewsModal> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
   final TextEditingController thumbnailController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
 
   List<Korisnik> korisnikList = [];
   String? selectedKorisnik;
@@ -77,9 +75,8 @@ class _AddNewsModalState extends State<AddNewsModal> {
 
       final title = titleController.text;
       final content = contentController.text;
-      final date = dateController.text;
 
-      if (title.isEmpty || content.isEmpty || date.isEmpty) {
+      if (title.isEmpty || content.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please fill all fields'),
@@ -87,8 +84,6 @@ class _AddNewsModalState extends State<AddNewsModal> {
           ),
         );
       } else {
-        DateTime tempDate = DateFormat("yyyy-MM-dd").parse(date);
-
         int korisnikID = findIdFromName(
           selectedKorisnik,
           korisnikList,
@@ -101,7 +96,7 @@ class _AddNewsModalState extends State<AddNewsModal> {
             "naslov": title,
             "sadrzaj": content,
             "thumbnail": base64Image,
-            "datumKreiranja": tempDate.toIso8601String(),
+            "datumKreiranja": DateTime.now().toIso8601String(),
             "korisnikID": korisnikID,
           };
 
@@ -163,14 +158,6 @@ class _AddNewsModalState extends State<AddNewsModal> {
                         child: const Text('Select Thumbnail',
                             style: TextStyle(color: Colors.white)),
                       ),
-                TextField(
-                  controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Creation date',
-                    hintText: 'YYYY-MM-DD',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                ),
                 DropdownButtonFormField<String>(
                   value: selectedKorisnik,
                   onChanged: (String? value) {

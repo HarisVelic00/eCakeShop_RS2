@@ -298,7 +298,7 @@ class OrdersTable extends StatelessWidget {
                         DataCell(
                           narudzba.datumNarudzbe != null
                               ? Text(
-                                  DateFormat('d.M.y')
+                                  DateFormat('MM.dd.yyyy')
                                       .format(narudzba.datumNarudzbe!),
                                 )
                               : const Text(''),

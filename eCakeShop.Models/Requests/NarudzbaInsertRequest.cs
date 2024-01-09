@@ -13,6 +13,7 @@ namespace eCakeShop.Models.Requests
         public int KorisnikID { get; set; }
         [Required]
         public int UplataID { get; set; }
+        public DateTime DatumNarudzbe{ get; set; }
         [Required]
         public List<NarudzbaProizvodiInsertRequest> ListaProizvoda { get; set; }
     }

@@ -25,7 +25,7 @@ namespace eCakeShop.Services.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-               optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=eCakeShop;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=eCakeShop;Trusted_Connection=true;MultipleActiveResultSets=true;TrustServerCertificate=True;");
             }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -109,7 +109,7 @@ namespace eCakeShop.Services.Database
 
             modelBuilder.Entity<Novost>().HasData(
              new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Crno-bijeli kokos kolac", Sadrzaj = "Crno-bijeli kokos kolac", Thumbnail = Convert.FromBase64String(Images.Slike[1]) },
-             new Novost { NovostID = 3, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[1]) }
+             new Novost { NovostID = 2, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[1]) }
             );
 
             modelBuilder.Entity<Proizvod>().HasData(
@@ -159,6 +159,10 @@ namespace eCakeShop.Services.Database
                 new VrstaProizvoda { VrstaProizvodaID = 6, Naziv = "Desert", Opis = "Desert" },
                 new VrstaProizvoda { VrstaProizvodaID = 7, Naziv = "Vocna poslastica", Opis = "Vocna poslastica" },
                 new VrstaProizvoda { VrstaProizvodaID = 8, Naziv = "Napici", Opis = "Napici" }
+            );
+
+            modelBuilder.Entity<Lokacija>().HasData(
+                new Lokacija { LokacijaID = 1, Naziv = "Sanski Most", Latitude = 44.7656, Longitude = 16.6653 }
             );
         }
     }
