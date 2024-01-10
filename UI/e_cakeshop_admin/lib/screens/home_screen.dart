@@ -43,20 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 10),
-                  Flexible(
-                    child: ClipOval(
-                      child: Image.asset(
-                        'lib/assets/images/logo.jpg',
-                        fit: BoxFit.cover,
-                        height: 180,
-                        width: 180,
-                      ),
-                    ),
+                  CircleAvatar(
+                    backgroundImage: AssetImage('lib/assets/images/logo.jpg'),
+                    radius: 60,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    textAlign: TextAlign.center,
                     Authorization.korisnik?.ime ?? 'Guest',
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

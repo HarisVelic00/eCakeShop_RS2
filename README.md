@@ -46,7 +46,7 @@ CVC: 123
 - Open the UI folder
 
 - Choose the ecakeshop_admin folder
-
+f
 - Fetch dependencies
 ```
   flutter pub get

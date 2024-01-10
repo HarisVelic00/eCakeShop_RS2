@@ -158,76 +158,80 @@ class _EditNewsModalState extends State<EditNewsModal> {
         child: Container(
           color: const Color.fromRGBO(247, 249, 253, 1),
           width: MediaQuery.of(context).size.width * 0.2,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    const Text(
-                      'Edit News',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(labelText: 'Title'),
-                    ),
-                    TextField(
-                      controller: contentController,
-                      decoration: const InputDecoration(labelText: 'Content'),
-                    ),
-                    const SizedBox(height: 20),
-                    _buildImagePreview(),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                      ),
-                      onPressed: _pickImage,
-                      child: const Text('Select Thumbnail',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    TextField(
-                      controller: dateController,
-                      decoration: const InputDecoration(
-                        labelText: 'Creation date',
-                        hintText: 'MM.dd.yyyy',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey,
-                          ),
-                          onPressed: widget.onCancelPressed,
-                          child: const Text('Cancel',
-                              style: TextStyle(color: Colors.white)),
+          child: SingleChildScrollView(
+            // Wrap the Column with SingleChildScrollView
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      const Text(
+                        'Edit News',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromRGBO(97, 142, 246, 1),
-                          ),
-                          onPressed: _editNews,
-                          child: const Text('OK',
-                              style: TextStyle(color: Colors.white)),
+                      ),
+                      TextField(
+                        controller: titleController,
+                        decoration: const InputDecoration(labelText: 'Title'),
+                      ),
+                      TextField(
+                        controller: contentController,
+                        decoration: const InputDecoration(labelText: 'Content'),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildImagePreview(),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
                         ),
-                      ],
-                    ),
-                  ],
+                        onPressed: _pickImage,
+                        child: const Text('Select Thumbnail',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      TextField(
+                        controller: dateController,
+                        decoration: const InputDecoration(
+                          labelText: 'Creation date',
+                          hintText: 'MM.dd.yyyy',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                            ),
+                            onPressed: widget.onCancelPressed,
+                            child: const Text('Cancel',
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromRGBO(97, 142, 246, 1),
+                            ),
+                            onPressed: _editNews,
+                            child: const Text('OK',
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

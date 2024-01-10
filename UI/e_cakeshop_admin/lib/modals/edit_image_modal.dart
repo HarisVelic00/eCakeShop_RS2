@@ -140,65 +140,68 @@ class _EditImageModalState extends State<EditImageModal> {
         child: Container(
           color: const Color.fromRGBO(247, 249, 253, 1),
           width: MediaQuery.of(context).size.width * 0.2,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    const Text(
-                      'Edit Image',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextField(
-                      controller: descriptionController,
-                      decoration:
-                          const InputDecoration(labelText: 'Description'),
-                    ),
-                    const SizedBox(height: 20),
-                    _buildImagePreview(),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-                      ),
-                      onPressed: _pickImage,
-                      child: const Text('Select Image',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey,
-                          ),
-                          onPressed: widget.onCancelPressed,
-                          child: const Text('Cancel',
-                              style: TextStyle(color: Colors.white)),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      const Text(
+                        'Edit Image',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromRGBO(97, 142, 246, 1),
-                          ),
-                          onPressed: _editImage,
-                          child: const Text('OK',
-                              style: TextStyle(color: Colors.white)),
+                      ),
+                      TextField(
+                        controller: descriptionController,
+                        decoration:
+                            const InputDecoration(labelText: 'Description'),
+                      ),
+                      const SizedBox(height: 20),
+                      _buildImagePreview(),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
                         ),
-                      ],
-                    ),
-                  ],
+                        onPressed: _pickImage,
+                        child: const Text('Select Image',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                            ),
+                            onPressed: widget.onCancelPressed,
+                            child: const Text('Cancel',
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color.fromRGBO(97, 142, 246, 1),
+                            ),
+                            onPressed: _editImage,
+                            child: const Text('OK',
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

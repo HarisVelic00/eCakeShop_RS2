@@ -163,86 +163,89 @@ class _AddOrderModalState extends State<AddOrderModal> {
     return Dialog(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: Container(
-          color: const Color.fromRGBO(247, 249, 253, 1),
-          width: MediaQuery.of(context).size.width * 0.2,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text(
-                  'Add Order',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Container(
+            color: const Color.fromRGBO(247, 249, 253, 1),
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text(
+                    'Add Order',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedKorisnik,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedKorisnik = value!;
-                    });
-                  },
-                  items: korisnikList.map((Korisnik korisnik) {
-                    return DropdownMenuItem<String>(
-                      value: korisnik.ime ?? '',
-                      child: Text(korisnik.ime ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'User'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                DropdownButtonFormField<String>(
-                  value: selectedUplata,
-                  onChanged: (String? value) {
-                    setState(() {
-                      selectedUplata = value!;
-                    });
-                  },
-                  items: uplataList.map((Uplata uplata) {
-                    return DropdownMenuItem<String>(
-                      value: uplata.brojTransakcije ?? '',
-                      child: Text(uplata.brojTransakcije ?? ''),
-                    );
-                  }).toList(),
-                  decoration: const InputDecoration(labelText: 'Payment'),
-                  dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                ),
-                const SizedBox(height: 20),
-                MultiDropdownCheckbox(
-                  products: ProizvodiList,
-                  onSelectionChanged: (selectedProducts) {
-                    setState(() {
-                      this.selectedProducts = selectedProducts;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
+                  DropdownButtonFormField<String>(
+                    value: selectedKorisnik,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedKorisnik = value!;
+                      });
+                    },
+                    items: korisnikList.map((Korisnik korisnik) {
+                      return DropdownMenuItem<String>(
+                        value: korisnik.ime ?? '',
+                        child: Text(korisnik.ime ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'User'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedUplata,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedUplata = value!;
+                      });
+                    },
+                    items: uplataList.map((Uplata uplata) {
+                      return DropdownMenuItem<String>(
+                        value: uplata.brojTransakcije ?? '',
+                        child: Text(uplata.brojTransakcije ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'Payment'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  const SizedBox(height: 20),
+                  MultiDropdownCheckbox(
+                    products: ProizvodiList,
+                    onSelectionChanged: (selectedProducts) {
+                      setState(() {
+                        this.selectedProducts = selectedProducts;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                        ),
+                        onPressed: widget.onCancelPressed,
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
                       ),
-                      onPressed: widget.onCancelPressed,
-                      child: const Text('Cancel',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
+                        ),
+                        onPressed: _uploadOrder,
+                        child: const Text('OK',
+                            style: TextStyle(color: Colors.white)),
                       ),
-                      onPressed: _uploadOrder,
-                      child: const Text('OK',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

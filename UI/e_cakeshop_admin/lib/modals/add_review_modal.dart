@@ -59,81 +59,104 @@ class _AddReviewModalState extends State<AddReviewModal> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: const Color.fromRGBO(247, 249, 253, 1),
-      title: const Text('Add Review'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: contentController,
-              decoration: const InputDecoration(labelText: 'Content'),
-            ),
-            const SizedBox(height: 20),
-            const Text('Rating'),
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: const Color.fromRGBO(97, 142, 246, 1),
-                inactiveTrackColor: const Color.fromRGBO(97, 142, 246, 0.3),
-                thumbColor: Colors.blueAccent,
-                valueIndicatorColor: const Color.fromRGBO(97, 142, 246, 1),
+    return Dialog(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: SingleChildScrollView(
+          child: Container(
+            color: const Color.fromRGBO(247, 249, 253, 1),
+            width: MediaQuery.of(context).size.width * 0.2,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    'Add Review',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextField(
+                    controller: contentController,
+                    decoration: const InputDecoration(labelText: 'Content'),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Rating'),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: const Color.fromRGBO(97, 142, 246, 1),
+                      inactiveTrackColor:
+                          const Color.fromRGBO(97, 142, 246, 0.3),
+                      thumbColor: Colors.blueAccent,
+                      valueIndicatorColor:
+                          const Color.fromRGBO(97, 142, 246, 1),
+                    ),
+                    child: Slider(
+                      value: _rating,
+                      min: 1,
+                      max: 5,
+                      divisions: 4,
+                      label: _rating.toString(),
+                      onChanged: (value) {
+                        setState(() {
+                          _rating = value;
+                        });
+                      },
+                    ),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedKorisnik,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedKorisnik = value!;
+                      });
+                    },
+                    items: korisnikList.map((Korisnik korisnik) {
+                      return DropdownMenuItem<String>(
+                        value: korisnik.ime ?? '',
+                        child: Text(korisnik.ime ?? ''),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'User'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(97, 142, 246, 1),
+                        ),
+                        onPressed: () {
+                          uploadReview();
+                        },
+                        child: const Text('Add',
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              child: Slider(
-                value: _rating,
-                min: 1,
-                max: 5,
-                divisions: 4,
-                label: _rating.toString(),
-                onChanged: (value) {
-                  setState(() {
-                    _rating = value;
-                  });
-                },
-              ),
             ),
-            DropdownButtonFormField<String>(
-              value: selectedKorisnik,
-              onChanged: (String? value) {
-                setState(() {
-                  selectedKorisnik = value!;
-                });
-              },
-              items: korisnikList.map((Korisnik korisnik) {
-                return DropdownMenuItem<String>(
-                  value: korisnik.ime ?? '',
-                  child: Text(korisnik.ime ?? ''),
-                );
-              }).toList(),
-              decoration: const InputDecoration(labelText: 'User'),
-              dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-            ),
-          ],
+          ),
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.grey,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
-          ),
-          onPressed: () {
-            uploadReview();
-          },
-          child: const Text('Add'),
-        ),
-      ],
     );
   }
 }

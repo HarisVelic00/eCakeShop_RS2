@@ -94,76 +94,78 @@ class LoginScreen extends StatelessWidget {
       ),
       backgroundColor: const Color.fromRGBO(222, 235, 251, 1),
       body: Center(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              FractionallySizedBox(
-                widthFactor: 0.2,
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "The username field cannot be empty";
-                    } else if (value.length < 3) {
-                      return "Username cannot contain fewer than 3 characters";
-                    }
-                    return null;
-                  },
-                  controller: _username,
-                  decoration: const InputDecoration(
-                    labelText: "Username",
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FractionallySizedBox(
+                  widthFactor: 0.2,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "The username field cannot be empty";
+                      } else if (value.length < 3) {
+                        return "Username cannot contain fewer than 3 characters";
+                      }
+                      return null;
+                    },
+                    controller: _username,
+                    decoration: const InputDecoration(
+                      labelText: "Username",
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+                      ),
                     ),
+                    cursorColor: const Color.fromRGBO(97, 142, 246, 1),
+                    maxLines: 1,
                   ),
-                  cursorColor: const Color.fromRGBO(97, 142, 246, 1),
-                  maxLines: 1,
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              FractionallySizedBox(
-                widthFactor: 0.2,
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "The password field cannot be empty";
-                    } else if (value.length < 4) {
-                      return "Password cannot contain fewer than 3 characters";
-                    }
-                    return null;
-                  },
-                  controller: _password,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Password",
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+                const SizedBox(
+                  height: 20,
+                ),
+                FractionallySizedBox(
+                  widthFactor: 0.2,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "The password field cannot be empty";
+                      } else if (value.length < 4) {
+                        return "Password cannot contain fewer than 3 characters";
+                      }
+                      return null;
+                    },
+                    controller: _password,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: "Password",
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color.fromRGBO(97, 142, 246, 1)),
+                      ),
                     ),
+                    cursorColor: const Color.fromRGBO(97, 142, 246, 1),
+                    maxLines: 1,
                   ),
-                  cursorColor: const Color.fromRGBO(97, 142, 246, 1),
-                  maxLines: 1,
                 ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              ElevatedButton(
-                onPressed: () => handleLogin(context),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(200, 48),
-                  backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                const SizedBox(
+                  height: 40,
                 ),
-                child: const Text(
-                  "Login",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            ],
+                ElevatedButton(
+                  onPressed: () => handleLogin(context),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(200, 48),
+                    backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
+                  ),
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
