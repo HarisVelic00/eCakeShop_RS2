@@ -8,12 +8,12 @@ import 'package:e_cakeshop_admin/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PicturesScreen extends StatefulWidget {
+class ImagesScreen extends StatefulWidget {
   @override
-  _PicturesScreenState createState() => _PicturesScreenState();
+  _ImagesScreenState createState() => _ImagesScreenState();
 }
 
-class _PicturesScreenState extends State<PicturesScreen> {
+class _ImagesScreenState extends State<ImagesScreen> {
   bool isDeleteModalOpen = false;
   bool isAddImageModalOpen = false;
   bool _isEditImageModalOpen = false;
@@ -144,7 +144,7 @@ class _PicturesScreenState extends State<PicturesScreen> {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -190,12 +190,14 @@ class _PicturesScreenState extends State<PicturesScreen> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: ImagesTable(
-                      openEditSlikaModal: openEditImageModal,
-                      openDeleteModal: openDeleteModal,
-                      slikaProvider: slikaProvider,
-                      searchQuery: _searchQuery,
+                  Center(
+                    child: Expanded(
+                      child: ImagesTable(
+                        openEditSlikaModal: openEditImageModal,
+                        openDeleteModal: openDeleteModal,
+                        slikaProvider: slikaProvider,
+                        searchQuery: _searchQuery,
+                      ),
                     ),
                   )
                 ],

@@ -144,7 +144,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -190,12 +190,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: OrdersTable(
-                      openEditOrderModal: openEditOrderModal,
-                      openDeleteModal: openDeleteModal,
-                      narudzbaProvider: narudzbaProvider,
-                      searchQuery: _searchQuery,
+                  Center(
+                    child: Expanded(
+                      child: OrdersTable(
+                        openEditOrderModal: openEditOrderModal,
+                        openDeleteModal: openDeleteModal,
+                        narudzbaProvider: narudzbaProvider,
+                        searchQuery: _searchQuery,
+                      ),
                     ),
                   )
                 ],

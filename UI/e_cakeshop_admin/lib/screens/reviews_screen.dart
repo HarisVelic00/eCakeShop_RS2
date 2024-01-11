@@ -146,7 +146,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -192,12 +192,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: ReviewTable(
-                      openEditReviewModal: openEditReviewModal,
-                      openDeleteModal: openDeleteModal,
-                      recenzijaProvider: recenzijaProvider,
-                      searchQuery: _searchQuery,
+                  Center(
+                    child: Expanded(
+                      child: ReviewTable(
+                        openEditReviewModal: openEditReviewModal,
+                        openDeleteModal: openDeleteModal,
+                        recenzijaProvider: recenzijaProvider,
+                        searchQuery: _searchQuery,
+                      ),
                     ),
                   )
                 ],

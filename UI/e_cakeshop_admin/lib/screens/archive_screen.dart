@@ -73,8 +73,9 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
       for (var narudzba in reportData) {
         final products = narudzba.narudzbaProizvodi ?? 'Products N/A';
         final user = narudzba.korisnik?.ime ?? 'User N/A';
-        final date =
-            '${narudzba.datumNarudzbe?.year}-${narudzba.datumNarudzbe?.month}-${narudzba.datumNarudzbe?.day}';
+        final date = narudzba.datumNarudzbe != null
+            ? DateFormat('MM.dd.yyyy').format(narudzba.datumNarudzbe!)
+            : 'Date N/A';
         final price = '${narudzba.ukupnaCijena.toString()} KM';
 
         pdfData.add([
@@ -132,7 +133,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -180,11 +181,13 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: ArchiveTable(
-                      openDeleteModal: openDeleteModal,
-                      arhivaProvider: arhivaProvider,
-                      searchQuery: _searchQuery,
+                  Center(
+                    child: Expanded(
+                      child: ArchiveTable(
+                        openDeleteModal: openDeleteModal,
+                        arhivaProvider: arhivaProvider,
+                        searchQuery: _searchQuery,
+                      ),
                     ),
                   )
                 ],

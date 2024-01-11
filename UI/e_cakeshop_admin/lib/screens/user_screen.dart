@@ -141,7 +141,7 @@ class _UserScreenState extends State<UserScreen> {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -187,12 +187,14 @@ class _UserScreenState extends State<UserScreen> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: UsersTable(
-                      openDeleteModal: openDeleteModal,
-                      openEditUserModal: openEditUserModal,
-                      korisnikProvider: korisnikProvider,
-                      searchQuery: _searchQuery,
+                  Center(
+                    child: Expanded(
+                      child: UsersTable(
+                        openDeleteModal: openDeleteModal,
+                        openEditUserModal: openEditUserModal,
+                        korisnikProvider: korisnikProvider,
+                        searchQuery: _searchQuery,
+                      ),
                     ),
                   ),
                 ],

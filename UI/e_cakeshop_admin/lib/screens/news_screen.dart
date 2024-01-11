@@ -145,7 +145,7 @@ class _NewsScreenState extends State<NewsScreen> {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -191,12 +191,14 @@ class _NewsScreenState extends State<NewsScreen> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: NewsTable(
-                      openEditNewsModal: openEditNewsModal,
-                      openDeleteModal: openDeleteModal,
-                      novostProvider: novostProvider,
-                      searchQuery: _searchQuery,
+                  Center(
+                    child: Expanded(
+                      child: NewsTable(
+                        openEditNewsModal: openEditNewsModal,
+                        openDeleteModal: openDeleteModal,
+                        novostProvider: novostProvider,
+                        searchQuery: _searchQuery,
+                      ),
                     ),
                   )
                 ],

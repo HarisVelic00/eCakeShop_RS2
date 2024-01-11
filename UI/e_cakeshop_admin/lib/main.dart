@@ -8,11 +8,13 @@ import 'package:e_cakeshop_admin/providers/slika_provider.dart';
 import 'package:e_cakeshop_admin/screens/home_screen.dart';
 import 'package:e_cakeshop_admin/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MainApp());
   WidgetsFlutterBinding.ensureInitialized();
+  //debugPaintSizeEnabled = true;
 }
 
 class MainApp extends StatelessWidget {

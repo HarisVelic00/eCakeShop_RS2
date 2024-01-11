@@ -40,25 +40,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: const Color.fromRGBO(247, 249, 253, 1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  CircleAvatar(
-                    backgroundImage: AssetImage('lib/assets/images/logo.jpg'),
-                    radius: 60,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    Authorization.korisnik?.ime ?? 'Guest',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    CircleAvatar(
+                      backgroundImage: AssetImage('lib/assets/images/logo.jpg'),
+                      radius: 60,
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  Expanded(
-                    child: ListView(
+                    const SizedBox(height: 10),
+                    Text(
+                      Authorization.korisnik?.ime ?? 'Guest',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    ListView(
                       shrinkWrap: true,
                       physics: AlwaysScrollableScrollPhysics(),
                       children: [
@@ -145,8 +145,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Images':
         return ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: PicturesScreen(),
+          child: ImagesScreen(),
         );
       case 'News':
         return ClipRRect(

@@ -147,7 +147,7 @@ class _ProductScreenState extends State<ProductScreen> {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -193,12 +193,14 @@ class _ProductScreenState extends State<ProductScreen> {
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: ProductTable(
-                      openEditProductModal: openEditProductModal,
-                      openDeleteModal: openDeleteModal,
-                      proizvodProvider: proizvodProvider,
-                      searchQuery: _searchQuery,
+                  Center(
+                    child: Expanded(
+                      child: ProductTable(
+                        openEditProductModal: openEditProductModal,
+                        openDeleteModal: openDeleteModal,
+                        proizvodProvider: proizvodProvider,
+                        searchQuery: _searchQuery,
+                      ),
                     ),
                   )
                 ],
