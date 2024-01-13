@@ -131,10 +131,18 @@ class _CartScreenState extends State<CartScreen> {
                         ElevatedButton(
                           onPressed: () async {
                             final enteredAddress = _addressController.text;
-                            await _saveAddress(enteredAddress);
-                            double totalPrice = _cartProvider.totalPrice;
-                            await makePayment(totalPrice);
-                            if (paymentIntentData == null) {}
+                            if (enteredAddress.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("Please enter delivery address")),
+                              );
+                            } else {
+                              await _saveAddress(enteredAddress);
+                              double totalPrice = _cartProvider.totalPrice;
+                              await makePayment(totalPrice);
+                              if (paymentIntentData == null) {}
+                            }
                           },
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(

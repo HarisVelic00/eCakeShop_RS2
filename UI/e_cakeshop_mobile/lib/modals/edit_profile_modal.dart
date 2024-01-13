@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 
 class EditProfileDialog extends StatefulWidget {
   final Function(Map<String, dynamic>) onEditPressed;
+  final Map<String, dynamic> userData;
 
-  const EditProfileDialog({required this.onEditPressed});
+  const EditProfileDialog({
+    required this.onEditPressed,
+    required this.userData,
+  });
 
   @override
   _EditProfileDialogState createState() => _EditProfileDialogState();
@@ -41,6 +45,15 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         ),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.userData['name'];
+    surnameController.text = widget.userData['surname'];
+    emailController.text = widget.userData['email'];
+    telephoneController.text = widget.userData['telephone'];
   }
 
   @override

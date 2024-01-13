@@ -129,6 +129,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           newEdit,
                         );
                       },
+                      userData: {
+                        'name': Authorization.korisnik?.ime ?? '',
+                        'surname': Authorization.korisnik?.prezime ?? '',
+                        'email': Authorization.korisnik?.email ?? '',
+                        'telephone':
+                            Authorization.korisnik?.telefon?.toString() ?? '',
+                      },
                     );
                   },
                 );

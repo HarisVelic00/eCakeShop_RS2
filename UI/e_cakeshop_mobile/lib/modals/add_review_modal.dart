@@ -1,8 +1,7 @@
-// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, avoid_print
 
 import 'package:e_cakeshop_mobile/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AddReviewModal extends StatefulWidget {
   final Function(Map<String, dynamic>) onAddReviewPressed;
@@ -15,23 +14,24 @@ class AddReviewModal extends StatefulWidget {
 
 class _AddReviewDialogState extends State<AddReviewModal> {
   final TextEditingController contentController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
   double _rating = 3.0;
 
   Future<void> uploadReview() async {
-    final content = contentController.text;
-    final date = dateController.text;
-    DateTime tempDate = DateFormat("yyyy-MM-dd").parse(date);
-    int convertedRating = _rating.toInt();
+    try {
+      final content = contentController.text;
+      int convertedRating = _rating.toInt();
 
-    Map<String, dynamic> newReview = {
-      "sadrzajRecenzije": content,
-      "ocjena": convertedRating,
-      "datumKreiranja": tempDate.toIso8601String(),
-      "korisnikID": Authorization.korisnik?.korisnikID,
-    };
-    widget.onAddReviewPressed(newReview);
-    setState(() {});
+      Map<String, dynamic> newReview = {
+        "sadrzajRecenzije": content,
+        "ocjena": convertedRating,
+        "datumKreiranja": DateTime.now().toIso8601String(),
+        "korisnikID": Authorization.korisnik?.korisnikID,
+      };
+      widget.onAddReviewPressed(newReview);
+      setState(() {});
+    } catch (e) {
+      print("Error uploading review: $e");
+    }
   }
 
   @override
@@ -46,7 +46,7 @@ class _AddReviewDialogState extends State<AddReviewModal> {
           children: [
             TextField(
               controller: contentController,
-              decoration: const InputDecoration(labelText: 'Review Content'),
+              decoration: const InputDecoration(labelText: 'Content'),
             ),
             const SizedBox(height: 20),
             const Text('Rating'),
@@ -70,14 +70,6 @@ class _AddReviewDialogState extends State<AddReviewModal> {
                 },
               ),
             ),
-            TextField(
-              controller: dateController,
-              decoration: const InputDecoration(
-                labelText: 'Date of Creation',
-                hintText: 'YYYY-MM-DD',
-                hintStyle: TextStyle(color: Colors.grey),
-              ),
-            ),
           ],
         ),
       ),
@@ -98,7 +90,15 @@ class _AddReviewDialogState extends State<AddReviewModal> {
             backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
           ),
           onPressed: () {
-            uploadReview();
+            if (contentController.text.trim().isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Content must not be empty.'),
+                ),
+              );
+            } else {
+              uploadReview();
+            }
           },
           child: const Text('Add'),
         ),
