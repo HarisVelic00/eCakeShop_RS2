@@ -74,3 +74,8 @@ f
 
 6. Running RabbitMQ through Visual Studio
 - Choose eCakeShop.Subscriber as the startup project and run it.
+
+7. Minor notes:
+- Due to limitations, use the address of a larger locality (Sanica, Donji Kamengrad, Mostar, etc.).
+- Outlook emails may not receive confirmations due to Microsoft's spam filters. Consider using alternative email platforms like Gmail or ProtonMail.
+- The small image count is designed to optimize Docker build speed.

@@ -12,12 +12,7 @@ namespace eCakeShop.Services.Services
 {
     public class NarudzbaService : CRUDService<Models.Narudzba, Narudzba, NarudzbaSearchObject, NarudzbaInsertRequest, NarudzbaUpdateRequest>, INarudzbaService
     {
-        //private readonly ConnectionFactory _factory;
-        //private readonly string _queueName = "Queue";
-        public NarudzbaService(eCakeShopContext db, IMapper mapper /*ConnectionFactory factory*/) : base(db, mapper)
-        {
-            //_factory = factory;
-        }
+        public NarudzbaService(eCakeShopContext db, IMapper mapper) : base(db, mapper) { }
 
         public override Models.Narudzba Insert(NarudzbaInsertRequest request)
         {
@@ -32,8 +27,6 @@ namespace eCakeShop.Services.Services
                 _db.Add(Proizvod);
             }
             _db.SaveChanges();
-            //SendMessageToQueue(entity);
-
             return entity;
         }
 
@@ -100,23 +93,5 @@ namespace eCakeShop.Services.Services
 
             return entity;
         }
-
-        //private void SendMessageToQueue(object data)
-        //{
-        //    using (var connection = _factory.CreateConnection())
-        //    using (var channel = connection.CreateModel())
-        //    {
-        //        channel.QueueDeclare(queue: _queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
-        //        var jsonData = JsonConvert.SerializeObject(data);
-        //        var body = Encoding.UTF8.GetBytes(jsonData);
-
-        //        channel.BasicPublish(exchange: "", routingKey: _queueName, basicProperties: null, body: body);
-
-        //        Console.WriteLine("Sent message to RabbitMQ: {0}", jsonData);
-        //    }
-        //}
-
-
     }
 }
