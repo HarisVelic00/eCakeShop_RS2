@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:file_picker/file_picker.dart';
 
 class ArchiveScreen extends StatefulWidget {
   @override
@@ -61,13 +62,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
       final List<List<dynamic>> pdfData = [];
 
       pdfData.add([
-        'Order Number',
-        'Date',
         'User',
         'Products',
         'Price',
-        'Is Shipped',
-        'Is Canceled',
+        'Date',
       ]);
 
       for (var narudzba in reportData) {
@@ -79,13 +77,10 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
         final price = '${narudzba.ukupnaCijena.toString()} KM';
 
         pdfData.add([
-          narudzba.brojNarudzbe?.toString() ?? '',
-          date,
           user,
           products,
           price,
-          narudzba.isShipped.toString(),
-          narudzba.isCanceled.toString(),
+          date,
         ]);
       }
 
@@ -100,7 +95,11 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
         ),
       );
 
-      final file = File('report.pdf');
+      final directoryPath = await FilePicker.platform.getDirectoryPath();
+      if (directoryPath == null) return;
+
+      final filePath = '$directoryPath/Report.pdf';
+      final file = File(filePath);
       await file.writeAsBytes(await pdf.save());
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -247,28 +246,14 @@ class ArchiveTable extends StatelessWidget {
                     dataRowMinHeight: 50,
                     dataRowMaxHeight: 150,
                     columns: const [
-                      DataColumn(label: Text('Order Number')),
-                      DataColumn(label: Text('Date')),
                       DataColumn(label: Text('User')),
                       DataColumn(label: Text('Products')),
                       DataColumn(label: Text('Price')),
-                      DataColumn(label: Text('Is Shipped')),
-                      DataColumn(label: Text('Is Canceled')),
-                      DataColumn(label: Text('Actions')),
+                      DataColumn(label: Text('Date')),
                     ],
                     rows: archivedOrder.map((narudzba) {
                       return DataRow(
                         cells: [
-                          DataCell(
-                              Text(narudzba.brojNarudzbe?.toString() ?? '')),
-                          DataCell(
-                            narudzba.datumNarudzbe != null
-                                ? Text(
-                                    DateFormat('MM.dd.yyyy')
-                                        .format(narudzba.datumNarudzbe!),
-                                  )
-                                : const Text(''),
-                          ),
                           DataCell(Text(narudzba.korisnik?.ime ?? '')),
                           DataCell(
                             Column(
@@ -284,19 +269,13 @@ class ArchiveTable extends StatelessWidget {
                               '${narudzba.ukupnaCijena?.toString() ?? ''} KM',
                             ),
                           ),
-                          DataCell(Text(narudzba.isShipped.toString())),
-                          DataCell(Text(narudzba.isCanceled.toString())),
                           DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () {
-                                    openDeleteModal(narudzba);
-                                  },
-                                ),
-                              ],
-                            ),
+                            narudzba.datumNarudzbe != null
+                                ? Text(
+                                    DateFormat('MM.dd.yyyy')
+                                        .format(narudzba.datumNarudzbe!),
+                                  )
+                                : const Text(''),
                           ),
                         ],
                       );

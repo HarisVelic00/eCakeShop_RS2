@@ -68,44 +68,51 @@ class _AddImageModalState extends State<AddImageModal> {
   }
 
   Future<void> _uploadImage() async {
-    if (_imageFile != null) {
-      List<int> imageBytes = await _imageFile!.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
+    try {
+      if (_imageFile != null) {
+        List<int> imageBytes = await _imageFile!.readAsBytes();
+        String base64Image = base64Encode(imageBytes);
 
-      final opis = descriptionController.text;
+        final opis = descriptionController.text;
 
-      if (opis.isEmpty || selectedKorisnik == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
+        if (opis.isEmpty || opis.trim().isEmpty || selectedKorisnik == null) {
+          throw Exception('Please fill all fields.');
+        }
+
+        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(opis)) {
+          throw Exception('Description should contain only letters.');
+        }
+
+        int korisnikID = findIdFromName(
+          selectedKorisnik,
+          korisnikList,
+          (Korisnik korisnik) => korisnik.ime ?? '',
+          (Korisnik korisnik) => korisnik.korisnikID ?? -1,
         );
-        return;
-      }
 
-      int korisnikID = findIdFromName(
-        selectedKorisnik,
-        korisnikList,
-        (Korisnik korisnik) => korisnik.ime ?? '',
-        (Korisnik korisnik) => korisnik.korisnikID ?? -1,
-      );
+        if (korisnikID != -1) {
+          Map<String, dynamic> newSlika = {
+            "slikaByte": base64Image,
+            "opis": opis,
+            "korisnikID": korisnikID,
+          };
 
-      if (korisnikID != -1) {
-        Map<String, dynamic> newSlika = {
-          "slikaByte": base64Image,
-          "opis": opis,
-          "korisnikID": korisnikID,
-        };
-
-        widget.onAddSlikaPressed(newSlika);
-        setState(() {});
-        Navigator.pop(context);
+          widget.onAddSlikaPressed(newSlika);
+          setState(() {});
+          Navigator.pop(context);
+        } else {
+          throw Exception('Error: Some selected values are not set');
+        }
       } else {
-        print("Error: Some selected values are not set");
+        throw Exception('No image selected. Please select an image.');
       }
-    } else {
-      print('No image selected');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

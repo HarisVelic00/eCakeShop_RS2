@@ -1,4 +1,4 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, avoid_print, unnecessary_null_comparison
 import 'package:e_cakeshop_admin/models/korisnik.dart';
 import 'package:e_cakeshop_admin/models/recenzija.dart';
 import 'package:e_cakeshop_admin/providers/korisnik_provider.dart';
@@ -40,28 +40,54 @@ class _EditReviewModalState extends State<EditReviewModal> {
   }
 
   void editReview() async {
-    final content = contentController.text;
-    final date = dateController.text;
-    int convertedRating = _rating.toInt();
+    try {
+      final content = contentController.text;
+      final date = dateController.text;
 
-    int korisnikID = korisnikList
-            .firstWhere((korisnik) => korisnik.ime == selectedKorisnik)
-            .korisnikID ??
-        -1;
+      int korisnikID = korisnikList
+              .firstWhere((korisnik) => korisnik.ime == selectedKorisnik)
+              .korisnikID ??
+          -1;
 
-    DateTime tempDate = DateFormat("MM.dd.yyyy").parse(date);
-    widget.onUpdatePressed(
-      _recenzijaToEdit!.recenzijaID!,
-      {
-        "sadrzajRecenzije": content,
-        "ocjena": convertedRating,
-        "datumKreiranja": tempDate.toIso8601String(),
-        "korisnikID": korisnikID,
-      },
-    );
-    Navigator.pop(context);
+      if (content.isEmpty) {
+        throw Exception('Please fill all fields');
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(content)) {
+        throw Exception('Content should contain only letters.');
+      }
 
-    setState(() {});
+      if (date.trim().isEmpty) {
+        throw Exception('Please fill all fields.');
+      }
+
+      DateTime tempDate = DateFormat("MM.dd.yyyy").parse(date);
+
+      int? convertedRating;
+      if (_rating != null) {
+        convertedRating = _rating.toInt();
+      }
+
+      widget.onUpdatePressed(
+        _recenzijaToEdit!.recenzijaID!,
+        {
+          "sadrzajRecenzije": content,
+          "ocjena": convertedRating,
+          "datumKreiranja": tempDate.toIso8601String(),
+          "korisnikID": korisnikID,
+        },
+      );
+
+      Navigator.pop(context);
+      setState(() {});
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Invalid date format. Please use MM.dd.yyyy.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

@@ -290,7 +290,6 @@ class ProductTable extends StatelessWidget {
                 child: DataTable(
                   dataRowHeight: 256,
                   columns: const [
-                    DataColumn(label: Text('ID')),
                     DataColumn(label: Text('Name')),
                     DataColumn(label: Text('Code')),
                     DataColumn(label: Text('Price')),
@@ -307,7 +306,6 @@ class ProductTable extends StatelessWidget {
                   rows: filteredProizvod.map((proizvod) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(proizvod.proizvodID?.toString() ?? '')),
                         DataCell(Text(proizvod.naziv ?? '')),
                         DataCell(Text(proizvod.sifra ?? '')),
                         DataCell(

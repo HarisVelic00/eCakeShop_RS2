@@ -134,8 +134,10 @@ class _CartScreenState extends State<CartScreen> {
                             if (enteredAddress.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content:
-                                        Text("Please enter delivery address")),
+                                  content:
+                                      Text('Please enter delivery address'),
+                                  backgroundColor: Colors.red,
+                                ),
                               );
                             } else {
                               await _saveAddress(enteredAddress);

@@ -36,6 +36,7 @@ class _AddUserModalState extends State<AddUserModal> {
   String? selectedGrad;
   String? selectedDrzava;
   String? selectedUloga;
+  Map<String, String> gradToDrzavaMap = {};
 
   int findIdFromName<T>(
     String? selectedValue,
@@ -59,12 +60,29 @@ class _AddUserModalState extends State<AddUserModal> {
       gradList = await GradProvider().Get();
       drzavaList = await DrzavaProvider().Get();
       ulogaList = await UlogaProvider().Get();
+
+      gradToDrzavaMap = await loadGradDrzavaMapping();
+
       if (mounted) {
         setState(() {});
       }
     } catch (e) {
       print('Error fetching data: $e');
     }
+  }
+
+  Future<Map<String, String>> loadGradDrzavaMapping() async {
+    Map<String, String> mapping = {
+      'Sarajevo': 'Bosna i Hercegovina',
+      'Beograd': 'Srbija',
+      'Zagreb': 'Hrvatska',
+    };
+    Set<String> uniqueCountries = mapping.values.toSet();
+    return {
+      for (var country in uniqueCountries)
+        mapping.entries.firstWhere((entry) => entry.value == country).key:
+            country
+    };
   }
 
   Future<void> _uploadUser() async {
@@ -94,6 +112,52 @@ class _AddUserModalState extends State<AddUserModal> {
           ),
         );
       } else {
+        if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+            .hasMatch(email)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid email format'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        try {
+          DateFormat('MM.dd.yyyy').parse(dob);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid date format. Please use MM.dd.yyyy'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(telephone)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('Invalid phone number format. Please use XXX-XXX-XXX'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*]+$').hasMatch(password) ||
+            password.length < 5) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Password should have at least 5 characters and can only contain letters, numbers, or special characters'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         DateTime tempDate = DateFormat("MM.dd.yyyy").parse(dob);
 
         int gradID = findIdFromName(
@@ -169,11 +233,19 @@ class _AddUserModalState extends State<AddUserModal> {
                   ),
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      hintText: 'Example: John',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: surnameController,
-                    decoration: const InputDecoration(labelText: 'Surname'),
+                    decoration: const InputDecoration(
+                      labelText: 'Surname',
+                      hintText: 'Example: Smith',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: dobController,
@@ -185,15 +257,39 @@ class _AddUserModalState extends State<AddUserModal> {
                   ),
                   TextField(
                     controller: emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      hintText: 'example@email.com',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: telephoneController,
                     decoration: const InputDecoration(
                       labelText: 'Telephone',
-                      hintText: 'Example 037-123-456',
+                      hintText: 'Example: 037-123-456',
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedDrzava,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedDrzava = value!;
+                        selectedGrad = null;
+                      });
+                    },
+                    items: drzavaList
+                        .map((Drzava drzava) => drzava.naziv ?? '')
+                        .toSet()
+                        .map((String country) {
+                      return DropdownMenuItem<String>(
+                        value: country,
+                        child: Text(country),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'Country'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                   ),
                   DropdownButtonFormField<String>(
                     value: selectedGrad,
@@ -202,7 +298,10 @@ class _AddUserModalState extends State<AddUserModal> {
                         selectedGrad = value!;
                       });
                     },
-                    items: gradList.map((Grad grad) {
+                    items: gradList
+                        .where((Grad grad) =>
+                            gradToDrzavaMap[grad.naziv] == selectedDrzava)
+                        .map((Grad grad) {
                       return DropdownMenuItem<String>(
                         value: grad.naziv,
                         child: Text(grad.naziv ?? ''),
@@ -211,25 +310,13 @@ class _AddUserModalState extends State<AddUserModal> {
                     decoration: const InputDecoration(labelText: 'City'),
                     dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
                   ),
-                  DropdownButtonFormField<String>(
-                    value: selectedDrzava,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedDrzava = value!;
-                      });
-                    },
-                    items: drzavaList.map((Drzava drzava) {
-                      return DropdownMenuItem<String>(
-                        value: drzava.naziv,
-                        child: Text(drzava.naziv ?? ''),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(labelText: 'Country'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
                   TextField(
                     controller: usernameController,
-                    decoration: const InputDecoration(labelText: 'Username'),
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                      hintText: 'Example: john_smith',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: passwordController,

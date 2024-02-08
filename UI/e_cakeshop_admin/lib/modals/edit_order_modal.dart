@@ -25,6 +25,16 @@ class _EditOrderModalState extends State<EditOrderModal> {
 
   Future<void> _editOrder() async {
     try {
+      if (isShippedController.value && isCanceledController.value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error: Cannot be both shipped and canceled'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       widget.onUpdatePressed(_narudzbaToEdit!.narudzbaID!, {
         "isShipped": isShippedController.value,
         "isCanceled": isCanceledController.value,
@@ -85,13 +95,16 @@ class _EditOrderModalState extends State<EditOrderModal> {
                             valueListenable: isShippedController,
                             builder: (context, value, child) {
                               return Checkbox(
-                                  value: value,
-                                  onChanged: (bool? newValue) {
-                                    isShippedController.value =
-                                        newValue ?? false;
-                                  },
-                                  activeColor:
-                                      const Color.fromRGBO(97, 142, 246, 1));
+                                value: value,
+                                onChanged: (bool? newValue) {
+                                  isShippedController.value = newValue ?? false;
+                                  if (isShippedController.value) {
+                                    isCanceledController.value = false;
+                                  }
+                                },
+                                activeColor:
+                                    const Color.fromRGBO(97, 142, 246, 1),
+                              );
                             },
                           ),
                         ],
@@ -105,13 +118,17 @@ class _EditOrderModalState extends State<EditOrderModal> {
                             valueListenable: isCanceledController,
                             builder: (context, value, child) {
                               return Checkbox(
-                                  value: value,
-                                  onChanged: (bool? newValue) {
-                                    isCanceledController.value =
-                                        newValue ?? false;
-                                  },
-                                  activeColor:
-                                      const Color.fromRGBO(97, 142, 246, 1));
+                                value: value,
+                                onChanged: (bool? newValue) {
+                                  isCanceledController.value =
+                                      newValue ?? false;
+                                  if (isCanceledController.value) {
+                                    isShippedController.value = false;
+                                  }
+                                },
+                                activeColor:
+                                    const Color.fromRGBO(97, 142, 246, 1),
+                              );
                             },
                           ),
                         ],

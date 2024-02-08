@@ -28,14 +28,54 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       final email = emailController.text;
       final telefon = telephoneController.text;
 
-      Map<String, dynamic> newEdit = {
-        "ime": ime,
-        "prezime": prezime,
-        "email": email,
-        "telefon": telefon
-      };
-      widget.onEditPressed(newEdit);
-      Navigator.pop(context);
+      if (ime.isEmpty || prezime.isEmpty || email.isEmpty || telefon.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please fill all fields'),
+          backgroundColor: Colors.red,
+        ));
+      } else {
+        if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+            .hasMatch(email)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid email format'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(telefon)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('Invalid phone number format. Please use XXX-XXX-XXX'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!RegExp(r'^[a-zA-Z]+$').hasMatch(ime) ||
+            !RegExp(r'^[a-zA-Z]+$').hasMatch(prezime)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Name and surname should contain only letters'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        Map<String, dynamic> newEdit = {
+          "ime": ime,
+          "prezime": prezime,
+          "email": email,
+          "telefon": telefon
+        };
+        widget.onEditPressed(newEdit);
+        Navigator.pop(context);
+      }
     } catch (e) {
       print('Error editing user: $e');
       ScaffoldMessenger.of(context).showSnackBar(

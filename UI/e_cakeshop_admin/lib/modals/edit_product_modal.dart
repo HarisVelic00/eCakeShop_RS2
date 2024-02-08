@@ -139,32 +139,74 @@ class _EditProductModalState extends State<EditProductModal> {
 
   void _editProduct() async {
     try {
+      if (_imageFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a different image.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      List<int>? imageBytes;
+      String? base64Image;
+
       if (_imageFile != null) {
-        List<int> imageBytes = await _imageFile!.readAsBytes();
-        String base64Image = base64Encode(imageBytes);
-        final name = nameController.text;
-        final price = double.tryParse(priceController.text);
-        final description = descriptionController.text;
+        imageBytes = await _imageFile!.readAsBytes();
+        base64Image = base64Encode(imageBytes);
+      }
 
-        if (name.isEmpty ||
-            price == null ||
-            description.isEmpty ||
-            selectedVrstaProizvoda == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please fill all fields'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        } else {
-          int vrstaProizvodaID = findIdFromName(
-            selectedVrstaProizvoda,
-            vrstaProizvodaList,
-            (VrstaProizvoda vrstaProizvoda) => vrstaProizvoda.naziv ?? '',
-            (VrstaProizvoda vrstaProizvoda) =>
-                vrstaProizvoda.vrstaProizvodaID ?? -1,
-          );
+      final name = nameController.text;
+      final price = double.tryParse(priceController.text);
+      final description = descriptionController.text;
 
+      if (name.isEmpty ||
+          description.isEmpty ||
+          selectedVrstaProizvoda == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (price == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Price should only contain numbers.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (price <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Price should be greater than zero.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Name should contain only letters.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(description)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Description should contain only letters.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        int vrstaProizvodaID = findIdFromName(
+          selectedVrstaProizvoda,
+          vrstaProizvodaList,
+          (VrstaProizvoda vrstaProizvoda) => vrstaProizvoda.naziv ?? '',
+          (VrstaProizvoda vrstaProizvoda) =>
+              vrstaProizvoda.vrstaProizvodaID ?? -1,
+        );
+
+        if (_imageFile != null) {
           widget.onUpdatePressed(
             _proizvodToEdit!.proizvodID!,
             {
@@ -175,11 +217,22 @@ class _EditProductModalState extends State<EditProductModal> {
               "vrstaProizvodaID": vrstaProizvodaID,
             },
           );
-          Navigator.pop(context);
+        } else {
+          widget.onUpdatePressed(
+            _proizvodToEdit!.proizvodID!,
+            {
+              "naziv": name,
+              "cijena": price,
+              "opis": description,
+              "vrstaProizvodaID": vrstaProizvodaID,
+            },
+          );
         }
+
+        Navigator.pop(context);
       }
     } catch (e) {
-      print("Error adding product: $e");
+      print("Error editing product: $e");
     }
   }
 

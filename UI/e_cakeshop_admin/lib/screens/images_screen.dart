@@ -296,8 +296,8 @@ class ImagesTable extends StatelessWidget {
                         DataCell(
                           slika.slikaByte != null
                               ? SizedBox(
-                                  width: 256,
-                                  height: 256,
+                                  width: 200,
+                                  height: 200,
                                   child: Image.memory(
                                     dataFromBase64String(slika.slikaByte!),
                                     fit: BoxFit.cover,

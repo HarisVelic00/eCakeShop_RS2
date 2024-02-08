@@ -62,14 +62,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       shrinkWrap: true,
                       physics: AlwaysScrollableScrollPhysics(),
                       children: [
-                        NavItem(
-                          title: 'Users',
-                          onTap: () {},
-                          onSelect: (item) {
-                            setState(() {
-                              selectedNavItem = item;
-                            });
-                          },
+                        Visibility(
+                          visible: Authorization.korisnik?.uloge
+                                  ?.toLowerCase()
+                                  .contains('administrator') ??
+                              false,
+                          child: NavItem(
+                            title: 'Users',
+                            onTap: () {},
+                            onSelect: (item) {
+                              setState(() {
+                                selectedNavItem = item;
+                              });
+                            },
+                          ),
                         ),
                         NavItem(
                           title: 'Products',
@@ -116,14 +122,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             });
                           },
                         ),
-                        NavItem(
-                          title: 'Reviews',
-                          onTap: () {},
-                          onSelect: (item) {
-                            setState(() {
-                              selectedNavItem = item;
-                            });
-                          },
+                        Visibility(
+                          visible: Authorization.korisnik?.uloge
+                                  ?.toLowerCase()
+                                  .contains('administrator') ??
+                              false,
+                          child: NavItem(
+                            title: 'Reviews',
+                            onTap: () {},
+                            onSelect: (item) {
+                              setState(() {
+                                selectedNavItem = item;
+                              });
+                            },
+                          ),
                         ),
                         NavItem(
                           title: 'Logout',

@@ -69,21 +69,26 @@ class _AddNewsModalState extends State<AddNewsModal> {
   }
 
   Future<void> _uploadThumbnail() async {
-    if (_imageFile != null) {
-      List<int> imageBytes = await _imageFile!.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
+    try {
+      if (_imageFile != null) {
+        List<int> imageBytes = await _imageFile!.readAsBytes();
+        String base64Image = base64Encode(imageBytes);
 
-      final title = titleController.text;
-      final content = contentController.text;
+        final title = titleController.text;
+        final content = contentController.text;
 
-      if (title.isEmpty || content.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
+        if (title.isEmpty || content.isEmpty) {
+          throw Exception('Please fill all fields.');
+        }
+
+        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(title)) {
+          throw Exception('Title should contain only letters.');
+        }
+
+        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(content)) {
+          throw Exception('Content should contain only letters.');
+        }
+
         int korisnikID = findIdFromName(
           selectedKorisnik,
           korisnikList,
@@ -104,11 +109,18 @@ class _AddNewsModalState extends State<AddNewsModal> {
           setState(() {});
           Navigator.pop(context);
         } else {
-          print("Error: Some selected values are not set");
+          throw Exception('Error: Some selected values are not set');
         }
+      } else {
+        throw Exception('No image selected. Please select an image.');
       }
-    } else {
-      print('No image selected');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

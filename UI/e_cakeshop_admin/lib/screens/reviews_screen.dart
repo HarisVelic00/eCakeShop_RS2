@@ -173,22 +173,22 @@ class _ReviewScreenState extends State<ReviewScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16.0),
-                        Expanded(
-                          flex: 1,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(200, 48),
-                              backgroundColor:
-                                  const Color.fromRGBO(97, 142, 246, 1),
-                            ),
-                            onPressed: openAddReviewModal,
-                            child: const Text(
-                              'Add Review',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
+                        // const SizedBox(width: 16.0),
+                        // Expanded(
+                        //   flex: 1,
+                        //   child: ElevatedButton(
+                        //     style: ElevatedButton.styleFrom(
+                        //       minimumSize: const Size(200, 48),
+                        //       backgroundColor:
+                        //           const Color.fromRGBO(97, 142, 246, 1),
+                        //     ),
+                        //     onPressed: openAddReviewModal,
+                        //     child: const Text(
+                        //       'Add Review',
+                        //       style: TextStyle(color: Colors.white),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -288,7 +288,6 @@ class ReviewTable extends StatelessWidget {
               child: SingleChildScrollView(
                 child: DataTable(
                   columns: const [
-                    DataColumn(label: Text('ID')),
                     DataColumn(label: Text('Content')),
                     DataColumn(label: Text('Rating')),
                     DataColumn(label: Text('Date of creation')),
@@ -298,7 +297,6 @@ class ReviewTable extends StatelessWidget {
                   rows: filteredRecenzija.map((recenzija) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(recenzija.recenzijaID?.toString() ?? '')),
                         DataCell(Text(recenzija.sadrzajRecenzije ?? '')),
                         DataCell(Text(recenzija.ocjena.toString())),
                         DataCell(

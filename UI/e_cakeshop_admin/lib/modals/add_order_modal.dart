@@ -124,12 +124,24 @@ class _AddOrderModalState extends State<AddOrderModal> {
 
   Future<void> _uploadOrder() async {
     try {
+      if (selectedKorisnik == null || selectedUplata == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       int korisnikID = korisnikList
-              .firstWhere((korisnik) => korisnik.ime == selectedKorisnik)
+              .firstWhere((korisnik) => korisnik.ime == selectedKorisnik,
+                  orElse: () => Korisnik())
               .korisnikID ??
           -1;
       int uplataID = uplataList
-              .firstWhere((uplata) => uplata.brojTransakcije == selectedUplata)
+              .firstWhere((uplata) => uplata.brojTransakcije == selectedUplata,
+                  orElse: () => Uplata())
               .uplataID ??
           -1;
 
@@ -145,10 +157,31 @@ class _AddOrderModalState extends State<AddOrderModal> {
         Navigator.pop(context);
         setState(() {});
       } else {
+        if (selectedProducts.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please select at least one product.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Some selected values are not set.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
         print("Error: Some selected values are not set");
       }
     } catch (e) {
-      print("Error adding user: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error adding order. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print("Error adding order: $e");
     }
   }
 

@@ -281,7 +281,6 @@ class NewsTable extends StatelessWidget {
                 child: DataTable(
                   dataRowHeight: 256,
                   columns: const [
-                    DataColumn(label: Text('ID')),
                     DataColumn(label: Text('Title')),
                     DataColumn(label: Text('Content')),
                     DataColumn(label: Text('Thumbnail')),
@@ -291,14 +290,13 @@ class NewsTable extends StatelessWidget {
                   rows: filteredNovost.map((novost) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(novost.novostID.toString())),
                         DataCell(Text(novost.naslov ?? '')),
                         DataCell(Text(novost.sadrzaj ?? '')),
                         DataCell(
                           novost.thumbnail != null
                               ? SizedBox(
-                                  width: 256,
-                                  height: 256,
+                                  width: 200,
+                                  height: 200,
                                   child: Image.memory(
                                     dataFromBase64String(novost.thumbnail!),
                                     fit: BoxFit.cover,

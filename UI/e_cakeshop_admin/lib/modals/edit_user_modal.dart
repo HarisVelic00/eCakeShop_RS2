@@ -2,10 +2,8 @@
 import 'package:e_cakeshop_admin/models/drzava.dart';
 import 'package:e_cakeshop_admin/models/grad.dart';
 import 'package:e_cakeshop_admin/models/korisnik.dart';
-import 'package:e_cakeshop_admin/models/uloga.dart';
 import 'package:e_cakeshop_admin/providers/drzava_provider.dart';
 import 'package:e_cakeshop_admin/providers/grad_provider.dart';
-import 'package:e_cakeshop_admin/providers/uloga_provider.dart';
 import 'package:flutter/material.dart';
 
 class EditUserModal extends StatefulWidget {
@@ -28,15 +26,13 @@ class _EditUserModalState extends State<EditUserModal> {
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController telephoneController = TextEditingController();
-  final TextEditingController roleController = TextEditingController();
 
   late Korisnik? _korisnikToEdit;
   List<Grad> gradList = [];
   List<Drzava> drzavaList = [];
-  List<Uloga> ulogaList = [];
   String? selectedGrad;
   String? selectedDrzava;
-  String? selectedUloga;
+  Map<String, String> gradToDrzavaMap = {};
 
   int findIdFromName<T>(
     String? selectedValue,
@@ -59,7 +55,7 @@ class _EditUserModalState extends State<EditUserModal> {
     try {
       gradList = await GradProvider().Get();
       drzavaList = await DrzavaProvider().Get();
-      ulogaList = await UlogaProvider().Get();
+      gradToDrzavaMap = await loadGradDrzavaMapping();
       if (mounted) {
         setState(() {});
       }
@@ -68,19 +64,31 @@ class _EditUserModalState extends State<EditUserModal> {
     }
   }
 
+  Future<Map<String, String>> loadGradDrzavaMapping() async {
+    Map<String, String> mapping = {
+      'Sarajevo': 'Bosna i Hercegovina',
+      'Beograd': 'Srbija',
+      'Zagreb': 'Hrvatska',
+    };
+    Set<String> uniqueCountries = mapping.values.toSet();
+    return {
+      for (var country in uniqueCountries)
+        mapping.entries.firstWhere((entry) => entry.value == country).key:
+            country
+    };
+  }
+
   Future<void> _editUser() async {
     try {
       final name = nameController.text;
       final surname = surnameController.text;
       final email = emailController.text;
       final telephone = telephoneController.text;
-      final role = roleController.text;
 
       if (name.isEmpty ||
           surname.isEmpty ||
           email.isEmpty ||
           telephone.isEmpty ||
-          role.isEmpty ||
           selectedGrad == null ||
           selectedDrzava == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -90,6 +98,39 @@ class _EditUserModalState extends State<EditUserModal> {
           ),
         );
       } else {
+        if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+            .hasMatch(email)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid email format'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(telephone)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text('Invalid phone number format. Please use XXX-XXX-XXX'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
+        if (!RegExp(r'^[a-zA-Z]+$').hasMatch(name) ||
+            !RegExp(r'^[a-zA-Z]+$').hasMatch(surname)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Name and surname should contain only letters'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         int gradID = findIdFromName(
           selectedGrad,
           gradList,
@@ -110,7 +151,6 @@ class _EditUserModalState extends State<EditUserModal> {
           'telefon': telephone,
           "gradID": gradID,
           "drzavaID": drzavaID,
-          'uloga': role,
         });
         Navigator.pop(context);
       }
@@ -135,7 +175,6 @@ class _EditUserModalState extends State<EditUserModal> {
       surnameController.text = _korisnikToEdit!.prezime ?? '';
       emailController.text = _korisnikToEdit!.email ?? '';
       telephoneController.text = _korisnikToEdit!.telefon ?? '';
-      roleController.text = _korisnikToEdit!.uloga?.opis ?? '';
       selectedGrad = _korisnikToEdit!.grad?.naziv;
       selectedDrzava = _korisnikToEdit!.drzava?.naziv;
     }
@@ -166,15 +205,27 @@ class _EditUserModalState extends State<EditUserModal> {
                   ),
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      hintText: 'Example John',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: surnameController,
-                    decoration: const InputDecoration(labelText: 'Surname'),
+                    decoration: const InputDecoration(
+                      labelText: 'Surname',
+                      hintText: 'Example Smith',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      hintText: 'example@email.com',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: telephoneController,
@@ -185,13 +236,36 @@ class _EditUserModalState extends State<EditUserModal> {
                     ),
                   ),
                   DropdownButtonFormField<String>(
+                    value: selectedDrzava,
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedDrzava = value!;
+                        selectedGrad = null;
+                      });
+                    },
+                    items: drzavaList
+                        .map((Drzava drzava) => drzava.naziv ?? '')
+                        .toSet()
+                        .map((String country) {
+                      return DropdownMenuItem<String>(
+                        value: country,
+                        child: Text(country),
+                      );
+                    }).toList(),
+                    decoration: const InputDecoration(labelText: 'Country'),
+                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                  ),
+                  DropdownButtonFormField<String>(
                     value: selectedGrad,
                     onChanged: (String? value) {
                       setState(() {
                         selectedGrad = value!;
                       });
                     },
-                    items: gradList.map((Grad grad) {
+                    items: gradList
+                        .where((Grad grad) =>
+                            gradToDrzavaMap[grad.naziv] == selectedDrzava)
+                        .map((Grad grad) {
                       return DropdownMenuItem<String>(
                         value: grad.naziv,
                         child: Text(grad.naziv ?? ''),
@@ -199,26 +273,6 @@ class _EditUserModalState extends State<EditUserModal> {
                     }).toList(),
                     decoration: const InputDecoration(labelText: 'City'),
                     dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: selectedDrzava,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedDrzava = value!;
-                      });
-                    },
-                    items: drzavaList.map((Drzava drzava) {
-                      return DropdownMenuItem<String>(
-                        value: drzava.naziv,
-                        child: Text(drzava.naziv ?? ''),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(labelText: 'Country'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  TextField(
-                    controller: roleController,
-                    decoration: const InputDecoration(labelText: 'Uloga'),
                   ),
                   const SizedBox(height: 20),
                   const Divider(),

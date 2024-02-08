@@ -21,6 +21,22 @@ class _AddReviewDialogState extends State<AddReviewModal> {
       final content = contentController.text;
       int convertedRating = _rating.toInt();
 
+      if (content.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Content must not be empty.'),
+          backgroundColor: Colors.red,
+        ));
+      } else {
+        if (!RegExp(r'^[a-zA-Z]+$').hasMatch(content)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Content should contain only letters'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+      }
       Map<String, dynamic> newReview = {
         "sadrzajRecenzije": content,
         "ocjena": convertedRating,
@@ -31,6 +47,12 @@ class _AddReviewDialogState extends State<AddReviewModal> {
       setState(() {});
     } catch (e) {
       print("Error uploading review: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error uploading review'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -90,15 +112,7 @@ class _AddReviewDialogState extends State<AddReviewModal> {
             backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
           ),
           onPressed: () {
-            if (contentController.text.trim().isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Content must not be empty.'),
-                ),
-              );
-            } else {
-              uploadReview();
-            }
+            uploadReview();
           },
           child: const Text('Add'),
         ),

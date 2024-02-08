@@ -282,19 +282,17 @@ class OrdersTable extends StatelessWidget {
                   dataRowMinHeight: 50,
                   dataRowMaxHeight: 150,
                   columns: const [
-                    DataColumn(label: Text('ID')),
                     DataColumn(label: Text('Order Number')),
                     DataColumn(label: Text('User')),
                     DataColumn(label: Text('Date')),
                     DataColumn(label: Text('Products')),
-                    DataColumn(label: Text('Is Shipped')),
-                    DataColumn(label: Text('Is Canceled')),
+                    DataColumn(label: Text('Shipped')),
+                    DataColumn(label: Text('Canceled')),
                     DataColumn(label: Text('Actions')),
                   ],
                   rows: filteredNarudzba.map((narudzba) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(narudzba.narudzbaID.toString())),
                         DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
                         DataCell(Text(narudzba.korisnik?.ime ?? '')),
                         DataCell(
@@ -317,8 +315,12 @@ class OrdersTable extends StatelessWidget {
                             ),
                           ),
                         ),
-                        DataCell(Text(narudzba.isShipped.toString())),
-                        DataCell(Text(narudzba.isCanceled.toString())),
+                        DataCell(
+                          Text(narudzba.isShipped ?? false ? '✓' : '✗'),
+                        ),
+                        DataCell(
+                          Text(narudzba.isCanceled ?? false ? '✓' : '✗'),
+                        ),
                         DataCell(
                           Row(
                             children: [

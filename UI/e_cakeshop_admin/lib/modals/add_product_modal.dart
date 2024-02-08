@@ -73,13 +73,50 @@ class _AddProductModalState extends State<AddProductModal> {
       final description = descriptionController.text;
       final price = double.tryParse(priceController.text);
 
-      if (name.isEmpty ||
-          description.isEmpty ||
-          price == null ||
-          _imageFile == null) {
+      if (name.isEmpty || description.isEmpty || price == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please fill all fields and select an image.'),
+            content: Text('Please fill all fields.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      if (price <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Price should be greater than zero.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Name should contain only letters.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(description)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Description should contain only letters.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      if (_imageFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select an image.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -145,11 +182,19 @@ class _AddProductModalState extends State<AddProductModal> {
                   ),
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Name'),
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      hintText: 'Example: Cheese Cake',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   TextField(
                     controller: priceController,
-                    decoration: const InputDecoration(labelText: 'Price'),
+                    decoration: const InputDecoration(
+                      labelText: 'Price',
+                      hintText: 'Example: 40',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   _imageFile != null
@@ -165,7 +210,11 @@ class _AddProductModalState extends State<AddProductModal> {
                         ),
                   TextField(
                     controller: descriptionController,
-                    decoration: const InputDecoration(labelText: 'Description'),
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      hintText: 'Example: Cake with cheese',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   DropdownButtonFormField<String>(
                     value: selectedVrstaProizvoda,

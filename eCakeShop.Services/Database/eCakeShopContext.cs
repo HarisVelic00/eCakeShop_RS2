@@ -50,11 +50,11 @@ namespace eCakeShop.Services.Database
             );
 
             modelBuilder.Entity<Korisnik>().HasData(
-                new Korisnik { KorisnikID = 1, Ime = "Admin", Prezime = "Admin", DatumRodjenja = DateTime.Now, DrzavaID = 1, GradID = 1, Email = "admin@gmail.com", KorisnickoIme = "admin", Telefon = "000000000", LozinkaSalt = saltAdmin, LozinkaHash = KorisnikService.GenerateHash(saltAdmin, "admin") },
-                new Korisnik { KorisnikID = 2, Ime = "Uposlenik", Prezime = "Uposlenik", DatumRodjenja = DateTime.Now, DrzavaID = 2, GradID = 2, Email = "uposlenik@gmail.com", KorisnickoIme = "uposlenik", Telefon = "000000001", LozinkaSalt = saltUposlenik, LozinkaHash = KorisnikService.GenerateHash(saltUposlenik, "uposlenik") },
-                new Korisnik { KorisnikID = 3, Ime = "User", Prezime = "User", DatumRodjenja = DateTime.Now, DrzavaID = 3, GradID = 3, Email = "user@gmail.com", KorisnickoIme = "user", Telefon = "000000002", LozinkaSalt = saltUser, LozinkaHash = KorisnikService.GenerateHash(saltUser, "user") },
-                new Korisnik { KorisnikID = 4, Ime = "Uposlenik2", Prezime = "Uposlenik2", DatumRodjenja = DateTime.Now, DrzavaID = 2, GradID = 2, Email = "uposlenik2@gmail.com", KorisnickoIme = "uposlenik2", Telefon = "000000003", LozinkaSalt = saltUposlenik2, LozinkaHash = KorisnikService.GenerateHash(saltUposlenik2, "uposlenik2") },
-                new Korisnik { KorisnikID = 5, Ime = "User2", Prezime = "User2", DatumRodjenja = DateTime.Now, DrzavaID = 3, GradID = 3, Email = "user2@gmail.com", KorisnickoIme = "user2", Telefon = "000000002", LozinkaSalt = saltUser2, LozinkaHash = KorisnikService.GenerateHash(saltUser2, "user2") }
+                new Korisnik { KorisnikID = 1, Ime = "Admin", Prezime = "Admin", DatumRodjenja = DateTime.Now, DrzavaID = 1, GradID = 1, Email = "admin@gmail.com", KorisnickoIme = "admin", Telefon = "000-000-000", LozinkaSalt = saltAdmin, LozinkaHash = KorisnikService.GenerateHash(saltAdmin, "admin") },
+                new Korisnik { KorisnikID = 2, Ime = "Uposlenik", Prezime = "Uposlenik", DatumRodjenja = DateTime.Now, DrzavaID = 2, GradID = 2, Email = "uposlenik@gmail.com", KorisnickoIme = "uposlenik", Telefon = "111-111-111", LozinkaSalt = saltUposlenik, LozinkaHash = KorisnikService.GenerateHash(saltUposlenik, "uposlenik") },
+                new Korisnik { KorisnikID = 3, Ime = "User", Prezime = "User", DatumRodjenja = DateTime.Now, DrzavaID = 3, GradID = 3, Email = "user@gmail.com", KorisnickoIme = "user", Telefon = "222-222-222", LozinkaSalt = saltUser, LozinkaHash = KorisnikService.GenerateHash(saltUser, "user") },
+                new Korisnik { KorisnikID = 4, Ime = "UposlenikDva", Prezime = "UposlenikDva", DatumRodjenja = DateTime.Now, DrzavaID = 2, GradID = 2, Email = "uposlenik2@gmail.com", KorisnickoIme = "uposlenik2", Telefon = "333-333-333", LozinkaSalt = saltUposlenik2, LozinkaHash = KorisnikService.GenerateHash(saltUposlenik2, "uposlenik2") },
+                new Korisnik { KorisnikID = 5, Ime = "UserDva", Prezime = "UserDva", DatumRodjenja = DateTime.Now, DrzavaID = 3, GradID = 3, Email = "user2@gmail.com", KorisnickoIme = "user2", Telefon = "444-444-444", LozinkaSalt = saltUser2, LozinkaHash = KorisnikService.GenerateHash(saltUser2, "user2") }
             );
 
             modelBuilder.Entity<KorisnikUloga>().HasData(

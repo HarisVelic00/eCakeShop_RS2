@@ -276,7 +276,6 @@ class UsersTable extends StatelessWidget {
               child: SingleChildScrollView(
                 child: DataTable(
                   columns: const [
-                    DataColumn(label: Text('ID')),
                     DataColumn(label: Text('Name')),
                     DataColumn(label: Text('Surname')),
                     DataColumn(label: Text('Username')),
@@ -290,7 +289,6 @@ class UsersTable extends StatelessWidget {
                   rows: filteredKorisnik.map((korisnik) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(korisnik.korisnikID.toString())),
                         DataCell(Text(korisnik.ime ?? '')),
                         DataCell(Text(korisnik.prezime ?? '')),
                         DataCell(Text(korisnik.korisnickoIme ?? '')),

@@ -20,6 +20,7 @@ class Korisnik {
   Drzava? drzava;
   String? lozinka;
   Uloga? uloga;
+  String? uloge;
 
   Korisnik({
     this.ime,
@@ -35,6 +36,7 @@ class Korisnik {
     this.drzava,
     this.lozinka,
     this.uloga,
+    this.uloge,
   });
 
   factory Korisnik.fromJson(Map<String, dynamic> json) =>

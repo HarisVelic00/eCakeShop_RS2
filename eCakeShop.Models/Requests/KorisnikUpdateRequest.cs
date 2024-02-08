@@ -22,6 +22,6 @@ namespace eCakeShop.Models.Requests
         public int GradID { get; set; }
         [Required(ErrorMessage = "Drzava ne smije ostati prazno polje")]
         public int DrzavaID { get; set; }
-        public string Uloga { get; set; }
+        public string? Uloga { get; set; }
     }
 }
