@@ -310,14 +310,14 @@ class ProductTable extends StatelessWidget {
                         DataCell(Text(proizvod.sifra ?? '')),
                         DataCell(
                           Text(
-                            '${proizvod.cijena?.toString() ?? ''} KM',
+                            '${proizvod.cijena?.toStringAsFixed(2) ?? ''} KM',
                           ),
                         ),
                         DataCell(
                           proizvod.slika != null
                               ? SizedBox(
-                                  width: 256,
-                                  height: 256,
+                                  width: 200,
+                                  height: 200,
                                   child: Image.memory(
                                     dataFromBase64String(proizvod.slika!),
                                     fit: BoxFit.cover,

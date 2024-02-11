@@ -79,48 +79,38 @@ class _EditImageModalState extends State<EditImageModal> {
 
   Future<void> _editImage() async {
     try {
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a different image.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
-      List<int>? imageBytes = await _imageFile!.readAsBytes();
-      String? base64Image = base64Encode(imageBytes);
-
       final opis = descriptionController.text;
 
-      if (opis.isEmpty || opis.trim().isEmpty) {
+      if (opis.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please fill all fields.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(opis)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Description should contain only letters.'),
+            content: Text('Please fill all fields'),
             backgroundColor: Colors.red,
           ),
         );
       } else {
         try {
-          if (_slikaToEdit != null) {
-            widget.onUpdatePressed(_slikaToEdit!.slikaID!, {
-              "slikaByte": base64Image,
-              "opis": opis,
-            });
+          Map<String, dynamic> updateData = {
+            "opis": opis,
+          };
+
+          if (_imageFile != null) {
+            List<int>? imageBytes = await _imageFile!.readAsBytes();
+            String? base64Image = base64Encode(imageBytes);
+            updateData["slikaByte"] = base64Image;
           } else {
-            print("Error: Image to edit is null");
+            updateData["slikaByte"] = _slikaToEdit!.slikaByte;
           }
+
+          widget.onUpdatePressed(_slikaToEdit!.slikaID!, updateData);
           Navigator.pop(context);
         } catch (e) {
-          print("Error editing image: $e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error updating image. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
     } catch (e) {

@@ -111,6 +111,18 @@ class _AddUserModalState extends State<AddUserModal> {
             backgroundColor: Colors.red,
           ),
         );
+      } else if (!RegExp(r'^[a-zA-Z]+$').hasMatch(name) ||
+          !RegExp(r'^[a-zA-Z]+$').hasMatch(surname)) {
+      } else if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*]+$').hasMatch(username) ||
+          username.contains(' ')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Username can only contain letters, numbers, or special characters and should not contain spaces'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
       } else {
         if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
             .hasMatch(email)) {

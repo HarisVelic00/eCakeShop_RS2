@@ -51,7 +51,7 @@ class _EditReviewModalState extends State<EditReviewModal> {
 
       if (content.isEmpty) {
         throw Exception('Please fill all fields');
-      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(content)) {
+      } else if (!RegExp(r'^[a-zA-Z0-9,. ]+$').hasMatch(content)) {
         throw Exception('Content should contain only letters.');
       }
 
@@ -59,7 +59,12 @@ class _EditReviewModalState extends State<EditReviewModal> {
         throw Exception('Please fill all fields.');
       }
 
-      DateTime tempDate = DateFormat("MM.dd.yyyy").parse(date);
+      DateTime tempDate;
+      try {
+        tempDate = DateFormat("MM.dd.yyyy").parse(date);
+      } catch (e) {
+        throw Exception('Invalid date format. Please use MM.dd.yyyy.');
+      }
 
       int? convertedRating;
       if (_rating != null) {
@@ -82,7 +87,7 @@ class _EditReviewModalState extends State<EditReviewModal> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Invalid date format. Please use MM.dd.yyyy.',
+            'Error editing review. Please try again.',
           ),
           backgroundColor: Colors.red,
         ),
@@ -161,8 +166,9 @@ class _EditReviewModalState extends State<EditReviewModal> {
                   ),
                   TextField(
                     controller: dateController,
+                    enabled: false,
                     decoration: const InputDecoration(
-                      labelText: 'Date of Creation',
+                      labelText: 'Creation date',
                       hintText: 'MM.dd.yyyy',
                       hintStyle: TextStyle(color: Colors.grey),
                     ),

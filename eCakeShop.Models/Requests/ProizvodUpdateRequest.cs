@@ -13,8 +13,8 @@ namespace eCakeShop.Models.Requests
         public string Naziv { get; set; }
         [Required(ErrorMessage = "Cijena ne smije ostati prazno polje")]
         public double Cijena { get; set; }
-        [Required(ErrorMessage = "Slika je obavezna")]
-        public byte[] Slika { get; set; }
+       
+        public byte[]? Slika { get; set; }
         [Required]
         public string Opis { get; set; }
         [Required]

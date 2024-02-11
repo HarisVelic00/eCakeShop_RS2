@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(const MainApp());
   WidgetsFlutterBinding.ensureInitialized();
-  //debugPaintSizeEnabled = true;
 }
 
 class MainApp extends StatelessWidget {

@@ -290,7 +290,7 @@ class ReviewTable extends StatelessWidget {
                   columns: const [
                     DataColumn(label: Text('Content')),
                     DataColumn(label: Text('Rating')),
-                    DataColumn(label: Text('Date of creation')),
+                    DataColumn(label: Text('Creation Date')),
                     DataColumn(label: Text('User')),
                     DataColumn(label: Text('Actions')),
                   ],

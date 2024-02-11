@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("eCakeShop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f607713d8367fa5971299c9542e1f14370ebbbe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e005540e024e84d362138a9ef05e3af87dd26ca")]
 [assembly: System.Reflection.AssemblyProductAttribute("eCakeShop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("eCakeShop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

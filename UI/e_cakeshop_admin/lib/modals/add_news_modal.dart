@@ -85,7 +85,7 @@ class _AddNewsModalState extends State<AddNewsModal> {
           throw Exception('Title should contain only letters.');
         }
 
-        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(content)) {
+        if (!RegExp(r'^[a-zA-Z,. ]+$').hasMatch(content)) {
           throw Exception('Content should contain only letters.');
         }
 

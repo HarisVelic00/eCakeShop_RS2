@@ -82,19 +82,6 @@ class _EditNewsModalState extends State<EditNewsModal> {
 
   Future<void> _editNews() async {
     try {
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a different image.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
-      List<int>? imageBytes = await _imageFile!.readAsBytes();
-      String? base64Image = base64Encode(imageBytes);
-
       final title = titleController.text;
       final content = contentController.text;
       final date = dateController.text;
@@ -113,7 +100,7 @@ class _EditNewsModalState extends State<EditNewsModal> {
             backgroundColor: Colors.red,
           ),
         );
-      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(content)) {
+      } else if (!RegExp(r'^[a-zA-Z,. ]+$').hasMatch(content)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Content should contain only letters.'),
@@ -121,6 +108,18 @@ class _EditNewsModalState extends State<EditNewsModal> {
           ),
         );
       } else {
+        try {
+          DateFormat("MM.dd.yyyy").parse(date);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid date format. Please use MM.dd.yyyy.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+
         try {
           DateTime tempDate = DateFormat("MM.dd.yyyy").parse(date);
           Map<String, dynamic> updateData = {
@@ -130,19 +129,19 @@ class _EditNewsModalState extends State<EditNewsModal> {
           };
 
           if (_imageFile != null) {
+            List<int>? imageBytes = await _imageFile!.readAsBytes();
+            String? base64Image = base64Encode(imageBytes);
             updateData["thumbnail"] = base64Image;
+          } else {
+            updateData["thumbnail"] = _novostToEdit!.thumbnail;
           }
 
-          if (_novostToEdit != null) {
-            widget.onUpdatePressed(_novostToEdit!.novostID!, updateData);
-          } else {
-            print("Error: News to edit is null");
-          }
+          widget.onUpdatePressed(_novostToEdit!.novostID!, updateData);
           Navigator.pop(context);
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Invalid date format. Please use MM.dd.yyyy.'),
+              content: Text('Error updating news. Please try again.'),
               backgroundColor: Colors.red,
             ),
           );
@@ -188,7 +187,6 @@ class _EditNewsModalState extends State<EditNewsModal> {
           color: const Color.fromRGBO(247, 249, 253, 1),
           width: MediaQuery.of(context).size.width * 0.2,
           child: SingleChildScrollView(
-            // Wrap the Column with SingleChildScrollView
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -226,6 +224,7 @@ class _EditNewsModalState extends State<EditNewsModal> {
                       ),
                       TextField(
                         controller: dateController,
+                        enabled: false,
                         decoration: const InputDecoration(
                           labelText: 'Creation date',
                           hintText: 'MM.dd.yyyy',

@@ -22,27 +22,32 @@ class _AddReviewDialogState extends State<AddReviewModal> {
       int convertedRating = _rating.toInt();
 
       if (content.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Content must not be empty.'),
-          backgroundColor: Colors.red,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Content must not be empty.'),
+            backgroundColor: Colors.red,
+          ),
+        );
       } else {
-        if (!RegExp(r'^[a-zA-Z]+$').hasMatch(content)) {
+        if (!RegExp(r'^[a-zA-Z0-9,. ]+$').hasMatch(content)) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Content should contain only letters'),
+              content: Text(
+                  'Content should contain only letters, numbers, commas, or periods'),
               backgroundColor: Colors.red,
             ),
           );
           return;
         }
       }
+
       Map<String, dynamic> newReview = {
         "sadrzajRecenzije": content,
         "ocjena": convertedRating,
         "datumKreiranja": DateTime.now().toIso8601String(),
         "korisnikID": Authorization.korisnik?.korisnikID,
       };
+
       widget.onAddReviewPressed(newReview);
       setState(() {});
     } catch (e) {

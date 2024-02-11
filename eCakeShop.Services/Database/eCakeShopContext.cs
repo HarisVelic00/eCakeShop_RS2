@@ -108,7 +108,7 @@ namespace eCakeShop.Services.Database
              );
 
             modelBuilder.Entity<Novost>().HasData(
-             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Crno-bijeli kokos kolac", Sadrzaj = "Crno-bijeli kokos kolac", Thumbnail = Convert.FromBase64String(Images.Slike[1]) },
+             new Novost { NovostID = 1, DatumKreiranja = DateTime.Now, KorisnikID = 2, Naslov = "Crno bijeli kokos kolac", Sadrzaj = "Crno bijeli kokos kolac", Thumbnail = Convert.FromBase64String(Images.Slike[1]) },
              new Novost { NovostID = 2, DatumKreiranja = DateTime.Now, KorisnikID = 4, Naslov = "Topla cokolada", Sadrzaj = "Topla cokolada", Thumbnail = Convert.FromBase64String(Images.Slike[1]) }
             );
 

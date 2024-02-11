@@ -103,7 +103,7 @@ class _AddProductModalState extends State<AddProductModal> {
         return;
       }
 
-      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(description)) {
+      if (!RegExp(r'^[a-zA-Z,. ]+$').hasMatch(description)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Description should contain only letters.'),

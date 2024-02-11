@@ -139,23 +139,6 @@ class _EditProductModalState extends State<EditProductModal> {
 
   void _editProduct() async {
     try {
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a different image.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-      List<int>? imageBytes;
-      String? base64Image;
-
-      if (_imageFile != null) {
-        imageBytes = await _imageFile!.readAsBytes();
-        base64Image = base64Encode(imageBytes);
-      }
-
       final name = nameController.text;
       final price = double.tryParse(priceController.text);
       final description = descriptionController.text;
@@ -190,7 +173,7 @@ class _EditProductModalState extends State<EditProductModal> {
             backgroundColor: Colors.red,
           ),
         );
-      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(description)) {
+      } else if (!RegExp(r'^[a-zA-Z,. ]+$').hasMatch(description)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Description should contain only letters.'),
@@ -206,33 +189,31 @@ class _EditProductModalState extends State<EditProductModal> {
               vrstaProizvoda.vrstaProizvodaID ?? -1,
         );
 
+        Map<String, dynamic> updateData = {
+          "naziv": name,
+          "cijena": price,
+          "opis": description,
+          "vrstaProizvodaID": vrstaProizvodaID,
+        };
+
         if (_imageFile != null) {
-          widget.onUpdatePressed(
-            _proizvodToEdit!.proizvodID!,
-            {
-              "naziv": name,
-              "cijena": price,
-              "slika": base64Image,
-              "opis": description,
-              "vrstaProizvodaID": vrstaProizvodaID,
-            },
-          );
+          List<int>? imageBytes = await _imageFile!.readAsBytes();
+          String? base64Image = base64Encode(imageBytes);
+          updateData["slika"] = base64Image;
         } else {
-          widget.onUpdatePressed(
-            _proizvodToEdit!.proizvodID!,
-            {
-              "naziv": name,
-              "cijena": price,
-              "opis": description,
-              "vrstaProizvodaID": vrstaProizvodaID,
-            },
-          );
+          updateData["slika"] = _proizvodToEdit!.slika;
         }
 
+        widget.onUpdatePressed(_proizvodToEdit!.proizvodID!, updateData);
         Navigator.pop(context);
       }
     } catch (e) {
-      print("Error editing product: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error updating product. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
