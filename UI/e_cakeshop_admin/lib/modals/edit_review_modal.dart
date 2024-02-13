@@ -49,14 +49,25 @@ class _EditReviewModalState extends State<EditReviewModal> {
               .korisnikID ??
           -1;
 
-      if (content.isEmpty) {
-        throw Exception('Please fill all fields');
-      } else if (!RegExp(r'^[a-zA-Z0-9,. ]+$').hasMatch(content)) {
-        throw Exception('Content should contain only letters.');
+      if (content.isEmpty || date.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill all fields'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
       }
 
-      if (date.trim().isEmpty) {
-        throw Exception('Please fill all fields.');
+      if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(content)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Content should contain only letters, numbers, . , !, and ?'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
       }
 
       DateTime tempDate;
@@ -86,12 +97,11 @@ class _EditReviewModalState extends State<EditReviewModal> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Error editing review. Please try again.',
-          ),
+          content: Text('Error updating review. Please try again.'),
           backgroundColor: Colors.red,
         ),
       );
+      print("Error editing image: $e");
     }
   }
 

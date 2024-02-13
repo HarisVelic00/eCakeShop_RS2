@@ -68,21 +68,20 @@ class _AddImageModalState extends State<AddImageModal> {
   }
 
   Future<void> _uploadImage() async {
-    try {
-      if (_imageFile != null) {
-        List<int> imageBytes = await _imageFile!.readAsBytes();
-        String base64Image = base64Encode(imageBytes);
+    String errorMessage = '';
 
-        final opis = descriptionController.text;
+    if (_imageFile != null) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
 
-        if (opis.isEmpty || opis.trim().isEmpty || selectedKorisnik == null) {
-          throw Exception('Please fill all fields.');
-        }
+      final opis = descriptionController.text;
 
-        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(opis)) {
-          throw Exception('Description should contain only letters.');
-        }
-
+      if (opis.isEmpty || opis.trim().isEmpty || selectedKorisnik == null) {
+        errorMessage = 'Please fill all fields.';
+      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(opis)) {
+        errorMessage =
+            'Description should contain only letters, numbers, . , !, and ?';
+      } else {
         int korisnikID = findIdFromName(
           selectedKorisnik,
           korisnikList,
@@ -100,20 +99,20 @@ class _AddImageModalState extends State<AddImageModal> {
           widget.onAddSlikaPressed(newSlika);
           setState(() {});
           Navigator.pop(context);
+          return;
         } else {
-          throw Exception('Error: Some selected values are not set');
+          errorMessage = 'Error: Some selected values are not set';
         }
-      } else {
-        throw Exception('No image selected. Please select an image.');
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
+    } else {
+      errorMessage = 'No image selected. Please select an image.';
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override

@@ -88,6 +88,14 @@ class _EditImageModalState extends State<EditImageModal> {
             backgroundColor: Colors.red,
           ),
         );
+      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(opis)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Description should contain only letters, numbers, . , !, and ?'),
+            backgroundColor: Colors.red,
+          ),
+        );
       } else {
         try {
           Map<String, dynamic> updateData = {

@@ -173,10 +173,11 @@ class _EditProductModalState extends State<EditProductModal> {
             backgroundColor: Colors.red,
           ),
         );
-      } else if (!RegExp(r'^[a-zA-Z,. ]+$').hasMatch(description)) {
+      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(description)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Description should contain only letters.'),
+            content: Text(
+                'Description should contain only letters, numbers, . , !, and ?'),
             backgroundColor: Colors.red,
           ),
         );

@@ -29,11 +29,11 @@ class _AddReviewDialogState extends State<AddReviewModal> {
           ),
         );
       } else {
-        if (!RegExp(r'^[a-zA-Z0-9,. ]+$').hasMatch(content)) {
+        if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(content)) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
-                  'Content should contain only letters, numbers, commas, or periods'),
+                  'Content should contain only letters, numbers, . , !, and ?'),
               backgroundColor: Colors.red,
             ),
           );

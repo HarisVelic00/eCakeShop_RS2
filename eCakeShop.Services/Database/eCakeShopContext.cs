@@ -118,7 +118,7 @@ namespace eCakeShop.Services.Database
                 new Proizvod { ProizvodID = 3, Cijena = 4, Naziv = "Kroasan", VrstaProizvodaID = 3, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Kroasan" },
                 new Proizvod { ProizvodID = 4, Cijena = 20, Naziv = "Cokoladne kocke", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Cokoladne kocke" },
                 new Proizvod { ProizvodID = 5, Cijena = 3, Naziv = "Sladoled", VrstaProizvodaID = 4, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Pita od jabuka" },
-                new Proizvod { ProizvodID = 6, Cijena = 30, Naziv = "Kolac od jagoda", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Crno-bijeli kokos kolac" },
+                new Proizvod { ProizvodID = 6, Cijena = 30, Naziv = "Kolac od jagoda", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Crno bijeli kokos kolac" },
                 new Proizvod { ProizvodID = 7, Cijena = 40, Naziv = "Cudo od cokolade", VrstaProizvodaID = 2, Sifra = Guid.NewGuid().ToString(), Slika = Convert.FromBase64String(Images.Slike[0]), Opis = "Cudo od cokolade" }
                 );
 
@@ -128,7 +128,7 @@ namespace eCakeShop.Services.Database
             );
 
             modelBuilder.Entity<Slika>().HasData(
-                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Crno-bijeli kokos kolac", SlikaByte = Convert.FromBase64String(Images.Slike[1]) },
+                new Slika { SlikaID = 1, KorisnikID = 2, Opis = "Crno bijeli kokos kolac", SlikaByte = Convert.FromBase64String(Images.Slike[1]) },
                 new Slika { SlikaID = 3, KorisnikID = 4, Opis = "Topla cokolada", SlikaByte = Convert.FromBase64String(Images.Slike[1]) }
              );
 

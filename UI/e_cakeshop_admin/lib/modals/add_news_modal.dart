@@ -69,26 +69,23 @@ class _AddNewsModalState extends State<AddNewsModal> {
   }
 
   Future<void> _uploadThumbnail() async {
-    try {
-      if (_imageFile != null) {
-        List<int> imageBytes = await _imageFile!.readAsBytes();
-        String base64Image = base64Encode(imageBytes);
+    String errorMessage = '';
 
-        final title = titleController.text;
-        final content = contentController.text;
+    if (_imageFile != null) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
 
-        if (title.isEmpty || content.isEmpty) {
-          throw Exception('Please fill all fields.');
-        }
+      final title = titleController.text;
+      final content = contentController.text;
 
-        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(title)) {
-          throw Exception('Title should contain only letters.');
-        }
-
-        if (!RegExp(r'^[a-zA-Z,. ]+$').hasMatch(content)) {
-          throw Exception('Content should contain only letters.');
-        }
-
+      if (title.isEmpty || content.isEmpty) {
+        errorMessage = 'Please fill all fields.';
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(title)) {
+        errorMessage = 'Title should contain only letters.';
+      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(content)) {
+        errorMessage =
+            'Content should contain only letters, numbers, . , !, and ?';
+      } else {
         int korisnikID = findIdFromName(
           selectedKorisnik,
           korisnikList,
@@ -108,20 +105,20 @@ class _AddNewsModalState extends State<AddNewsModal> {
           widget.onAddNewsPressed(newNews);
           setState(() {});
           Navigator.pop(context);
+          return;
         } else {
-          throw Exception('Error: Some selected values are not set');
+          errorMessage = 'Error: Some selected values are not set';
         }
-      } else {
-        throw Exception('No image selected. Please select an image.');
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
+    } else {
+      errorMessage = 'No image selected. Please select an image.';
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override

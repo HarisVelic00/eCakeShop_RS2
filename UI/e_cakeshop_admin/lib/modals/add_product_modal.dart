@@ -73,47 +73,45 @@ class _AddProductModalState extends State<AddProductModal> {
       final description = descriptionController.text;
       final price = double.tryParse(priceController.text);
 
-      if (name.isEmpty || description.isEmpty || price == null) {
+      if (name.isEmpty ||
+          description.isEmpty ||
+          selectedVrstaProizvoda == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please fill all fields.'),
+            content: Text('Please fill all fields'),
             backgroundColor: Colors.red,
           ),
         );
-        return;
-      }
-
-      if (price <= 0) {
+      } else if (price == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Price should only contain numbers.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (price <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Price should be greater than zero.'),
             backgroundColor: Colors.red,
           ),
         );
-        return;
-      }
-
-      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
+      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Name should contain only letters.'),
             backgroundColor: Colors.red,
           ),
         );
-        return;
-      }
-
-      if (!RegExp(r'^[a-zA-Z,. ]+$').hasMatch(description)) {
+      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(description)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Description should contain only letters.'),
+            content: Text(
+                'Description should contain only letters, numbers, . , !, and ?'),
             backgroundColor: Colors.red,
           ),
         );
-        return;
-      }
-
-      if (_imageFile == null) {
+      } else if (_imageFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please select an image.'),
@@ -121,32 +119,32 @@ class _AddProductModalState extends State<AddProductModal> {
           ),
         );
         return;
-      }
-
-      int vrstaProizvodaID = findIdFromName(
-        selectedVrstaProizvoda,
-        vrstaProizvodaList,
-        (VrstaProizvoda _vrstaP) => _vrstaP.naziv ?? '',
-        (VrstaProizvoda _vrstaP) => _vrstaP.vrstaProizvodaID ?? -1,
-      );
-
-      if (vrstaProizvodaID != -1) {
-        List<int> imageBytes = await _imageFile!.readAsBytes();
-        String base64Image = base64Encode(imageBytes);
-
-        Map<String, dynamic> newProduct = {
-          "naziv": name,
-          "cijena": price,
-          "slika": base64Image,
-          "opis": description,
-          "vrstaProizvodaID": vrstaProizvodaID,
-        };
-
-        widget.onAddProductPressed(newProduct);
-        Navigator.pop(context);
-        setState(() {});
       } else {
-        print("Error: Selected value not found in vrstaProizvodaList");
+        int vrstaProizvodaID = findIdFromName(
+          selectedVrstaProizvoda,
+          vrstaProizvodaList,
+          (VrstaProizvoda _vrstaP) => _vrstaP.naziv ?? '',
+          (VrstaProizvoda _vrstaP) => _vrstaP.vrstaProizvodaID ?? -1,
+        );
+
+        if (vrstaProizvodaID != -1) {
+          List<int> imageBytes = await _imageFile!.readAsBytes();
+          String base64Image = base64Encode(imageBytes);
+
+          Map<String, dynamic> newProduct = {
+            "naziv": name,
+            "cijena": price,
+            "slika": base64Image,
+            "opis": description,
+            "vrstaProizvodaID": vrstaProizvodaID,
+          };
+
+          widget.onAddProductPressed(newProduct);
+          Navigator.pop(context);
+          setState(() {});
+        } else {
+          print("Error: Selected value not found in vrstaProizvodaList");
+        }
       }
     } catch (e) {
       print("Error adding product: $e");
