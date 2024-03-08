@@ -74,7 +74,7 @@ class _MapScreenState extends State<MapScreen> {
                     infoWindow: const InfoWindow(title: 'Delivery Location'),
                   ),
                 );
-                generateRoute();
+                generateRoute(); // Call generateRoute after setting deliveryLatLng
                 vanRoute.clear();
                 _counter = 0;
                 moveVan();
@@ -92,34 +92,41 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> generateRoute() async {
     PolylinePoints polylinePoints = PolylinePoints();
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyCYzY_liNCJT4JJFgfBB47lWnuOBLD_dPg',
-      PointLatLng(restaurantLatLng.latitude, restaurantLatLng.longitude),
-      PointLatLng(deliveryLatLng.latitude, deliveryLatLng.longitude),
-      travelMode: TravelMode.driving,
-    );
+    try {
+      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        'AIzaSyCYzY_liNCJT4JJFgfBB47lWnuOBLD_dPg',
+        PointLatLng(restaurantLatLng.latitude, restaurantLatLng.longitude),
+        PointLatLng(deliveryLatLng.latitude, deliveryLatLng.longitude),
+        travelMode: TravelMode.driving,
+      );
 
-    List<LatLng> polylineCoordinates = [];
+      List<LatLng> polylineCoordinates = [];
 
-    if (result.points.isNotEmpty) {
-      for (var point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      if (result.points.isNotEmpty) {
+        for (var point in result.points) {
+          polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+        }
+        print('Polyline Coordinates: $polylineCoordinates');
+      } else {
+        print('No polyline points found');
       }
+
+      setState(() {
+        polylines = {
+          Polyline(
+            polylineId: const PolylineId('route'),
+            color: Colors.blue,
+            width: 3,
+            points: polylineCoordinates,
+          )
+        };
+        vanRoute = polylineCoordinates;
+      });
+
+      moveVan();
+    } catch (e) {
+      print('Error generating route: $e');
     }
-
-    setState(() {
-      polylines = {
-        Polyline(
-          polylineId: const PolylineId('route'),
-          color: Colors.blue,
-          width: 3,
-          points: polylineCoordinates,
-        )
-      };
-      vanRoute = polylineCoordinates;
-    });
-
-    moveVan();
   }
 
   Future<void> _loadVanLocation() async {
