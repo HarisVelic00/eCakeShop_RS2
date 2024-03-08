@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:e_cakeshop_admin/models/novost.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 class EditNewsModal extends StatefulWidget {
   final VoidCallback onCancelPressed;
@@ -23,9 +22,9 @@ class EditNewsModal extends StatefulWidget {
 }
 
 class _EditNewsModalState extends State<EditNewsModal> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
   late Novost? _novostToEdit;
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
@@ -84,70 +83,23 @@ class _EditNewsModalState extends State<EditNewsModal> {
     try {
       final title = titleController.text;
       final content = contentController.text;
-      final date = dateController.text;
 
-      if (title.isEmpty || content.isEmpty || date.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(title)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Title should contain only letters.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(content)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Content should contain only letters, numbers, . , !, and ?'),
-            backgroundColor: Colors.red,
-          ),
-        );
+      Map<String, dynamic> updateData = {
+        "naslov": title,
+        "sadrzaj": content,
+        "datumKreiranja": _novostToEdit!.datumKreiranja!.toIso8601String(),
+      };
+
+      if (_imageFile != null) {
+        List<int>? imageBytes = await _imageFile!.readAsBytes();
+        String? base64Image = base64Encode(imageBytes);
+        updateData["thumbnail"] = base64Image;
       } else {
-        try {
-          DateFormat("MM.dd.yyyy").parse(date);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid date format. Please use MM.dd.yyyy.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        try {
-          DateTime tempDate = DateFormat("MM.dd.yyyy").parse(date);
-          Map<String, dynamic> updateData = {
-            "naslov": title,
-            "sadrzaj": content,
-            "datumKreiranja": tempDate.toIso8601String(),
-          };
-
-          if (_imageFile != null) {
-            List<int>? imageBytes = await _imageFile!.readAsBytes();
-            String? base64Image = base64Encode(imageBytes);
-            updateData["thumbnail"] = base64Image;
-          } else {
-            updateData["thumbnail"] = _novostToEdit!.thumbnail;
-          }
-
-          widget.onUpdatePressed(_novostToEdit!.novostID!, updateData);
-          Navigator.pop(context);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Error updating news. Please try again.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        updateData["thumbnail"] = _novostToEdit!.thumbnail;
       }
+
+      widget.onUpdatePressed(_novostToEdit!.novostID!, updateData);
+      Navigator.pop(context);
     } catch (e) {
       print("Error updating news: $e");
     }
@@ -161,9 +113,6 @@ class _EditNewsModalState extends State<EditNewsModal> {
     if (_novostToEdit != null) {
       titleController.text = _novostToEdit!.naslov ?? '';
       contentController.text = _novostToEdit!.sadrzaj ?? '';
-      DateTime datumKreiranja = _novostToEdit!.datumKreiranja!;
-      String formattedDate = DateFormat('MM.dd.yyyy').format(datumKreiranja);
-      dateController.text = formattedDate;
 
       if (_novostToEdit!.thumbnail != null &&
           _novostToEdit!.thumbnail!.isNotEmpty) {
@@ -193,70 +142,91 @@ class _EditNewsModalState extends State<EditNewsModal> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      const Text(
-                        'Edit News',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextField(
-                        controller: titleController,
-                        decoration: const InputDecoration(labelText: 'Title'),
-                      ),
-                      TextField(
-                        controller: contentController,
-                        decoration: const InputDecoration(labelText: 'Content'),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildImagePreview(),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromRGBO(97, 142, 246, 1),
-                        ),
-                        onPressed: _pickImage,
-                        child: const Text('Select Thumbnail',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                      TextField(
-                        controller: dateController,
-                        enabled: false,
-                        decoration: const InputDecoration(
-                          labelText: 'Creation date',
-                          hintText: 'MM.dd.yyyy',
-                          hintStyle: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                            ),
-                            onPressed: widget.onCancelPressed,
-                            child: const Text('Cancel',
-                                style: TextStyle(color: Colors.white)),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        const Text(
+                          'Edit News',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromRGBO(97, 142, 246, 1),
-                            ),
-                            onPressed: _editNews,
-                            child: const Text('OK',
-                                style: TextStyle(color: Colors.white)),
+                        ),
+                        TextFormField(
+                          controller: titleController,
+                          decoration: const InputDecoration(
+                            labelText: 'Title',
+                            hintText: 'Example: Cheese Cake',
+                            hintStyle: TextStyle(color: Colors.grey),
                           ),
-                        ],
-                      ),
-                    ],
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter news title';
+                            }
+                            if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                              return 'Title can only contain letters';
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: contentController,
+                          decoration: const InputDecoration(
+                            labelText: 'Content',
+                            hintText: 'Example: This cake is delicious!',
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter news content';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        _buildImagePreview(),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(97, 142, 246, 1),
+                          ),
+                          onPressed: _pickImage,
+                          child: const Text('Select Thumbnail',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        const SizedBox(height: 20),
+                        const Divider(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                              ),
+                              onPressed: widget.onCancelPressed,
+                              child: const Text('Cancel',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(97, 142, 246, 1),
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _editNews();
+                                }
+                              },
+                              child: const Text('Save',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

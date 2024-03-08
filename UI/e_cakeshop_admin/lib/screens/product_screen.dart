@@ -291,7 +291,6 @@ class ProductTable extends StatelessWidget {
                   dataRowHeight: 256,
                   columns: const [
                     DataColumn(label: Text('Name')),
-                    DataColumn(label: Text('Code')),
                     DataColumn(label: Text('Price')),
                     DataColumn(
                       label: SizedBox(
@@ -307,7 +306,6 @@ class ProductTable extends StatelessWidget {
                     return DataRow(
                       cells: [
                         DataCell(Text(proizvod.naziv ?? '')),
-                        DataCell(Text(proizvod.sifra ?? '')),
                         DataCell(
                           Text(
                             '${proizvod.cijena?.toStringAsFixed(2) ?? ''} KM',

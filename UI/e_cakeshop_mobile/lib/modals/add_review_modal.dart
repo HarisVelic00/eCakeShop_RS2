@@ -14,32 +14,13 @@ class AddReviewModal extends StatefulWidget {
 
 class _AddReviewDialogState extends State<AddReviewModal> {
   final TextEditingController contentController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   double _rating = 3.0;
 
   Future<void> uploadReview() async {
     try {
       final content = contentController.text;
       int convertedRating = _rating.toInt();
-
-      if (content.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Content must not be empty.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
-        if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(content)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Content should contain only letters, numbers, . , !, and ?'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-      }
 
       Map<String, dynamic> newReview = {
         "sadrzajRecenzije": content,
@@ -52,12 +33,6 @@ class _AddReviewDialogState extends State<AddReviewModal> {
       setState(() {});
     } catch (e) {
       print("Error uploading review: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error uploading review'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
@@ -67,37 +42,50 @@ class _AddReviewDialogState extends State<AddReviewModal> {
       backgroundColor: const Color.fromRGBO(247, 249, 253, 1),
       title: const Text('Add Review'),
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: contentController,
-              decoration: const InputDecoration(labelText: 'Content'),
-            ),
-            const SizedBox(height: 20),
-            const Text('Rating'),
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: const Color.fromRGBO(97, 142, 246, 1),
-                inactiveTrackColor: const Color.fromRGBO(97, 142, 246, 0.3),
-                thumbColor: Colors.blueAccent,
-                valueIndicatorColor: const Color.fromRGBO(97, 142, 246, 1),
-              ),
-              child: Slider(
-                value: _rating,
-                min: 1,
-                max: 5,
-                divisions: 4,
-                label: _rating.toString(),
-                onChanged: (value) {
-                  setState(() {
-                    _rating = value;
-                  });
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: contentController,
+                decoration: const InputDecoration(
+                  labelText: 'Content',
+                  hintText: 'Example: This cake is delicious!',
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter content';
+                  }
+                  return null;
                 },
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              const Text('Rating'),
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: const Color.fromRGBO(97, 142, 246, 1),
+                  inactiveTrackColor: const Color.fromRGBO(97, 142, 246, 0.3),
+                  thumbColor: Colors.blueAccent,
+                  valueIndicatorColor: const Color.fromRGBO(97, 142, 246, 1),
+                ),
+                child: Slider(
+                  value: _rating,
+                  min: 1,
+                  max: 5,
+                  divisions: 4,
+                  label: _rating.toString(),
+                  onChanged: (value) {
+                    setState(() {
+                      _rating = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       actions: <Widget>[
@@ -117,7 +105,9 @@ class _AddReviewDialogState extends State<AddReviewModal> {
             backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
           ),
           onPressed: () {
-            uploadReview();
+            if (_formKey.currentState!.validate()) {
+              uploadReview();
+            }
           },
           child: const Text('Add'),
         ),

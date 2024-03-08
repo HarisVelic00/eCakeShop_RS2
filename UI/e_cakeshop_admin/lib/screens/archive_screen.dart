@@ -272,7 +272,7 @@ class ArchiveTable extends StatelessWidget {
                           DataCell(
                             narudzba.datumNarudzbe != null
                                 ? Text(
-                                    DateFormat('MM.dd.yyyy')
+                                    DateFormat('dd.MM.yyyy')
                                         .format(narudzba.datumNarudzbe!),
                                   )
                                 : const Text(''),

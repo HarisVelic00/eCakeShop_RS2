@@ -16,6 +16,7 @@ class EditProfileDialog extends StatefulWidget {
 }
 
 class _EditProfileDialogState extends State<EditProfileDialog> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -28,62 +29,16 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       final email = emailController.text;
       final telefon = telephoneController.text;
 
-      if (ime.isEmpty || prezime.isEmpty || email.isEmpty || telefon.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Please fill all fields'),
-          backgroundColor: Colors.red,
-        ));
-      } else {
-        if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-            .hasMatch(email)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid email format'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(telefon)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Invalid phone number format. Please use XXX-XXX-XXX'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        if (!RegExp(r'^[a-zA-Z]+$').hasMatch(ime) ||
-            !RegExp(r'^[a-zA-Z]+$').hasMatch(prezime)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Name and surname should contain only letters'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        Map<String, dynamic> newEdit = {
-          "ime": ime,
-          "prezime": prezime,
-          "email": email,
-          "telefon": telefon
-        };
-        widget.onEditPressed(newEdit);
-        Navigator.pop(context);
-      }
+      Map<String, dynamic> newEdit = {
+        "ime": ime,
+        "prezime": prezime,
+        "email": email,
+        "telefon": telefon
+      };
+      widget.onEditPressed(newEdit);
+      Navigator.pop(context);
     } catch (e) {
       print('Error editing user: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error editing user'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
@@ -102,28 +57,81 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       backgroundColor: const Color.fromRGBO(247, 249, 253, 1),
       title: const Text('Edit Profile'),
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            TextField(
-              controller: surnameController,
-              decoration: const InputDecoration(labelText: 'Surname'),
-            ),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: telephoneController,
-              decoration: const InputDecoration(labelText: 'Telephone'),
-              keyboardType: TextInputType.phone,
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  hintText: 'Example: John',
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your name';
+                  }
+                  if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                    return 'Name can only contain letters';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: surnameController,
+                decoration: const InputDecoration(
+                  labelText: 'Surname',
+                  hintText: 'Example: Smith',
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your surname';
+                  }
+                  if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                    return 'Surname can only contain letters';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'example@email.com',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                        .hasMatch(value)) {
+                      return 'Invalid email format';
+                    }
+                    return null;
+                  }),
+              TextFormField(
+                controller: telephoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Telephone',
+                  hintText: 'Example: 037-123-456',
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your telephone';
+                  }
+                  if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(value)) {
+                    return 'Invalid phone number format';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
         ),
       ),
       actions: <Widget>[
@@ -142,7 +150,11 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             foregroundColor: Colors.white,
             backgroundColor: const Color.fromRGBO(97, 142, 246, 1),
           ),
-          onPressed: uploadEdit,
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              uploadEdit();
+            }
+          },
           child: const Text('Save'),
         ),
       ],

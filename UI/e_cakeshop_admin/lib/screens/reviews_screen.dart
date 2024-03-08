@@ -1,5 +1,4 @@
 // ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print
-import 'package:e_cakeshop_admin/modals/add_review_modal.dart';
 import 'package:e_cakeshop_admin/modals/delete_modal.dart';
 import 'package:e_cakeshop_admin/modals/edit_review_modal.dart';
 import 'package:e_cakeshop_admin/models/recenzija.dart';
@@ -33,20 +32,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
     setState(() {
       isDeleteModalOpen = false;
     });
-  }
-
-  void openAddReviewModal() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AddReviewModal(
-          onCancelPressed: () {
-            Navigator.pop(context);
-          },
-          onAddReviewPressed: addNewReview,
-        );
-      },
-    );
   }
 
   void openEditReviewModal(Recenzija recenzija) {
@@ -173,22 +158,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
                             ),
                           ),
                         ),
-                        // const SizedBox(width: 16.0),
-                        // Expanded(
-                        //   flex: 1,
-                        //   child: ElevatedButton(
-                        //     style: ElevatedButton.styleFrom(
-                        //       minimumSize: const Size(200, 48),
-                        //       backgroundColor:
-                        //           const Color.fromRGBO(97, 142, 246, 1),
-                        //     ),
-                        //     onPressed: openAddReviewModal,
-                        //     child: const Text(
-                        //       'Add Review',
-                        //       style: TextStyle(color: Colors.white),
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
@@ -216,18 +185,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     onCancelPressed: () {
                       closeDeleteModal();
                     },
-                  ),
-                ),
-              if (isAddReviewModalOpen)
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: AddReviewModal(
-                      onCancelPressed: () {
-                        Navigator.pop(context);
-                      },
-                      onAddReviewPressed: addNewReview,
-                    ),
                   ),
                 ),
               if (_isEditReviewModalOpen)
@@ -302,7 +259,7 @@ class ReviewTable extends StatelessWidget {
                         DataCell(
                           recenzija.datumKreiranja != null
                               ? Text(
-                                  DateFormat('MM.dd.yyyy')
+                                  DateFormat('dd.MM.yyyy')
                                       .format(recenzija.datumKreiranja!),
                                 )
                               : const Text(''),

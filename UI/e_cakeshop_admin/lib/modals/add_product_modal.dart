@@ -18,6 +18,7 @@ class AddProductModal extends StatefulWidget {
 }
 
 class _AddProductModalState extends State<AddProductModal> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -25,6 +26,7 @@ class _AddProductModalState extends State<AddProductModal> {
   final ImagePicker _picker = ImagePicker();
   String? selectedVrstaProizvoda;
   List<VrstaProizvoda> vrstaProizvodaList = [];
+  bool _imageError = false;
 
   Future<void> _pickImage() async {
     try {
@@ -69,86 +71,43 @@ class _AddProductModalState extends State<AddProductModal> {
 
   Future<void> _uploadProizvod() async {
     try {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
       final name = nameController.text;
       final description = descriptionController.text;
       final price = double.tryParse(priceController.text);
 
-      if (name.isEmpty ||
-          description.isEmpty ||
-          selectedVrstaProizvoda == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (price == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Price should only contain numbers.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (price <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Price should be greater than zero.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Name should contain only letters.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(description)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Description should contain only letters, numbers, . , !, and ?'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select an image.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      } else {
-        int vrstaProizvodaID = findIdFromName(
-          selectedVrstaProizvoda,
-          vrstaProizvodaList,
-          (VrstaProizvoda _vrstaP) => _vrstaP.naziv ?? '',
-          (VrstaProizvoda _vrstaP) => _vrstaP.vrstaProizvodaID ?? -1,
-        );
+      int vrstaProizvodaID = findIdFromName(
+        selectedVrstaProizvoda,
+        vrstaProizvodaList,
+        (VrstaProizvoda _vrstaP) => _vrstaP.naziv ?? '',
+        (VrstaProizvoda _vrstaP) => _vrstaP.vrstaProizvodaID ?? -1,
+      );
 
-        if (vrstaProizvodaID != -1) {
-          List<int> imageBytes = await _imageFile!.readAsBytes();
-          String base64Image = base64Encode(imageBytes);
+      if (vrstaProizvodaID != -1) {
+        Map<String, dynamic> newProduct = {
+          "naziv": name,
+          "cijena": price,
+          "slika": base64Image,
+          "opis": description,
+          "vrstaProizvodaID": vrstaProizvodaID,
+        };
 
-          Map<String, dynamic> newProduct = {
-            "naziv": name,
-            "cijena": price,
-            "slika": base64Image,
-            "opis": description,
-            "vrstaProizvodaID": vrstaProizvodaID,
-          };
-
-          widget.onAddProductPressed(newProduct);
-          Navigator.pop(context);
-          setState(() {});
-        } else {
-          print("Error: Selected value not found in vrstaProizvodaList");
-        }
+        widget.onAddProductPressed(newProduct);
+        Navigator.pop(context);
+        setState(() {});
       }
     } catch (e) {
-      print("Error adding product: $e");
+      print("Error: $e");
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -168,95 +127,149 @@ class _AddProductModalState extends State<AddProductModal> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const Text(
-                    'Add Product',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text(
+                      'Add Product',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      hintText: 'Example: Cheese Cake',
-                      hintStyle: TextStyle(color: Colors.grey),
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Name',
+                        hintText: 'Example: Cheese Cake',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter product name';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'Product name can only contain letters';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                  TextField(
-                    controller: priceController,
-                    decoration: const InputDecoration(
-                      labelText: 'Price',
-                      hintText: 'Example: 40',
-                      hintStyle: TextStyle(color: Colors.grey),
+                    TextFormField(
+                      controller: priceController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter product price';
+                        }
+                        if (!RegExp(r'^[0-9]+(\.[0-9]+)?$').hasMatch(value)) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Price',
+                        hintText: 'Example: 40',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  _imageFile != null
-                      ? Image.file(_imageFile!)
-                      : ElevatedButton(
+                    const SizedBox(height: 20),
+                    _imageFile != null
+                        ? Image.file(_imageFile!)
+                        : Column(
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromRGBO(97, 142, 246, 1),
+                                ),
+                                onPressed: _pickImage,
+                                child: const Text('Select Image',
+                                    style: TextStyle(color: Colors.white)),
+                              ),
+                              _imageError
+                                  ? const Text(
+                                      'Please select an image',
+                                      style: TextStyle(color: Colors.red),
+                                    )
+                                  : Container(),
+                            ],
+                          ),
+                    TextFormField(
+                      controller: descriptionController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter product description';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        hintText: 'Example: Cake with cheese',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedVrstaProizvoda,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedVrstaProizvoda = value;
+                        });
+                      },
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a product type';
+                        }
+                        return null;
+                      },
+                      items: vrstaProizvodaList
+                          .map((VrstaProizvoda _vrstaProizvoda) {
+                        return DropdownMenuItem<String>(
+                          value: _vrstaProizvoda.naziv,
+                          child: Text(_vrstaProizvoda.naziv ?? ''),
+                        );
+                      }).toList(),
+                      decoration:
+                          const InputDecoration(labelText: 'Product Type'),
+                      dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                          ),
+                          onPressed: widget.onCancelPressed,
+                          child: const Text('Cancel',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 const Color.fromRGBO(97, 142, 246, 1),
                           ),
-                          onPressed: _pickImage,
-                          child: const Text('Select Image',
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              if (_imageFile == null) {
+                                setState(() {
+                                  _imageError = true;
+                                });
+                              } else {
+                                _uploadProizvod();
+                              }
+                            }
+                          },
+                          child: const Text('OK',
                               style: TextStyle(color: Colors.white)),
                         ),
-                  TextField(
-                    controller: descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Description',
-                      hintText: 'Example: Cake with cheese',
-                      hintStyle: TextStyle(color: Colors.grey),
+                      ],
                     ),
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: selectedVrstaProizvoda,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedVrstaProizvoda = value;
-                      });
-                    },
-                    items: vrstaProizvodaList
-                        .map((VrstaProizvoda _vrstaProizvoda) {
-                      return DropdownMenuItem<String>(
-                        value: _vrstaProizvoda.naziv,
-                        child: Text(_vrstaProizvoda.naziv ?? ''),
-                      );
-                    }).toList(),
-                    decoration:
-                        const InputDecoration(labelText: 'Product Type'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  const SizedBox(height: 20),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
-                        ),
-                        onPressed: widget.onCancelPressed,
-                        child: const Text('Cancel',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromRGBO(97, 142, 246, 1),
-                        ),
-                        onPressed: _uploadProizvod,
-                        child: const Text('OK',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

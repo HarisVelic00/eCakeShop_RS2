@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 import 'package:e_cakeshop_admin/main.dart';
 import 'package:e_cakeshop_admin/screens/archive_screen.dart';
-import 'package:e_cakeshop_admin/screens/images_screen.dart';
 import 'package:e_cakeshop_admin/screens/news_screen.dart';
 import 'package:e_cakeshop_admin/screens/orders_screen.dart';
 import 'package:e_cakeshop_admin/screens/product_screen.dart';
@@ -96,15 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         ),
                         NavItem(
-                          title: 'Images',
-                          onTap: () {},
-                          onSelect: (item) {
-                            setState(() {
-                              selectedNavItem = item;
-                            });
-                          },
-                        ),
-                        NavItem(
                           title: 'News',
                           onTap: () {},
                           onSelect: (item) {
@@ -190,11 +180,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: ProductScreen(),
-        );
-      case 'Images':
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: ImagesScreen(),
         );
       case 'News':
         return ClipRRect(

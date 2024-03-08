@@ -22,6 +22,7 @@ class AddUserModal extends StatefulWidget {
 }
 
 class _AddUserModalState extends State<AddUserModal> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
@@ -29,6 +30,21 @@ class _AddUserModalState extends State<AddUserModal> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController telephoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        dobController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+      });
+    }
+  }
 
   List<Grad> gradList = [];
   List<Drzava> drzavaList = [];
@@ -60,9 +76,7 @@ class _AddUserModalState extends State<AddUserModal> {
       gradList = await GradProvider().Get();
       drzavaList = await DrzavaProvider().Get();
       ulogaList = await UlogaProvider().Get();
-
       gradToDrzavaMap = await loadGradDrzavaMapping();
-
       if (mounted) {
         setState(() {});
       }
@@ -86,152 +100,71 @@ class _AddUserModalState extends State<AddUserModal> {
   }
 
   Future<void> _uploadUser() async {
-    try {
-      final name = nameController.text;
-      final surname = surnameController.text;
-      final username = usernameController.text;
-      final dob = dobController.text;
-      final email = emailController.text;
-      final telephone = telephoneController.text;
-      final password = passwordController.text;
+    final name = nameController.text;
+    final surname = surnameController.text;
+    final username = usernameController.text;
+    final dob = dobController.text;
+    final email = emailController.text;
+    final telephone = telephoneController.text;
+    final password = passwordController.text;
+    DateTime tempDate = DateFormat("dd/MM/yyyy").parse(dob);
 
-      if (name.isEmpty ||
-          surname.isEmpty ||
-          username.isEmpty ||
-          dob.isEmpty ||
-          email.isEmpty ||
-          telephone.isEmpty ||
-          selectedGrad == null ||
-          selectedDrzava == null ||
-          selectedUloga == null ||
-          password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z]+$').hasMatch(name)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Name can only contain letters'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z]+$').hasMatch(surname)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Surname can only contain letters'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*]+$').hasMatch(username) ||
-          username.contains(' ') ||
-          username.length < 5) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Username should have at least 5 characters and can only contain letters, numbers, or special characters and should not contain spaces'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      } else {
-        if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-            .hasMatch(email)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid email format'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
+    int gradID = findIdFromName(
+      selectedGrad,
+      gradList,
+      (Grad grad) => grad.naziv ?? '',
+      (Grad grad) => grad.gradID ?? -1,
+    );
+    int drzavaID = findIdFromName(
+      selectedDrzava,
+      drzavaList,
+      (Drzava drzava) => drzava.naziv ?? '',
+      (Drzava drzava) => drzava.drzavaID ?? -1,
+    );
+    int ulogaID = findIdFromName(
+      selectedUloga,
+      ulogaList,
+      (Uloga uloga) => uloga.naziv ?? '',
+      (Uloga uloga) => uloga.ulogaID ?? -1,
+    );
 
-        try {
-          DateFormat('MM.dd.yyyy').parse(dob);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid date format. Please use MM.dd.yyyy'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
+    if (gradID != -1 && drzavaID != -1 && ulogaID != -1) {
+      Map<String, dynamic> newUser = {
+        "ime": name,
+        "prezime": surname,
+        "datumRodjenja": tempDate.toIso8601String(),
+        "korisnickoIme": username,
+        "email": email,
+        "telefon": telephone,
+        "gradID": gradID,
+        "drzavaID": drzavaID,
+        "ulogeID": [ulogaID],
+        "lozinka": password,
+      };
 
-        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(telephone)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Invalid phone number format. Please use XXX-XXX-XXX'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*]+$').hasMatch(password) ||
-            password.length < 5) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Password should have at least 5 characters and can only contain letters, numbers, or special characters'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        DateTime tempDate = DateFormat("MM.dd.yyyy").parse(dob);
-
-        int gradID = findIdFromName(
-          selectedGrad,
-          gradList,
-          (Grad grad) => grad.naziv ?? '',
-          (Grad grad) => grad.gradID ?? -1,
-        );
-        int drzavaID = findIdFromName(
-          selectedDrzava,
-          drzavaList,
-          (Drzava drzava) => drzava.naziv ?? '',
-          (Drzava drzava) => drzava.drzavaID ?? -1,
-        );
-        int ulogaID = findIdFromName(
-          selectedUloga,
-          ulogaList,
-          (Uloga uloga) => uloga.naziv ?? '',
-          (Uloga uloga) => uloga.ulogaID ?? -1,
-        );
-
-        if (gradID != -1 && drzavaID != -1 && ulogaID != -1) {
-          Map<String, dynamic> newUser = {
-            "ime": name,
-            "prezime": surname,
-            "datumRodjenja": tempDate.toIso8601String(),
-            "korisnickoIme": username,
-            "email": email,
-            "telefon": telephone,
-            "gradID": gradID,
-            "drzavaID": drzavaID,
-            "ulogeID": [ulogaID],
-            "lozinka": password,
-          };
-
-          widget.onAddUserPressed(newUser);
-          setState(() {});
-        } else {
-          print("Error: Some selected values are not set");
-        }
-      }
-    } catch (e) {
-      print("Error adding user: $e");
+      widget.onAddUserPressed(newUser);
+      setState(() {});
+    } else {
+      print("Error!");
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    surnameController.dispose();
+    usernameController.dispose();
+    dobController.dispose();
+    emailController.dispose();
+    telephoneController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    dobController.text = '';
     loadData();
   }
 
@@ -246,151 +179,246 @@ class _AddUserModalState extends State<AddUserModal> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const Text(
-                    'Add User',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      hintText: 'Example: John',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: surnameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Surname',
-                      hintText: 'Example: Smith',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: dobController,
-                    decoration: const InputDecoration(
-                      labelText: 'Date of Birth',
-                      hintText: 'MM.dd.yyyy',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'example@email.com',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: telephoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Telephone',
-                      hintText: 'Example: 037-123-456',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: selectedDrzava,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedDrzava = value!;
-                        selectedGrad = null;
-                      });
-                    },
-                    items: drzavaList
-                        .map((Drzava drzava) => drzava.naziv ?? '')
-                        .toSet()
-                        .map((String country) {
-                      return DropdownMenuItem<String>(
-                        value: country,
-                        child: Text(country),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(labelText: 'Country'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: selectedGrad,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedGrad = value!;
-                      });
-                    },
-                    items: gradList
-                        .where((Grad grad) =>
-                            gradToDrzavaMap[grad.naziv] == selectedDrzava)
-                        .map((Grad grad) {
-                      return DropdownMenuItem<String>(
-                        value: grad.naziv,
-                        child: Text(grad.naziv ?? ''),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(labelText: 'City'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  TextField(
-                    controller: usernameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
-                      hintText: 'Example: john_smith',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                    ),
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: selectedUloga,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedUloga = value!;
-                      });
-                    },
-                    items: ulogaList.map((Uloga uloga) {
-                      return DropdownMenuItem<String>(
-                        value: uloga.naziv,
-                        child: Text(uloga.naziv ?? ''),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(labelText: 'Uloga'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  const SizedBox(height: 20),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
-                        ),
-                        onPressed: widget.onCancelPressed,
-                        child: const Text('Cancel',
-                            style: TextStyle(color: Colors.white)),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text(
+                      'Add User',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromRGBO(97, 142, 246, 1),
-                        ),
-                        onPressed: _uploadUser,
-                        child: const Text('OK',
-                            style: TextStyle(color: Colors.white)),
+                    ),
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Name',
+                        hintText: 'Example: John',
+                        hintStyle: TextStyle(color: Colors.grey),
                       ),
-                    ],
-                  ),
-                ],
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'Name can only contain letters';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: surnameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Surname',
+                        hintText: 'Example: Smith',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your surname';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'Surname can only contain letters';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      readOnly: true,
+                      controller: dobController,
+                      onTap: () {
+                        _selectDate(context);
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Date of Birth',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your date of birth';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        hintText: 'example@email.com',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        if (!RegExp(
+                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                            .hasMatch(value)) {
+                          return 'Invalid email format';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: telephoneController,
+                      decoration: const InputDecoration(
+                        labelText: 'Telephone',
+                        hintText: 'Example: 037-123-456',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your telephone';
+                        }
+                        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(value)) {
+                          return 'Invalid phone number format';
+                        }
+                        return null;
+                      },
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedDrzava,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedDrzava = value!;
+                          selectedGrad = null;
+                        });
+                      },
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a country';
+                        }
+                        return null;
+                      },
+                      items: drzavaList
+                          .map((Drzava drzava) => drzava.naziv ?? '')
+                          .toSet()
+                          .map((String country) {
+                        return DropdownMenuItem<String>(
+                          value: country,
+                          child: Text(country),
+                        );
+                      }).toList(),
+                      decoration: const InputDecoration(labelText: 'Country'),
+                      dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedGrad,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedGrad = value!;
+                        });
+                      },
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a city';
+                        }
+                        return null;
+                      },
+                      items: gradList
+                          .where((Grad grad) =>
+                              gradToDrzavaMap[grad.naziv] == selectedDrzava)
+                          .map((Grad grad) {
+                        return DropdownMenuItem<String>(
+                          value: grad.naziv,
+                          child: Text(grad.naziv ?? ''),
+                        );
+                      }).toList(),
+                      decoration: const InputDecoration(labelText: 'City'),
+                      dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                    ),
+                    TextFormField(
+                      controller: usernameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                        hintText: 'Example: john_smith',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your username';
+                        }
+                        if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*]+$')
+                                .hasMatch(value) ||
+                            value.length < 5) {
+                          return 'Username should have at least 5 characters and can only contain letters, numbers, or special characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        if (!RegExp(r'^[a-zA-Z0-9!@#$%^&*]+$')
+                                .hasMatch(value) ||
+                            value.length < 5) {
+                          return 'Password should have at least 5 characters and can only contain letters, numbers, or special characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedUloga,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedUloga = value!;
+                        });
+                      },
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a role';
+                        }
+                        return null;
+                      },
+                      items: ulogaList.map((Uloga uloga) {
+                        return DropdownMenuItem<String>(
+                          value: uloga.naziv,
+                          child: Text(uloga.naziv ?? ''),
+                        );
+                      }).toList(),
+                      decoration: const InputDecoration(labelText: 'Uloga'),
+                      dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                          ),
+                          onPressed: widget.onCancelPressed,
+                          child: const Text('Cancel',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(97, 142, 246, 1),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _uploadUser();
+                            }
+                          },
+                          child: const Text('OK',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

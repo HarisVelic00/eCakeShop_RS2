@@ -24,6 +24,7 @@ class EditProductModal extends StatefulWidget {
 }
 
 class _EditProductModalState extends State<EditProductModal> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -62,20 +63,6 @@ class _EditProductModalState extends State<EditProductModal> {
     return -1;
   }
 
-  Future<void> _pickImage() async {
-    try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-      setState(() {
-        if (pickedFile != null) {
-          _imageFile = File(pickedFile.path);
-          _updateImagePreview();
-        }
-      });
-    } catch (e) {
-      print("Error picking image: $e");
-    }
-  }
-
   void _updateImagePreview() {
     if (_imageFile != null) {
       setState(() {
@@ -92,6 +79,20 @@ class _EditProductModalState extends State<EditProductModal> {
       });
     } catch (e) {
       print('Error decoding image: $e');
+    }
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        if (pickedFile != null) {
+          _imageFile = File(pickedFile.path);
+          _updateImagePreview();
+        }
+      });
+    } catch (e) {
+      print("Error picking image: $e");
     }
   }
 
@@ -133,7 +134,6 @@ class _EditProductModalState extends State<EditProductModal> {
         }
       }
     }
-
     loadData();
   }
 
@@ -143,79 +143,42 @@ class _EditProductModalState extends State<EditProductModal> {
       final price = double.tryParse(priceController.text);
       final description = descriptionController.text;
 
-      if (name.isEmpty ||
-          description.isEmpty ||
-          selectedVrstaProizvoda == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (price == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Price should only contain numbers.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (price <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Price should be greater than zero.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Name should contain only letters.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else if (!RegExp(r'^[a-zA-Z0-9,.!? ]+$').hasMatch(description)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Description should contain only letters, numbers, . , !, and ?'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
-        int vrstaProizvodaID = findIdFromName(
-          selectedVrstaProizvoda,
-          vrstaProizvodaList,
-          (VrstaProizvoda vrstaProizvoda) => vrstaProizvoda.naziv ?? '',
-          (VrstaProizvoda vrstaProizvoda) =>
-              vrstaProizvoda.vrstaProizvodaID ?? -1,
-        );
-
-        Map<String, dynamic> updateData = {
-          "naziv": name,
-          "cijena": price,
-          "opis": description,
-          "vrstaProizvodaID": vrstaProizvodaID,
-        };
-
-        if (_imageFile != null) {
-          List<int>? imageBytes = await _imageFile!.readAsBytes();
-          String? base64Image = base64Encode(imageBytes);
-          updateData["slika"] = base64Image;
-        } else {
-          updateData["slika"] = _proizvodToEdit!.slika;
-        }
-
-        widget.onUpdatePressed(_proizvodToEdit!.proizvodID!, updateData);
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error updating product. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
+      int vrstaProizvodaID = findIdFromName(
+        selectedVrstaProizvoda,
+        vrstaProizvodaList,
+        (VrstaProizvoda vrstaProizvoda) => vrstaProizvoda.naziv ?? '',
+        (VrstaProizvoda vrstaProizvoda) =>
+            vrstaProizvoda.vrstaProizvodaID ?? -1,
       );
+
+      Map<String, dynamic> updateData = {
+        "naziv": name,
+        "cijena": price,
+        "opis": description,
+        "vrstaProizvodaID": vrstaProizvodaID,
+      };
+
+      if (_imageFile != null) {
+        List<int>? imageBytes = await _imageFile!.readAsBytes();
+        String? base64Image = base64Encode(imageBytes);
+        updateData["slika"] = base64Image;
+      } else {
+        updateData["slika"] = _proizvodToEdit!.slika;
+      }
+
+      widget.onUpdatePressed(_proizvodToEdit!.proizvodID!, updateData);
+      Navigator.pop(context);
+    } catch (e) {
+      print("Error updating product: $e");
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -232,83 +195,133 @@ class _EditProductModalState extends State<EditProductModal> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      const Text(
-                        'Edit Product',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextField(
-                        controller: nameController,
-                        decoration: const InputDecoration(labelText: 'Name'),
-                      ),
-                      TextField(
-                        controller: priceController,
-                        decoration: const InputDecoration(labelText: 'Price'),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildImagePreview(),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromRGBO(97, 142, 246, 1),
-                        ),
-                        onPressed: _pickImage,
-                        child: const Text('Select Image',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                      TextField(
-                        controller: descriptionController,
-                        decoration:
-                            const InputDecoration(labelText: 'Description'),
-                      ),
-                      DropdownButtonFormField<String>(
-                        value: selectedVrstaProizvoda,
-                        onChanged: (String? value) {
-                          setState(() {
-                            selectedVrstaProizvoda = value!;
-                          });
-                        },
-                        items: vrstaProizvodaList
-                            .map((VrstaProizvoda vrstaProizvoda) {
-                          return DropdownMenuItem<String>(
-                            value: vrstaProizvoda.naziv ?? '',
-                            child: Text(vrstaProizvoda.naziv ?? ''),
-                          );
-                        }).toList(),
-                        decoration: const InputDecoration(labelText: 'Type'),
-                        dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                      ),
-                      const SizedBox(height: 20),
-                      const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                            ),
-                            onPressed: widget.onCancelPressed,
-                            child: const Text('Cancel',
-                                style: TextStyle(color: Colors.white)),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        const Text(
+                          'Edit Product',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromRGBO(97, 142, 246, 1),
-                            ),
-                            onPressed: _editProduct,
-                            child: const Text('Save',
-                                style: TextStyle(color: Colors.white)),
+                        ),
+                        TextFormField(
+                          controller: nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Name',
+                            hintText: 'Example: Cheese Cake',
+                            hintStyle: TextStyle(color: Colors.grey),
                           ),
-                        ],
-                      ),
-                    ],
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter product name';
+                            }
+                            if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                              return 'Product name can only contain letters';
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: priceController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter product price';
+                            }
+                            if (!RegExp(r'^[0-9]+(\.[0-9]+)?$')
+                                .hasMatch(value)) {
+                              return 'Please enter a valid number';
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Price',
+                            hintText: 'Example: 40',
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildImagePreview(),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(97, 142, 246, 1),
+                          ),
+                          onPressed: _pickImage,
+                          child: const Text('Select Image',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        TextFormField(
+                          controller: descriptionController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter product description';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Description',
+                            hintText: 'Example: Cake with cheese',
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        DropdownButtonFormField<String>(
+                          value: selectedVrstaProizvoda,
+                          onChanged: (String? value) {
+                            setState(() {
+                              selectedVrstaProizvoda = value!;
+                            });
+                          },
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a product type';
+                            }
+                            return null;
+                          },
+                          items: vrstaProizvodaList
+                              .map((VrstaProizvoda vrstaProizvoda) {
+                            return DropdownMenuItem<String>(
+                              value: vrstaProizvoda.naziv ?? '',
+                              child: Text(vrstaProizvoda.naziv ?? ''),
+                            );
+                          }).toList(),
+                          decoration: const InputDecoration(labelText: 'Type'),
+                          dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                        ),
+                        const SizedBox(height: 20),
+                        const Divider(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                              ),
+                              onPressed: widget.onCancelPressed,
+                              child: const Text('Cancel',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(97, 142, 246, 1),
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _editProduct();
+                                }
+                              },
+                              child: const Text('OK',
+                                  style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

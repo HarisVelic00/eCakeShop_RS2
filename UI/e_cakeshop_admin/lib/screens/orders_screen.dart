@@ -1,5 +1,4 @@
 // ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, use_build_context_synchronously, avoid_print, prefer_const_constructors_in_immutables
-import 'package:e_cakeshop_admin/modals/add_order_modal.dart';
 import 'package:e_cakeshop_admin/modals/delete_modal.dart';
 import 'package:e_cakeshop_admin/modals/edit_order_modal.dart';
 import 'package:e_cakeshop_admin/models/narudzba.dart';
@@ -34,20 +33,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       isDeleteModalOpen = false;
       narudzbaToDelete = null;
     });
-  }
-
-  void openAddOrderModal() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AddOrderModal(
-          onCancelPressed: () {
-            Navigator.pop(context);
-          },
-          onAddOrderPressed: addNewOrder,
-        );
-      },
-    );
   }
 
   void openEditOrderModal(Narudzba narudzba) {
@@ -172,21 +157,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           ),
                         ),
                         const SizedBox(width: 16.0),
-                        Expanded(
-                          flex: 1,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(200, 48),
-                              backgroundColor:
-                                  const Color.fromRGBO(97, 142, 246, 1),
-                            ),
-                            onPressed: openAddOrderModal,
-                            child: const Text(
-                              'Add Order',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -212,18 +182,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     onCancelPressed: () {
                       closeDeleteModal();
                     },
-                  ),
-                ),
-              if (isAddOrderModalOpen)
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: AddOrderModal(
-                      onCancelPressed: () {
-                        Navigator.pop(context);
-                      },
-                      onAddOrderPressed: addNewOrder,
-                    ),
                   ),
                 ),
               if (_isEditOrderModalOpen)
@@ -282,7 +240,6 @@ class OrdersTable extends StatelessWidget {
                   dataRowMinHeight: 50,
                   dataRowMaxHeight: 150,
                   columns: const [
-                    DataColumn(label: Text('Order Number')),
                     DataColumn(label: Text('User')),
                     DataColumn(label: Text('Date')),
                     DataColumn(label: Text('Products')),
@@ -293,12 +250,11 @@ class OrdersTable extends StatelessWidget {
                   rows: filteredNarudzba.map((narudzba) {
                     return DataRow(
                       cells: [
-                        DataCell(Text(narudzba.brojNarudzbe?.toString() ?? '')),
                         DataCell(Text(narudzba.korisnik?.ime ?? '')),
                         DataCell(
                           narudzba.datumNarudzbe != null
                               ? Text(
-                                  DateFormat('MM.dd.yyyy')
+                                  DateFormat('dd.MM.yyyy')
                                       .format(narudzba.datumNarudzbe!),
                                 )
                               : const Text(''),

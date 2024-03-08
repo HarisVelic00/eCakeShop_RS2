@@ -22,6 +22,7 @@ class EditUserModal extends StatefulWidget {
 }
 
 class _EditUserModalState extends State<EditUserModal> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -79,97 +80,51 @@ class _EditUserModalState extends State<EditUserModal> {
   }
 
   Future<void> _editUser() async {
-    try {
-      final name = nameController.text;
-      final surname = surnameController.text;
-      final email = emailController.text;
-      final telephone = telephoneController.text;
+    final name = nameController.text;
+    final surname = surnameController.text;
+    final email = emailController.text;
+    final telephone = telephoneController.text;
 
-      if (name.isEmpty ||
-          surname.isEmpty ||
-          email.isEmpty ||
-          telephone.isEmpty ||
-          selectedGrad == null ||
-          selectedDrzava == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all fields'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } else {
-        if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-            .hasMatch(email)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid email format'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(telephone)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content:
-                  Text('Invalid phone number format. Please use XXX-XXX-XXX'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        if (!RegExp(r'^[a-zA-Z]+$').hasMatch(name) ||
-            !RegExp(r'^[a-zA-Z]+$').hasMatch(surname)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Name and surname should contain only letters'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        int gradID = findIdFromName(
-          selectedGrad,
-          gradList,
-          (Grad grad) => grad.naziv ?? '',
-          (Grad grad) => grad.gradID ?? -1,
-        );
-        int drzavaID = findIdFromName(
-          selectedDrzava,
-          drzavaList,
-          (Drzava drzava) => drzava.naziv ?? '',
-          (Drzava drzava) => drzava.drzavaID ?? -1,
-        );
-
-        widget.onUpdatePressed(_korisnikToEdit!.korisnikID!, {
-          'ime': name,
-          'prezime': surname,
-          'email': email,
-          'telefon': telephone,
-          "gradID": gradID,
-          "drzavaID": drzavaID,
-        });
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      print('Error editing user: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error editing user'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    int gradID = findIdFromName(
+      selectedGrad,
+      gradList,
+      (Grad grad) => grad.naziv ?? '',
+      (Grad grad) => grad.gradID ?? -1,
+    );
+    int drzavaID = findIdFromName(
+      selectedDrzava,
+      drzavaList,
+      (Drzava drzava) => drzava.naziv ?? '',
+      (Drzava drzava) => drzava.drzavaID ?? -1,
+    );
+    if (_korisnikToEdit != null) {
+      widget.onUpdatePressed(_korisnikToEdit!.korisnikID!, {
+        'ime': name,
+        'prezime': surname,
+        'email': email,
+        'telefon': telephone,
+        "gradID": gradID,
+        "drzavaID": drzavaID,
+      });
+      Navigator.pop(context);
+    } else {
+      print("Error!");
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    surnameController.dispose();
+    emailController.dispose();
+    telephoneController.dispose();
+    super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
     _korisnikToEdit = widget.korisnikToEdit;
-
     if (_korisnikToEdit != null) {
       nameController.text = _korisnikToEdit!.ime ?? '';
       surnameController.text = _korisnikToEdit!.prezime ?? '';
@@ -178,7 +133,6 @@ class _EditUserModalState extends State<EditUserModal> {
       selectedGrad = _korisnikToEdit!.grad?.naziv;
       selectedDrzava = _korisnikToEdit!.drzava?.naziv;
     }
-
     loadData();
   }
 
@@ -193,112 +147,168 @@ class _EditUserModalState extends State<EditUserModal> {
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const Text(
-                    'Edit User',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      hintText: 'Example John',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: surnameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Surname',
-                      hintText: 'Example Smith',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'example@email.com',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextField(
-                    controller: telephoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Telephone',
-                      hintText: 'Example 037-123-456',
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: selectedDrzava,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedDrzava = value!;
-                        selectedGrad = null;
-                      });
-                    },
-                    items: drzavaList
-                        .map((Drzava drzava) => drzava.naziv ?? '')
-                        .toSet()
-                        .map((String country) {
-                      return DropdownMenuItem<String>(
-                        value: country,
-                        child: Text(country),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(labelText: 'Country'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: selectedGrad,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedGrad = value!;
-                      });
-                    },
-                    items: gradList
-                        .where((Grad grad) =>
-                            gradToDrzavaMap[grad.naziv] == selectedDrzava)
-                        .map((Grad grad) {
-                      return DropdownMenuItem<String>(
-                        value: grad.naziv,
-                        child: Text(grad.naziv ?? ''),
-                      );
-                    }).toList(),
-                    decoration: const InputDecoration(labelText: 'City'),
-                    dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
-                  ),
-                  const SizedBox(height: 20),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
-                        ),
-                        onPressed: widget.onCancelPressed,
-                        child: const Text('Cancel',
-                            style: TextStyle(color: Colors.white)),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text(
+                      'Edit User',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromRGBO(97, 142, 246, 1),
-                        ),
-                        onPressed: _editUser,
-                        child: const Text('Save',
-                            style: TextStyle(color: Colors.white)),
+                    ),
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Name',
+                        hintText: 'Example: John',
+                        hintStyle: TextStyle(color: Colors.grey),
                       ),
-                    ],
-                  ),
-                ],
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'Name can only contain letters';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: surnameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Surname',
+                        hintText: 'Example: Smith',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your surname';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                          return 'Surname can only contain letters';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          hintText: 'example@email.com',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          if (!RegExp(
+                                  r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                              .hasMatch(value)) {
+                            return 'Invalid email format';
+                          }
+                          return null;
+                        }),
+                    TextFormField(
+                      controller: telephoneController,
+                      decoration: const InputDecoration(
+                        labelText: 'Telephone',
+                        hintText: 'Example: 037-123-456',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your telephone';
+                        }
+                        if (!RegExp(r'^\d{3}-\d{3}-\d{3}$').hasMatch(value)) {
+                          return 'Invalid phone number format';
+                        }
+                        return null;
+                      },
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedDrzava,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedDrzava = value!;
+                          selectedGrad = null;
+                        });
+                      },
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a country';
+                        }
+                        return null;
+                      },
+                      items: drzavaList
+                          .map((Drzava drzava) => drzava.naziv ?? '')
+                          .toSet()
+                          .map((String country) {
+                        return DropdownMenuItem<String>(
+                          value: country,
+                          child: Text(country),
+                        );
+                      }).toList(),
+                      decoration: const InputDecoration(labelText: 'Country'),
+                      dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: selectedGrad,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedGrad = value!;
+                        });
+                      },
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a city';
+                        }
+                        return null;
+                      },
+                      items: gradList
+                          .where((Grad grad) =>
+                              gradToDrzavaMap[grad.naziv] == selectedDrzava)
+                          .map((Grad grad) {
+                        return DropdownMenuItem<String>(
+                          value: grad.naziv,
+                          child: Text(grad.naziv ?? ''),
+                        );
+                      }).toList(),
+                      decoration: const InputDecoration(labelText: 'City'),
+                      dropdownColor: const Color.fromRGBO(247, 249, 253, 1),
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                          ),
+                          onPressed: widget.onCancelPressed,
+                          child: const Text('Cancel',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(97, 142, 246, 1),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _editUser();
+                            }
+                          },
+                          child: const Text('Save',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

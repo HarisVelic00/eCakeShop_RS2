@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, unused_catch_clause
+// ignore_for_file: use_build_context_synchronously, avoid_print, unused_catch_clause, deprecated_member_use
 import 'dart:convert';
 import 'package:e_cakeshop_mobile/.env';
 import 'package:e_cakeshop_mobile/models/cart.dart';
@@ -31,9 +31,9 @@ class _CartScreenState extends State<CartScreen> {
   Uplata? uplata;
   double iznos = 0;
   late TextEditingController _addressController;
-
   String? enteredAddress;
   late SharedPreferences _prefs;
+  final GlobalKey<FormState> _addressFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -97,22 +97,35 @@ class _CartScreenState extends State<CartScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.black,
-                            width: 1.0,
+                    Form(
+                      key: _addressFormKey,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.black,
+                              width: 1.0,
+                            ),
                           ),
                         ),
-                      ),
-                      child: TextField(
-                        controller: _addressController,
-                        decoration: const InputDecoration(
-                          labelText: 'Enter Delivery Address',
-                          labelStyle: TextStyle(color: Colors.black),
-                          border: InputBorder.none,
+                        child: TextFormField(
+                          controller: _addressController,
+                          decoration: const InputDecoration(
+                            labelText: 'Enter Delivery Address',
+                            labelStyle: TextStyle(color: Colors.black),
+                            border: InputBorder.none,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter delivery address';
+                            }
+                            RegExp regex = RegExp(r'^[a-zA-Z0-9\s]*$');
+                            if (!regex.hasMatch(value)) {
+                              return 'Please enter a valid address';
+                            }
+                            return null;
+                          },
                         ),
                       ),
                     ),
@@ -128,30 +141,22 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           onPressed: () async {
-                            final enteredAddress = _addressController.text;
-                            if (enteredAddress.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Please enter delivery address'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            } else {
+                            if (_addressFormKey.currentState!.validate()) {
+                              final enteredAddress = _addressController.text;
                               await _saveAddress(enteredAddress);
                               double totalPrice = _cartProvider.totalPrice;
                               await makePayment(totalPrice);
                               if (paymentIntentData == null) {}
                             }
                           },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                              Colors.green,
-                            ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.green,
                           ),
-                          child: const Text(
+                          icon: const Icon(Icons.shopping_cart,
+                              color: Colors.white),
+                          label: const Text(
                             "Buy",
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
